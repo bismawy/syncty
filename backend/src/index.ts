@@ -48,6 +48,8 @@ export default {
     if (request.method === "OPTIONS") return cors(new Response(null, { status: 204 }));
 
     const authId = request.headers.get("X-Auth-Id");
+    const deviceId = request.headers.get("X-Device-Id");
+
     // /health is the only unauthenticated route.
     if (url.pathname === "/health") return json({ ok: true });
 
@@ -55,9 +57,9 @@ export default {
 
     const p = url.pathname;
     try {
-      if (p === "/vault" && request.method === "GET") return await getVault(env, authId!);
-      if (p === "/vault" && request.method === "PUT") return await putVault(env, authId!, await request.json());
-      if (p === "/devices" && request.method === "GET") return await listDevices(env, authId!);
+      if (p === "/vault" && request.method === "GET") return await getVault(env, authId!, deviceId);
+      if (p === "/vault" && request.method === "PUT") return await putVault(env, authId!, deviceId, await request.json());
+      if (p === "/devices" && request.method === "GET") return await listDevices(env, authId!, deviceId);
       if (p === "/device" && request.method === "POST") return await upsertDevice(env, authId!, await request.json());
       if (p === "/device" && request.method === "DELETE") return await removeDevice(env, authId!, url.searchParams.get("device_id"));
       return json({ error: "not found" }, 404);
@@ -67,20 +69,37 @@ export default {
   },
 };
 
-async function getVault(env: Env, authId: string): Promise<Response> {
+async function getVault(env: Env, authId: string, deviceId: string | null): Promise<Response> {
   const row = await env.DB.prepare("SELECT blob, version, updated_at FROM vaults WHERE auth_id = ?")
     .bind(authId).first<{ blob: string; version: number; updated_at: number }>();
   if (!row) return json({ error: "no vault" }, 404);
+
+  // If vault exists and version > 0, verify the device is not revoked
+  if (row.version > 0) {
+    if (!deviceId) return json({ error: "device_id required" }, 401);
+    const dev = await env.DB.prepare("SELECT 1 FROM devices WHERE auth_id = ? AND device_id = ?")
+      .bind(authId, deviceId).first();
+    if (!dev) return json({ error: "device_revoked" }, 401);
+  }
+
   return json({ blob: row.blob, version: row.version, updated_at: row.updated_at });
 }
 
-async function putVault(env: Env, authId: string, body: any): Promise<Response> {
+async function putVault(env: Env, authId: string, deviceId: string | null, body: any): Promise<Response> {
   // Optimistic locking: client sends expectedVersion (what it read from GET).
   // Server controls the increment — client cannot set arbitrary versions.
   const blob = typeof body?.blob === "string" && body.blob.length > 0 ? body.blob : null;
   const expectedVersion = Number(body?.expectedVersion);
   if (!blob || !Number.isInteger(expectedVersion) || expectedVersion < 0) return json({ error: "invalid payload" }, 422);
   const now = Date.now();
+
+  // If vault exists and version > 0, verify the device is not revoked
+  if (expectedVersion > 0) {
+    if (!deviceId) return json({ error: "device_id required" }, 401);
+    const dev = await env.DB.prepare("SELECT 1 FROM devices WHERE auth_id = ? AND device_id = ?")
+      .bind(authId, deviceId).first();
+    if (!dev) return json({ error: "device_revoked" }, 401);
+  }
 
   if (expectedVersion === 0) {
     // First push: try to insert a new vault.
@@ -99,7 +118,17 @@ async function putVault(env: Env, authId: string, body: any): Promise<Response> 
   return json({ version: expectedVersion + 1, updated_at: now });
 }
 
-async function listDevices(env: Env, authId: string): Promise<Response> {
+async function listDevices(env: Env, authId: string, deviceId: string | null): Promise<Response> {
+  // If vault exists and version > 0, verify the device is not revoked
+  const row = await env.DB.prepare("SELECT version FROM vaults WHERE auth_id = ?")
+    .bind(authId).first<{ version: number }>();
+  if (row && row.version > 0) {
+    if (!deviceId) return json({ error: "device_id required" }, 401);
+    const dev = await env.DB.prepare("SELECT 1 FROM devices WHERE auth_id = ? AND device_id = ?")
+      .bind(authId, deviceId).first();
+    if (!dev) return json({ error: "device_revoked" }, 401);
+  }
+
   const rows = await env.DB.prepare(
     "SELECT device_id, label, last_sync FROM devices WHERE auth_id = ? ORDER BY last_sync DESC"
   ).bind(authId).all<{ device_id: string; label: string; last_sync: number }>();

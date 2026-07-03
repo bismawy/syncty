@@ -1,18 +1,30 @@
+import { getDeviceId } from './device';
 import type { DeviceInfo, ServerVault } from './types';
 
 declare const __API_BASE__: string;
 
 const BASE = __API_BASE__;
 
+export class UnauthorizedError extends Error {
+  constructor() { super('unauthorized'); this.name = 'UnauthorizedError'; }
+}
+
+export class ConflictError extends Error {
+  constructor() { super('conflict'); this.name = 'ConflictError'; }
+}
+
 async function req(path: string, authId: string, init: RequestInit = {}): Promise<Response> {
+  const deviceId = await getDeviceId();
   const res = await fetch(`${BASE}${path}`, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
       'X-Auth-Id': authId,
+      'X-Device-Id': deviceId,
       ...(init.headers ?? {}),
     },
   });
+  if (res.status === 401) throw new UnauthorizedError();
   return res;
 }
 
@@ -21,10 +33,6 @@ export async function getVault(authId: string): Promise<ServerVault> {
   if (res.status === 404) return { blob: null, version: 0, updatedAt: 0 };
   if (!res.ok) throw new Error(`vault GET failed: ${res.status}`);
   return res.json();
-}
-
-export class ConflictError extends Error {
-  constructor() { super('conflict'); this.name = 'ConflictError'; }
 }
 
 export async function putVault(authId: string, blob: string, expectedVersion: number): Promise<{ version: number; updatedAt: number }> {

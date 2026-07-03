@@ -9,9 +9,20 @@ export default function App() {
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    loadSession()
-      .then((s) => { setOnboarded(!!s); setReady(true); })
-      .catch((e) => { setError(String(e)); setReady(true); });
+    const check = () =>
+      loadSession()
+        .then((s) => { setOnboarded(!!s); setReady(true); })
+        .catch((e) => { setError(String(e)); setReady(true); });
+
+    check();
+
+    const onChange = (changes: Record<string, any>) => {
+      if (changes['syncty.mnemonic'] || changes['syncty.authId']) {
+        check();
+      }
+    };
+    browser.storage.onChanged.addListener(onChange);
+    return () => browser.storage.onChanged.removeListener(onChange);
   }, []);
 
   if (error) {
