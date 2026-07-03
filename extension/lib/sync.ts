@@ -11,9 +11,9 @@
 // merge if multi-user concurrent editing is ever needed.
 
 import { encryptJSON, decryptJSON } from './crypto';
-import { getVault, putVault, upsertDevice, ConflictError } from './api';
+import { getVault, putVault, upsertDevice, ConflictError, UnauthorizedError } from './api';
 import { getDeviceId, getDeviceLabel } from './device';
-import { loadSession, getVersion, setVersion, setLastSync, KEYS } from './storage';
+import { loadSession, clearSession, getVersion, setVersion, setLastSync, KEYS } from './storage';
 import type { SyncStatus } from './types';
 import { EMPTY_STATUS } from './types';
 
@@ -178,8 +178,17 @@ export async function syncNow(): Promise<SyncResult> {
   syncing = true;
   try {
     const authId = session.authId;
-    const server = await getVault(authId);
     const localKnown = await getVersion();
+    
+    // On first sync/onboarding, proactively register this device before checking vault
+    // to ensure the D1 backend knows it exists and doesn't block it with a 401.
+    if (localKnown === 0) {
+      const label = getDeviceLabel();
+      await upsertDevice(authId, await getDeviceId(), label);
+      await browser.storage.local.set({ [LAST_LABEL_KEY]: label });
+    }
+
+    const server = await getVault(authId);
     const dirty = await isDirty();
 
     let tree = await serializeToolbar();
@@ -261,6 +270,9 @@ export async function syncNow(): Promise<SyncResult> {
       version: await getVersion(),
     };
   } catch (err) {
+    if (err instanceof UnauthorizedError) {
+      await clearSession();
+    }
     return { ...EMPTY_STATUS, error: String(err) };
   } finally {
     syncing = false;

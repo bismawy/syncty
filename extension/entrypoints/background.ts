@@ -6,28 +6,34 @@ const ALARM = 'syncty-sync';
 const INTERVAL_KEY = 'syncty.syncInterval';
 const DEFAULT_INTERVAL_MIN = 15;
 
-async function setupAlarm() {
+async function setupAlarm(force = false) {
   const data = await browser.storage.local.get(INTERVAL_KEY);
   const interval = data[INTERVAL_KEY] !== undefined ? (data[INTERVAL_KEY] as number) : DEFAULT_INTERVAL_MIN;
   if (interval <= 0) {
     await browser.alarms.clear(ALARM);
   } else {
-    await browser.alarms.create(ALARM, { periodInMinutes: interval });
+    const existing = await browser.alarms.get(ALARM);
+    if (!existing || force) {
+      await browser.alarms.create(ALARM, { periodInMinutes: interval });
+    }
   }
 }
 
 export default defineBackground(() => {
+  // Ensure the alarm is created or maintained when the service worker wakes up/loads.
+  setupAlarm(false);
+
   // On install: open the Syncty new-tab page for onboarding.
   browser.runtime.onInstalled.addListener(async (details: Browser.runtime.InstalledDetails) => {
     if (details.reason === 'install') {
       await browser.tabs.create({ url: browser.runtime.getURL('/newtab.html') });
     }
-    await setupAlarm();
+    await setupAlarm(true);
   });
 
   // Ensure the alarm exists even after browser restart without an install event.
   browser.runtime.onStartup.addListener(async () => {
-    await setupAlarm();
+    await setupAlarm(true);
     const session = await loadSession();
     if (session) void syncNow();
   });
@@ -35,7 +41,7 @@ export default defineBackground(() => {
   // Re-register alarms when the sync interval changes
   browser.storage.onChanged.addListener(async (changes) => {
     if (changes[INTERVAL_KEY]) {
-      await setupAlarm();
+      await setupAlarm(true);
     }
   });
 
