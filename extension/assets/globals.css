@@ -1,0 +1,205 @@
+@import "tailwindcss";
+
+/* ponytail: single dark theme (Cloudflare-dashboard inspired). Add a light
+   variant behind a `.light` class toggle when a theme switch is requested. */
+:root {
+  --radius: 0.375rem; /* Sharp and modern border radius like Cloudflare Dashboard & Shadcn UI */
+
+  --background: oklch(0.09 0 0); /* Dark carbon background (zinc-950) */
+  --foreground: oklch(0.98 0 0); /* Off-white text (zinc-50) */
+  --card: oklch(0.12 0 0); /* Deep gray card (zinc-900) */
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.12 0 0);
+  --popover-foreground: oklch(0.98 0 0);
+
+  --muted: oklch(0.16 0 0); /* Subtle dark gray (zinc-800) */
+  --muted-foreground: oklch(0.65 0 0); /* Muted text gray (zinc-400) */
+
+  --border: oklch(0.18 0 0); /* Sharp, thin borders (zinc-800) */
+  --input: oklch(0.18 0 0);
+  --ring: oklch(0.85 0 0); /* Focus ring */
+
+  --primary: oklch(0.98 0 0); /* High-contrast white for primary actions */
+  --primary-foreground: oklch(0.09 0 0); /* Black text on primary */
+
+  --secondary: oklch(0.16 0 0); /* Secondary actions */
+  --secondary-foreground: oklch(0.98 0 0);
+
+  --accent: oklch(0.16 0 0); /* Hover state highlights */
+  --accent-foreground: oklch(0.98 0 0);
+
+  --destructive: oklch(0.55 0.15 25); /* Muted safety red for destructive operations */
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --success: oklch(0.75 0 0); /* Monochrome success feedback */
+}
+
+.light {
+  --background: oklch(0.99 0 0); /* Light background (zinc-50) */
+  --foreground: oklch(0.09 0 0); /* Dark text (zinc-950) */
+  --card: oklch(0.97 0 0); /* White/light gray card (zinc-100) */
+  --card-foreground: oklch(0.09 0 0);
+  --popover: oklch(0.97 0 0);
+  --popover-foreground: oklch(0.09 0 0);
+
+  --muted: oklch(0.94 0 0); /* Subtle light gray (zinc-200) */
+  --muted-foreground: oklch(0.45 0 0); /* Muted gray text (zinc-500) */
+
+  --border: oklch(0.89 0 0); /* Light borders (zinc-200) */
+  --input: oklch(0.89 0 0);
+  --ring: oklch(0.20 0 0); /* Focus ring */
+
+  --primary: oklch(0.09 0 0); /* Solid black for primary actions */
+  --primary-foreground: oklch(0.98 0 0); /* White text on primary */
+
+  --secondary: oklch(0.94 0 0); /* Secondary actions */
+  --secondary-foreground: oklch(0.09 0 0);
+
+  --accent: oklch(0.94 0 0); /* Hover state highlights */
+  --accent-foreground: oklch(0.09 0 0);
+
+  --destructive: oklch(0.55 0.15 25); /* Red for safety */
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --success: oklch(0.40 0 0); /* Darker gray for success in light mode */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  overflow: hidden;
+}
+
+/* Smooth fluid marquee for long titles: text scrolls, fades at both edges
+   via mask gradient. Only animates on hover when text overflows. */
+.marquee {
+  overflow: hidden;
+  max-width: 100%;
+}
+.marquee.has-overflow {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.marquee.has-overflow:hover {
+  text-overflow: clip;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+}
+.marquee-inner {
+  display: inline-block;
+  white-space: nowrap;
+  will-change: transform;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.marquee.has-overflow:hover .marquee-inner.marquee-animate {
+  animation: marquee-scroll-precise var(--marquee-duration, 4s) ease-in-out infinite alternate;
+}
+@keyframes marquee-scroll-precise {
+  0%, 20% {
+    transform: translateX(0);
+  }
+  80%, 100% {
+    transform: translateX(var(--scroll-dist, 0px));
+  }
+}
+
+/* Thin scrollbars to match the dashboard aesthetic. */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ==========================================
+   Radix Dialog Transitions (Fade-Up / Down)
+   ========================================== */
+.dialog-content {
+  left: 50% !important;
+  top: 50% !important;
+  translate: none !important;
+}
+
+[data-state='open'].dialog-overlay {
+  animation: dialogFadeIn 180ms ease-out forwards;
+}
+[data-state='closed'].dialog-overlay {
+  animation: dialogFadeOut 150ms ease-in forwards;
+}
+
+[data-state='open'].dialog-content {
+  animation: dialogFadeUpIn 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+[data-state='closed'].dialog-content {
+  animation: dialogFadeDownOut 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dialogFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes dialogFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes dialogFadeUpIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes dialogFadeDownOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.97);
+  }
+}

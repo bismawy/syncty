@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build output
+extension/.output/
+extension/.wxt/
+backend/dist/
+*.zip
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+.dev.vars
+backend/.dev.vars
+backend/wrangler.toml.bak
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+
+# Cloudflare
+.wrangler/
