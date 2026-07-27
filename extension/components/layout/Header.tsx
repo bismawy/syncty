@@ -1,0 +1,106 @@
+import * as React from 'react';
+import { Heart, Languages, Check, LayoutGrid } from 'lucide-react';
+import { SupportModal } from '@/components/modals/SupportModal';
+import { useTranslation } from '@/lib/i18n';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+import { IconButton } from '@/components/ui/icon-button';
+
+export function Header({
+  activeTab,
+  onOpenWidgetSettings,
+}: {
+  activeTab: 'dashboard' | 'bookmark' | 'organize' | 'trash';
+  onOpenWidgetSettings?: () => void;
+}) {
+  const { language, setLanguage, t } = useTranslation();
+  const [showSupportModal, setShowSupportModal] = React.useState(false);
+
+  return (
+    <header className="absolute top-0 left-0 right-0 z-30 h-[57px] shrink-0 border-b border-[var(--color-border)]/80 bg-[var(--color-card)]/60 backdrop-blur-md backdrop-saturate-150 px-8 flex items-center justify-between gap-4 select-none">
+      {/* Left Section: Page Title */}
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div className="flex items-center h-8 gap-2">
+          <span className="section-label uppercase font-mono tracking-wider font-bold">
+            {activeTab === 'bookmark'
+              ? t('headerBookmark')
+              : activeTab === 'organize'
+              ? t('headerOrganize')
+              : activeTab === 'trash'
+              ? t('headerTrash')
+              : t('headerDashboard')}
+          </span>
+        </div>
+      </div>
+
+      {/* Right Section: Edit Widgets, Language Selector & Support Button */}
+      <div className="flex items-center gap-2.5 text-xs shrink-0 select-none">
+        {/* Edit Widgets Icon Button (only visible in Dashboard tab) */}
+        {activeTab === 'dashboard' && onOpenWidgetSettings && (
+          <IconButton
+            size="sm"
+            onClick={onOpenWidgetSettings}
+            title={t('editWidgetsTooltip')}
+          >
+            <LayoutGrid className="h-3.5 w-3.5" />
+          </IconButton>
+        )}
+
+        {/* Language Selector Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--color-card)] hover:bg-[var(--color-accent)] border border-[var(--color-border)] text-[var(--color-foreground)] transition-all cursor-pointer shadow-xs active:scale-95 text-xs font-semibold"
+              title="Pilih Bahasa / Change Language"
+            >
+              <Languages className="h-3.5 w-3.5 text-[var(--color-muted-foreground)]" />
+              <span className="uppercase font-mono font-semibold text-xs">
+                {language === 'id' ? 'ID' : 'EN'}
+              </span>
+            </button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent
+            align="end"
+            className="w-36 bg-[var(--color-card)] border-[var(--color-border)] text-[var(--color-foreground)] rounded-xl shadow-lg p-1"
+          >
+            <DropdownMenuItem
+              onClick={() => setLanguage('id')}
+              className="flex items-center justify-between px-3 py-2 text-xs rounded-lg cursor-pointer hover:bg-[var(--color-accent)] focus:bg-[var(--color-accent)] text-[var(--color-foreground)]"
+            >
+              <span className="font-medium">Bahasa Indonesia</span>
+              {language === 'id' && <Check className="h-3.5 w-3.5 text-[var(--color-primary)] shrink-0 ml-2" />}
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={() => setLanguage('en')}
+              className="flex items-center justify-between px-3 py-2 text-xs rounded-lg cursor-pointer hover:bg-[var(--color-accent)] focus:bg-[var(--color-accent)] text-[var(--color-foreground)]"
+            >
+              <span className="font-medium">English</span>
+              {language === 'en' && <Check className="h-3.5 w-3.5 text-[var(--color-primary)] shrink-0 ml-2" />}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Support & Donation Button */}
+        <button
+          type="button"
+          onClick={() => setShowSupportModal(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-500/10 to-pink-500/10 hover:from-rose-500/20 hover:to-pink-500/20 border border-rose-500/30 text-rose-500 font-semibold transition-all cursor-pointer shadow-xs active:scale-95 text-xs"
+        >
+          <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500 animate-pulse shrink-0" />
+          <span>{t('headerSupport')}</span>
+        </button>
+      </div>
+
+      {/* Support & Donation Modal */}
+      <SupportModal open={showSupportModal} onOpenChange={setShowSupportModal} />
+    </header>
+  );
+}

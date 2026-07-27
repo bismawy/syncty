@@ -1,0 +1,131 @@
+import * as React from 'react';
+import { Folder, Trash2, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { EmptyFolderItem } from '@/lib/bookmarkManagement';
+import { moveToTrash } from '@/lib/trash';
+
+interface EmptyFoldersTabProps {
+  emptyFolders: EmptyFolderItem[];
+  selectedEmptyFolderIds: Set<string>;
+  setSelectedEmptyFolderIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+  pageData: EmptyFolderItem[];
+  language: string;
+  hasScanned: boolean;
+  isScanning: boolean;
+  handleScanEmpty: () => void;
+}
+
+export function EmptyFoldersTab({
+  emptyFolders,
+  selectedEmptyFolderIds,
+  setSelectedEmptyFolderIds,
+  pageData,
+  language,
+  hasScanned,
+  isScanning,
+  handleScanEmpty,
+}: EmptyFoldersTabProps) {
+  if (!hasScanned && !isScanning) {
+    return (
+      <tr key="not-scanned">
+        <td colSpan={5} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
+          <div className="flex flex-col items-center justify-center space-y-2">
+            <Folder className="h-6 w-6 text-[var(--color-muted-foreground)]/40" />
+            <p className="font-semibold text-[var(--color-foreground)]">
+              {language === 'id' ? 'Belum Ada Data Pemindaian' : 'No Scan Data Yet'}
+            </p>
+            <p className="text-[11px] text-[var(--color-muted-foreground)] max-w-xs">
+              {language === 'id'
+                ? 'Klik tombol Pindai untuk menganalisis folder kosong Anda.'
+                : 'Click Scan to analyze your empty folders.'}
+            </p>
+          </div>
+        </td>
+      </tr>
+    );
+  }
+
+  if (isScanning) {
+    return (
+      <tr key="scanning">
+        <td colSpan={5} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
+          <div className="flex items-center justify-center gap-2">
+            <RefreshCw className="h-4 w-4 animate-spin text-[var(--color-primary)]" />
+            <span>{language === 'id' ? 'Memindai folder kosong...' : 'Scanning empty folders...'}</span>
+          </div>
+        </td>
+      </tr>
+    );
+  }
+
+  if (hasScanned && emptyFolders.length === 0) {
+    return (
+      <tr key="empty">
+        <td colSpan={5} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
+          <div className="flex flex-col items-center justify-center space-y-1.5">
+            <CheckCircle2 className="h-6 w-6 text-emerald-500" />
+            <p className="font-semibold text-[var(--color-foreground)]">
+              {language === 'id' ? 'Tidak Ada Folder Kosong Ditemukan!' : 'No Empty Folders Found!'}
+            </p>
+          </div>
+        </td>
+      </tr>
+    );
+  }
+
+  return (
+    <>
+      {pageData.map((item) => {
+        const isSelected = selectedEmptyFolderIds.has(item.id);
+
+        return (
+          <tr key={item.id} className="hover:bg-[var(--color-accent)]/40 transition-colors">
+            <td className="py-2.5 px-4 text-center">
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={(c) => {
+                  setSelectedEmptyFolderIds((prev) => {
+                    const next = new Set(prev);
+                    if (c) next.add(item.id);
+                    else next.delete(item.id);
+                    return next;
+                  });
+                }}
+              />
+            </td>
+            <td className="py-2.5 px-4 min-w-0">
+              <div className="flex items-center gap-2 font-bold text-[var(--color-foreground)] truncate" title={item.folderName}>
+                <Folder className="h-4 w-4 text-[var(--color-muted-foreground)] shrink-0" />
+                <span className="truncate">{item.folderName}</span>
+              </div>
+            </td>
+            <td className="py-2.5 px-4 text-[var(--color-muted-foreground)] font-mono text-[11px] truncate" title={item.folderPath}>
+              {item.folderPath}
+            </td>
+            <td className="py-2.5 px-4 text-center">
+              <Badge variant="outline" className="text-[9px] uppercase font-bold text-rose-500 border-rose-500/30 bg-rose-500/10 rounded-md">
+                {language === 'id' ? 'Kosong' : 'Empty'}
+              </Badge>
+            </td>
+            <td className="py-2.5 px-4 text-center">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={async () => {
+                  await moveToTrash(item.id);
+                  handleScanEmpty();
+                }}
+                className="h-7 w-7 p-0 rounded-lg text-rose-500 hover:bg-rose-500/10 cursor-pointer"
+                title="Buang ke Tong Sampah"
+              >
+                <Trash2 className="h-3.5 w-3.5 text-current" />
+              </Button>
+            </td>
+          </tr>
+        );
+      })}
+    </>
+  );
+}

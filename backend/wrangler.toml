@@ -1,0 +1,15 @@
+name = "syncty"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 database binding. Create it with:
+#   npx wrangler d1 create syncty
+# then paste the database_id below.
+[[d1_databases]]
+binding = "DB"
+database_name = "syncty"
+database_id = "603a4312-255c-4060-ae25-7a9ef5b67826"
+migrations_dir = "migrations"
+
+# Apply migrations: npx wrangler d1 migrations apply syncty --remote
