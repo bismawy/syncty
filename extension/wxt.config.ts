@@ -35,5 +35,10 @@ export default defineConfig({
     },
     // ponytail: override the new-tab page so the Syncty dashboard replaces it.
     chrome_url_overrides: { newtab: 'newtab.html' },
+    browser_specific_settings: {
+      gecko: {
+        id: 'syncty@extension.id',
+      },
+    },
   },
 });
