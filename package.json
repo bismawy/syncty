@@ -1,6 +1,6 @@
 {
   "name": "syncty",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "description": "Syncty — bookmark sync extension (zero-knowledge E2E) for Chromium & Firefox.",
   "workspaces": [
