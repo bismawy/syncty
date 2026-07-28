@@ -17,7 +17,7 @@ export default defineConfig({
   }),
   manifest: {
     name: 'Syncty',
-    description: 'Sinkronisasi bookmark terenkripsi antar browser & OS.',
+    description: 'Encrypted bookmark synchronization across browsers & OS.',
     permissions: ['bookmarks', 'storage', 'alarms', 'topSites'],
     host_permissions: ['https://*/*'],
     icons: {

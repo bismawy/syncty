@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FolderGit2, ChevronDown, ChevronRight, Folder, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, Folder, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -172,8 +172,6 @@ export function MergeFoldersTab({
                   disabled={isProcessing}
                   className="h-7 px-3 rounded-lg text-[11px] font-semibold bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:opacity-90 cursor-pointer shadow-xs"
                 >
-
-                  <FolderGit2 className="h-3.5 w-3.5 text-current mr-1" />
                   <span>{language === 'id' ? 'Gabungkan' : 'Merge'}</span>
                 </Button>
               </td>

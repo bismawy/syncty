@@ -103,69 +103,80 @@ export async function countLocalBookmarks(): Promise<number> {
 
 export interface SyncResult extends SyncStatus {}
 
-export function mergeTrees(local: TreeNode, remote: TreeNode): TreeNode {
-  if (local.url || remote.url) return local;
-
-  const mergedChildren: TreeNode[] = [];
-  const remoteBookmarks = new Map<string, TreeNode>();
-  const remoteFolders = new Map<string, TreeNode>();
-
-  for (const child of remote.children ?? []) {
-    if (child.url) {
-      remoteBookmarks.set(normalizeUrl(child.url), child);
-    } else {
-      remoteFolders.set(child.title, child);
-    }
-  }
-
-  const mergedRemoteKeys = new Set<string>();
-
-  for (const localChild of local.children ?? []) {
-    if (localChild.url) {
-      const normUrl = normalizeUrl(localChild.url);
-      const matchingRemote = remoteBookmarks.get(normUrl);
-      if (matchingRemote) {
-        mergedChildren.push(localChild);
-        mergedRemoteKeys.add(`bookmark:${normUrl}`);
-      } else {
-        mergedChildren.push(localChild);
-      }
-    } else {
-      const matchingRemote = remoteFolders.get(localChild.title);
-      if (matchingRemote) {
-        mergedChildren.push(mergeTrees(localChild, matchingRemote));
-        mergedRemoteKeys.add(`folder:${localChild.title}`);
-      } else {
-        mergedChildren.push(localChild);
-      }
-    }
-  }
-
-  for (const remoteChild of remote.children ?? []) {
-    if (remoteChild.url) {
-      const normUrl = normalizeUrl(remoteChild.url);
-      if (!mergedRemoteKeys.has(`bookmark:${normUrl}`)) {
-        mergedChildren.push(remoteChild);
-      }
-    } else {
-      if (!mergedRemoteKeys.has(`folder:${remoteChild.title}`)) {
-        mergedChildren.push(remoteChild);
-      }
-    }
-  }
-
-  return {
-    title: local.title,
-    children: mergedChildren,
-  };
+function normalizeTitle(title: string | undefined): string {
+  return (title ?? '').trim().toLowerCase();
 }
 
 function normalizeUrl(url: string): string {
   try {
-    return new URL(url).href.replace(/\/$/, '');
+    const u = new URL(url);
+    return u.href.replace(/\/$/, '').toLowerCase();
   } catch {
-    return url.trim().replace(/\/$/, '');
+    return url.trim().replace(/\/$/, '').toLowerCase();
   }
+}
+
+export function mergeTrees(remote: TreeNode, local: TreeNode): TreeNode {
+  if (remote.url || local.url) {
+    return remote.url ? remote : local;
+  }
+
+  const localFoldersMap = new Map<string, TreeNode[]>();
+  const localBookmarksMap = new Map<string, TreeNode[]>();
+  const usedLocalNodes = new Set<TreeNode>();
+
+  for (const child of local.children ?? []) {
+    if (child.url) {
+      const normUrl = normalizeUrl(child.url);
+      const list = localBookmarksMap.get(normUrl) ?? [];
+      list.push(child);
+      localBookmarksMap.set(normUrl, list);
+    } else {
+      const normTitle = normalizeTitle(child.title);
+      const list = localFoldersMap.get(normTitle) ?? [];
+      list.push(child);
+      localFoldersMap.set(normTitle, list);
+    }
+  }
+
+  const mergedChildren: TreeNode[] = [];
+
+  for (const remoteChild of remote.children ?? []) {
+    if (remoteChild.url) {
+      const normUrl = normalizeUrl(remoteChild.url);
+      const matchingLocalBookmarks = localBookmarksMap.get(normUrl);
+      if (matchingLocalBookmarks && matchingLocalBookmarks.length > 0) {
+        for (const b of matchingLocalBookmarks) {
+          usedLocalNodes.add(b);
+        }
+      }
+      mergedChildren.push(remoteChild);
+    } else {
+      const normTitle = normalizeTitle(remoteChild.title);
+      const matchingLocalFolders = localFoldersMap.get(normTitle);
+      if (matchingLocalFolders && matchingLocalFolders.length > 0) {
+        let mergedFolder = remoteChild;
+        for (const localFolder of matchingLocalFolders) {
+          usedLocalNodes.add(localFolder);
+          mergedFolder = mergeTrees(mergedFolder, localFolder);
+        }
+        mergedChildren.push(mergedFolder);
+      } else {
+        mergedChildren.push(remoteChild);
+      }
+    }
+  }
+
+  for (const localChild of local.children ?? []) {
+    if (!usedLocalNodes.has(localChild)) {
+      mergedChildren.push(localChild);
+    }
+  }
+
+  return {
+    title: remote.title || local.title,
+    children: mergedChildren,
+  };
 }
 
 // Guard against concurrent syncNow() calls (alarm + popup click firing together).
@@ -196,10 +207,9 @@ export async function syncNow(): Promise<SyncResult> {
     let trashItems = await getTrashItems();
 
     if (server.version > localKnown) {
-      // Server is newer → pull (or merge if first sync with local bookmarks).
+      // Server is newer → pull vault from database and replace local toolbar.
       if (server.blob) {
         const doc = await decryptJSON<{ tree: TreeNode; trash?: TrashItem[] }>(server.blob, session.encKey);
-        const localCount = countBookmarks(tree);
         
         // Merge or update trash items
         if (doc.trash) {
@@ -214,33 +224,16 @@ export async function syncNow(): Promise<SyncResult> {
           trashItems = mergedTrash;
         }
 
-        if (localKnown === 0 && localCount > 0) {
-          // First sync on a device with pre-existing bookmarks: merge instead of overwriting!
-          const mergedTree = mergeTrees(tree, doc.tree);
-          const blob = await encryptJSON({ tree: mergedTree, trash: trashItems }, session.encKey);
-          const res = await putVault(authId, blob, server.version);
-          
-          suppress = true;
-          try {
-            await clearToolbar();
-            await restoreTree(toolbarId(), mergedTree.children ?? []);
-          } finally {
-            suppress = false;
-          }
-          tree = await serializeToolbar();
-          await setVersion(res.version);
-        } else {
-          // Standard pull: overwrite local
-          suppress = true;
-          try {
-            await clearToolbar();
-            await restoreTree(toolbarId(), doc.tree.children ?? []);
-          } finally {
-            suppress = false;
-          }
-          tree = await serializeToolbar();
-          await setVersion(server.version);
+        // Pull server tree: overwrite local toolbar
+        suppress = true;
+        try {
+          await clearToolbar();
+          await restoreTree(toolbarId(), doc.tree.children ?? []);
+        } finally {
+          suppress = false;
         }
+        tree = await serializeToolbar();
+        await setVersion(server.version);
       } else {
         await setVersion(server.version);
       }

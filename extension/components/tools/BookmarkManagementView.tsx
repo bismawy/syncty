@@ -586,10 +586,10 @@ export function BookmarkManagementView() {
                           }}
                         />
                       </th>
-                      <th className="py-2.5 px-4">{language === 'id' ? 'Link' : 'Link'}</th>
-                      <th className="py-2.5 px-4 w-60">{language === 'id' ? 'Lokasi' : 'Location'}</th>
-                      <th className="py-2.5 px-4 w-28 text-center">{language === 'id' ? 'Status' : 'Status'}</th>
-                      <th className="py-2.5 px-4 w-20 text-center">{language === 'id' ? 'Aksi' : 'Action'}</th>
+                      <th className="py-2.5 px-4 w-72">{language === 'id' ? 'Link' : 'Link'}</th>
+                      <th className="py-2.5 px-4">{language === 'id' ? 'Lokasi' : 'Location'}</th>
+                      <th className="py-2.5 px-4 w-32 text-center">{language === 'id' ? 'Status' : 'Status'}</th>
+                      <th className="py-2.5 px-4 w-32 text-center">{language === 'id' ? 'Aksi' : 'Action'}</th>
                     </>
                   ) : activeSubTab === 'merge' ? (
                     <>
@@ -603,10 +603,10 @@ export function BookmarkManagementView() {
                           }}
                         />
                       </th>
-                      <th className="py-2.5 px-4">{language === 'id' ? 'Folder' : 'Folder'}</th>
-                      <th className="py-2.5 px-4 w-72">{language === 'id' ? 'Target' : 'Target'}</th>
+                      <th className="py-2.5 px-4 w-72">{language === 'id' ? 'Folder' : 'Folder'}</th>
+                      <th className="py-2.5 px-4">{language === 'id' ? 'Target' : 'Target'}</th>
                       <th className="py-2.5 px-4 w-32 text-center">{language === 'id' ? 'Jumlah' : 'Count'}</th>
-                      <th className="py-2.5 px-4 w-28 text-center">{language === 'id' ? 'Aksi' : 'Action'}</th>
+                      <th className="py-2.5 px-4 w-32 text-center">{language === 'id' ? 'Aksi' : 'Action'}</th>
                     </>
                   ) : activeSubTab === 'empty' ? (
                     <>
@@ -620,17 +620,17 @@ export function BookmarkManagementView() {
                           }}
                         />
                       </th>
-                      <th className="py-2.5 px-4">{language === 'id' ? 'Folder' : 'Folder'}</th>
-                      <th className="py-2.5 px-4 w-72">{language === 'id' ? 'Lokasi' : 'Location'}</th>
-                      <th className="py-2.5 px-4 w-28 text-center">{language === 'id' ? 'Status' : 'Status'}</th>
-                      <th className="py-2.5 px-4 w-20 text-center">{language === 'id' ? 'Aksi' : 'Action'}</th>
+                      <th className="py-2.5 px-4 w-72">{language === 'id' ? 'Folder' : 'Folder'}</th>
+                      <th className="py-2.5 px-4">{language === 'id' ? 'Lokasi' : 'Location'}</th>
+                      <th className="py-2.5 px-4 w-32 text-center">{language === 'id' ? 'Status' : 'Status'}</th>
+                      <th className="py-2.5 px-4 w-32 text-center">{language === 'id' ? 'Aksi' : 'Action'}</th>
                     </>
                   ) : (
                     <>
                       <th className="py-2.5 px-4 w-12 text-center">#</th>
-                      <th className="py-2.5 px-4">{language === 'id' ? 'Folder' : 'Folder'}</th>
-                      <th className="py-2.5 px-4 w-72">{language === 'id' ? 'Domain' : 'Domains'}</th>
-                      <th className="py-2.5 px-4 w-28 text-center">{language === 'id' ? 'Jumlah' : 'Count'}</th>
+                      <th className="py-2.5 px-4 w-72">{language === 'id' ? 'Folder' : 'Folder'}</th>
+                      <th className="py-2.5 px-4">{language === 'id' ? 'Domain' : 'Domains'}</th>
+                      <th className="py-2.5 px-4 w-32 text-center">{language === 'id' ? 'Jumlah' : 'Count'}</th>
                       <th className="py-2.5 px-4 w-32 text-center">{language === 'id' ? 'Aksi' : 'Action'}</th>
                     </>
                   )}
