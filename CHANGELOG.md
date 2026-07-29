@@ -4,6 +4,16 @@ All notable changes to the **Syncty** project will be documented in this file.
 
 ---
 
+## [1.1.3] - 2026-07-29
+
+### 🎨 Sidebar & Footer UX Refinements
+- **Trash Bin Relocation**: Moved "Tong Sampah" (Trash Bin) navigation item from footer to the sidebar navigation section directly above the profile/device card for cleaner layout and full text visibility.
+- **Support Button Integration**: Integrated a labeled Support button (`<Heart />`) into the sidebar footer, linking directly to the Support & Donation modal.
+- **Header Cleanup**: Removed duplicate Support button from top header for a cleaner top navigation bar.
+- **Compact Settings Control**: Streamlined Settings into a minimal icon-only button alongside the Theme mode switch in the footer bar.
+
+---
+
 ## [1.1.2] - 2026-07-29
 
 ### 🪶 Lean & Cleanup (Over-Engineering Audit)
