@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Folder, Trash2, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Folder, Trash2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyFolderItem } from '@/lib/bookmarkManagement';
+import { ScanTableState } from './ScanTableState';
 import { moveToTrash } from '@/lib/trash';
 
 interface EmptyFoldersTabProps {
@@ -29,49 +30,31 @@ export function EmptyFoldersTab({
 }: EmptyFoldersTabProps) {
   if (!hasScanned && !isScanning) {
     return (
-      <tr key="not-scanned">
-        <td colSpan={5} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
-          <div className="flex flex-col items-center justify-center space-y-2">
-            <Folder className="h-6 w-6 text-[var(--color-muted-foreground)]/40" />
-            <p className="font-semibold text-[var(--color-foreground)]">
-              {language === 'id' ? 'Belum Ada Data Pemindaian' : 'No Scan Data Yet'}
-            </p>
-            <p className="text-[11px] text-[var(--color-muted-foreground)] max-w-xs">
-              {language === 'id'
-                ? 'Klik tombol Pindai untuk menganalisis folder kosong Anda.'
-                : 'Click Scan to analyze your empty folders.'}
-            </p>
-          </div>
-        </td>
-      </tr>
+      <ScanTableState
+        state="notScanned"
+        language={language}
+        subtitleId="Klik tombol Pindai untuk menganalisis folder kosong Anda."
+        subtitleEn="Click Scan to analyze your empty folders."
+        emptyId="Tidak Ada Folder Kosong Ditemukan!"
+        emptyEn="No Empty Folders Found!"
+      />
     );
   }
 
   if (isScanning) {
-    return (
-      <tr key="scanning">
-        <td colSpan={5} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
-          <div className="flex items-center justify-center gap-2">
-            <RefreshCw className="h-4 w-4 animate-spin text-[var(--color-primary)]" />
-            <span>{language === 'id' ? 'Memindai folder kosong...' : 'Scanning empty folders...'}</span>
-          </div>
-        </td>
-      </tr>
-    );
+    return <ScanTableState state="scanning" language={language} subtitleId="" subtitleEn="" emptyId="" emptyEn="" />;
   }
 
   if (hasScanned && emptyFolders.length === 0) {
     return (
-      <tr key="empty">
-        <td colSpan={5} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
-          <div className="flex flex-col items-center justify-center space-y-1.5">
-            <CheckCircle2 className="h-6 w-6 text-emerald-500" />
-            <p className="font-semibold text-[var(--color-foreground)]">
-              {language === 'id' ? 'Tidak Ada Folder Kosong Ditemukan!' : 'No Empty Folders Found!'}
-            </p>
-          </div>
-        </td>
-      </tr>
+      <ScanTableState
+        state="empty"
+        language={language}
+        subtitleId=""
+        subtitleEn=""
+        emptyId="Tidak Ada Folder Kosong Ditemukan!"
+        emptyEn="No Empty Folders Found!"
+      />
     );
   }
 

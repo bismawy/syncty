@@ -1,4 +1,5 @@
 import { moveToTrash } from './trash';
+import { domainOf } from './utils';
 
 export interface FolderNodeItem {
   id: string;
@@ -24,12 +25,7 @@ export interface SplitFolderCandidate {
 }
 
 function extractDomain(url: string): string {
-  try {
-    const u = new URL(url);
-    return u.hostname.replace(/^www\./, '').toLowerCase();
-  } catch {
-    return 'other';
-  }
+  return domainOf(url) || 'other';
 }
 
 /**

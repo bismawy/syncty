@@ -7,7 +7,6 @@ export interface DashboardCardProps extends Omit<React.HTMLAttributes<HTMLDivEle
   icon?: React.ReactNode;
   headerAction?: React.ReactNode;
   headerBadge?: React.ReactNode;
-  showDivider?: boolean;
   children: React.ReactNode;
   className?: string;
   minHeight?: string;
@@ -19,7 +18,6 @@ export function DashboardCard({
   icon,
   headerAction,
   headerBadge,
-  showDivider = false,
   children,
   className,
   minHeight = 'h-[240px]',
@@ -36,12 +34,7 @@ export function DashboardCard({
       {...props}
     >
       {(title || headerAction || headerBadge) && (
-        <CardHeader
-          className={cn(
-            'h-[42px] px-4 py-0 flex flex-row items-center justify-between shrink-0 select-none space-y-0',
-            showDivider && 'border-b border-[var(--color-border)]/50'
-          )}
-        >
+        <CardHeader className="h-[42px] px-4 py-0 flex flex-row items-center justify-between shrink-0 select-none space-y-0">
           {title && (
             <div className="section-label flex items-center gap-2 truncate">
               {icon}

@@ -4,6 +4,40 @@ All notable changes to the **Syncty** project will be documented in this file.
 
 ---
 
+## [1.1.2] - 2026-07-29
+
+### 🪶 Lean & Cleanup (Over-Engineering Audit)
+- **-794 net lines** of dead/duplicated/speculative code removed across 30 files.
+- **-4 dependencies**: `@dicebear/core`, `@dicebear/collection`, `@radix-ui/react-tooltip`, `sharp`.
+- **Bundle size -27 kB** (712 kB → 685 kB).
+- Removed dead `mergeTrees` merge engine + its test (sync overwrites wholesale).
+- Removed unused Tooltip system (all tooltips use native `title`).
+- Removed `purgeExpiredTrash` wrapper and 6 dead UI exports.
+- Removed `generate-icons.mjs` script + `sharp` dep (PNG icons already committed).
+
+### 🔧 Deduplication
+- One shared `formatSyncAgo` helper replaces 3 inline copies.
+- `trash.ts` reuses `serializeNode`/`restoreTree` from `sync.ts`.
+- One shared `domainOf` helper replaces 4 copies.
+- One `useRandomQuote` hook replaces 2 identical quote widgets.
+- 5 credit panels → 1 data array + map.
+- 4 tool-tab empty states → 1 `ScanTableState` component.
+- Hijri calendar: event labels deduped (table + hardcoded if-chains merged); dead Julian fallback removed.
+- Widget config migration: 18-branch if-chain → Map lookup; `DEFAULT_ORDER` derived.
+
+### 🐛 Fixes
+- **`Clear Local Cache` now actually works** — was removing nonexistent storage keys (`syncty.lastSyncTime`, `syncty.vaultHash`); now removes real keys (`syncty.version`, `syncty.lastSync`, `syncty.dirty`).
+- Fixed pre-existing typecheck failure (CSS side-effect imports) via `globals.d.ts`.
+- Crypto self-check moved out of production bundle (removed `node:url` build warning).
+
+### ♻️ Native Over Reimplementation
+- `Select` rebuilt on native `<select>` (Radix dropdown → 32 lines).
+- `AbortSignal.timeout()` replaces manual `AbortController` + `setTimeout` pairs.
+- Device label UA-sniffing 12 browsers → 6 (Brave/Opera/Edge/Chrome/Firefox/Safari).
+- Dicebear avatar → simple initial-letter glyph.
+
+---
+
 ## [1.1.0] - 2026-07-27
 
 ### 🚀 Highlights

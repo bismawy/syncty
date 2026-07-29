@@ -81,6 +81,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { formatSyncAgo } from '@/lib/utils';
 import type { SyncStatus } from '@/lib/types';
 import { useTranslation, type TranslationKey, type Language } from '@/lib/i18n';
 
@@ -106,21 +107,8 @@ const DEFAULT_WIDGET_CONFIGS: WidgetConfig[] = [
   { id: 'hijriCalendar', nameKey: 'widgetHijriCalendarTitle', enabled: false },
 ];
 
-const DEFAULT_ORDER = [
-  'topSites',
-  'favoriteSites',
-  'clock',
-  'stats',
-  'notes',
-  'todo',
-  'quote',
-  'islamicQuote',
-  'quranRadio',
-  'natureRadio',
-  'pomodoro',
-  'worldClock',
-  'hijriCalendar',
-];
+const DEFAULT_ORDER = DEFAULT_WIDGET_CONFIGS.map((w) => w.id);
+const DEFAULT_NAME_KEYS = new Map(DEFAULT_WIDGET_CONFIGS.map((w) => [w.id, w.nameKey]));
 
 export type WidgetCategoryId = 'timeProductivity' | 'sitesNavigation' | 'islamicInspiration';
 
@@ -173,20 +161,8 @@ export function WidgetsSection({
         const merged = parsed
           .filter((w) => w.id !== 'quicklinks')
           .map((w) => {
-            if (w.id === 'topSites') return { ...w, nameKey: 'widgetTopSitesTitle' };
-            if (w.id === 'favoriteSites') return { ...w, nameKey: 'widgetFavoriteSitesTitle' };
-            if (w.id === 'clock') return { ...w, nameKey: 'widgetClockTitle' };
-            if (w.id === 'notes') return { ...w, nameKey: 'widgetNotesTitle' };
-            if (w.id === 'stats') return { ...w, nameKey: 'widgetStatsTitle' };
-            if (w.id === 'todo') return { ...w, nameKey: 'widgetTodoTitle' };
-            if (w.id === 'quote') return { ...w, nameKey: 'widgetQuoteTitle' };
-            if (w.id === 'islamicQuote') return { ...w, nameKey: 'widgetIslamicQuoteTitle' };
-            if (w.id === 'quranRadio') return { ...w, nameKey: 'widgetQuranRadioTitle' };
-            if (w.id === 'natureRadio') return { ...w, nameKey: 'widgetNatureRadioTitle' };
-            if (w.id === 'pomodoro') return { ...w, nameKey: 'widgetPomodoroTitle' };
-            if (w.id === 'worldClock') return { ...w, nameKey: 'widgetWorldClockTitle' };
-            if (w.id === 'hijriCalendar') return { ...w, nameKey: 'widgetHijriCalendarTitle' };
-            return w;
+            const nameKey = DEFAULT_NAME_KEYS.get(w.id);
+            return nameKey ? { ...w, nameKey } : w;
           });
 
         DEFAULT_WIDGET_CONFIGS.forEach((def) => {
@@ -590,13 +566,6 @@ function StatsWidget({
   dragHandle: React.ReactNode;
 }) {
   const { t } = useTranslation();
-  const formatLastSync = (n: number | null) => {
-    if (!n) return t('syncNever');
-    const d = Date.now() - n;
-    if (d < 60_000) return t('syncStatusSyncedJustNow');
-    if (d < 3_600_000) return t('syncStatusSyncedAgo', { time: `${Math.floor(d / 60_000)}m` });
-    return t('syncStatusSyncedAgo', { time: `${Math.floor(d / 3_600_000)}h` });
-  };
 
   return (
     <DashboardCard
@@ -643,7 +612,7 @@ function StatsWidget({
               <span className="truncate">{t('syncLabel')}</span>
             </div>
             <span className="text-xs font-semibold text-[var(--color-foreground)] truncate">
-              {syncStatus.lastSync ? formatLastSync(syncStatus.lastSync) : t('syncNever')}
+              {syncStatus.lastSync ? formatSyncAgo(t, syncStatus.lastSync) : t('syncNever')}
             </span>
           </div>
         </div>
@@ -799,11 +768,7 @@ async function fetchMotivationalQuoteApi(lang: Language): Promise<{ text: string
   if (lang === 'id') {
     try {
       const url = `https://quotes.liupurnomo.com/api/quotes/random?_t=${Date.now()}`;
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 2200);
-
-      const res = await fetch(url, { signal: controller.signal });
-      clearTimeout(timer);
+      const res = await fetch(url, { signal: AbortSignal.timeout(2200) });
 
       if (!res.ok) return null;
       const json = await res.json();
@@ -917,11 +882,7 @@ async function fetchShortHadithApi(lang: Language): Promise<{ text: string; auth
     try {
       const url = `https://api.myquran.com/v3/hadis/enc/random?_t=${Date.now()}_${attempt}`;
 
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 2200);
-
-      const res = await fetch(url, { signal: controller.signal });
-      clearTimeout(timer);
+      const res = await fetch(url, { signal: AbortSignal.timeout(2200) });
 
       if (!res.ok) continue;
       const json = await res.json();
@@ -1081,49 +1042,46 @@ function BaseQuoteWidget({
   );
 }
 
+// Shared quote-loading hook: try the live API, fall back to a random local quote.
+// Auto-loads on mount and refreshes every 5 minutes.
+function useRandomQuote<T>(fetcher: (lang: Language) => Promise<T | null>, list: T[], language: Language) {
+  const [current, setCurrent] = React.useState<T>(() => list[Math.floor(Math.random() * list.length)]);
+  const [loading, setLoading] = React.useState(false);
+
+  const loadNext = React.useCallback(async () => {
+    setLoading(true);
+    const apiQuote = await fetcher(language);
+    setCurrent(apiQuote ?? list[Math.floor(Math.random() * list.length)]);
+    setLoading(false);
+  }, [fetcher, language, list]);
+
+  React.useEffect(() => {
+    loadNext();
+  }, [loadNext]);
+
+  React.useEffect(() => {
+    const timer = setInterval(loadNext, 300000); // 5 minutes
+    return () => clearInterval(timer);
+  }, [loadNext]);
+
+  return { current, loading, loadNext };
+}
+
 function QuoteWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
   const { t, language } = useTranslation();
   const fallbackList = MOTIVATIONAL_QUOTES[language] || MOTIVATIONAL_QUOTES.id;
-
-  const [currentQuote, setCurrentQuote] = React.useState<{ text: string; author: string; category?: string }>(
-    () => fallbackList[Math.floor(Math.random() * fallbackList.length)]
-  );
-  const [loadingQuote, setLoadingQuote] = React.useState(false);
-
-  const loadNextQuote = React.useCallback(async () => {
-    setLoadingQuote(true);
-    const apiQuote = await fetchMotivationalQuoteApi(language);
-    if (apiQuote) {
-      setCurrentQuote(apiQuote);
-    } else {
-      const currentList = MOTIVATIONAL_QUOTES[language] || MOTIVATIONAL_QUOTES.id;
-      const randomItem = currentList[Math.floor(Math.random() * currentList.length)];
-      setCurrentQuote(randomItem);
-    }
-    setLoadingQuote(false);
-  }, [language]);
-
-  React.useEffect(() => {
-    loadNextQuote();
-  }, [loadNextQuote]);
-
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      loadNextQuote();
-    }, 300000); // 5 minutes
-    return () => clearInterval(timer);
-  }, [loadNextQuote]);
+  const { current, loading, loadNext } = useRandomQuote(fetchMotivationalQuoteApi, fallbackList, language);
 
   return (
     <BaseQuoteWidget
       title={t('widgetQuoteTitle')}
       icon={<QuoteIcon className="h-3.5 w-3.5 text-[var(--color-muted-foreground)] shrink-0" />}
       dragHandle={dragHandle}
-      onRefresh={loadNextQuote}
-      isLoading={loadingQuote}
-      text={currentQuote.text}
-      author={currentQuote.author}
-      category={currentQuote.category}
+      onRefresh={loadNext}
+      isLoading={loading}
+      text={current.text}
+      author={current.author}
+      category={(current as { category?: string }).category}
       showQuotes={true}
     />
   );
@@ -1132,45 +1090,18 @@ function QuoteWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
 function IslamicQuoteWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
   const { t, language } = useTranslation();
   const fallbackList = ISLAMIC_QUOTES[language] || ISLAMIC_QUOTES.id;
-
-  const [currentQuote, setCurrentQuote] = React.useState<{ text: string; author: string; source: string }>(
-    () => fallbackList[Math.floor(Math.random() * fallbackList.length)]
-  );
-  const [loadingHadith, setLoadingHadith] = React.useState(false);
-
-  const loadNextQuote = React.useCallback(async () => {
-    setLoadingHadith(true);
-    const apiQuote = await fetchShortHadithApi(language);
-    if (apiQuote) {
-      setCurrentQuote(apiQuote);
-    } else {
-      const currentList = ISLAMIC_QUOTES[language] || ISLAMIC_QUOTES.id;
-      setCurrentQuote(currentList[Math.floor(Math.random() * currentList.length)]);
-    }
-    setLoadingHadith(false);
-  }, [language]);
-
-  React.useEffect(() => {
-    loadNextQuote();
-  }, [loadNextQuote]);
-
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      loadNextQuote();
-    }, 300000); // Auto-refresh every 5 minutes
-    return () => clearInterval(timer);
-  }, [loadNextQuote]);
+  const { current, loading, loadNext } = useRandomQuote(fetchShortHadithApi, fallbackList, language);
 
   return (
     <BaseQuoteWidget
       title={t('widgetIslamicQuoteTitle')}
       icon={<BookOpen className="h-3.5 w-3.5 text-[var(--color-muted-foreground)] shrink-0" />}
       dragHandle={dragHandle}
-      onRefresh={loadNextQuote}
-      isLoading={loadingHadith}
-      text={currentQuote.text}
-      author={currentQuote.author}
-      source={currentQuote.source}
+      onRefresh={loadNext}
+      isLoading={loading}
+      text={current.text}
+      author={current.author}
+      source={current.source}
       showQuotes={false}
     />
   );
@@ -1230,9 +1161,10 @@ let globalQuranSelectedId = (() => {
   return 'afasy';
 })();
 
-const quranSubscribers = new Set<() => void>();
+// Exactly one widget instance exists at a time — a single listener slot suffices.
+let onQuranChange: (() => void) | null = null;
 function notifyQuranSubscribers() {
-  quranSubscribers.forEach((cb) => cb());
+  onQuranChange?.();
 }
 
 if (typeof window !== 'undefined') {
@@ -1295,9 +1227,9 @@ function QuranRadioWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
 
   React.useEffect(() => {
     const handler = () => forceUpdate();
-    quranSubscribers.add(handler);
+    onQuranChange = handler;
     return () => {
-      quranSubscribers.delete(handler);
+      if (onQuranChange === handler) onQuranChange = null;
     };
   }, []);
 
@@ -1446,9 +1378,10 @@ let globalNatureVolume = 0.2;
 let globalNatureIsMuted = false;
 let globalNatureActiveSoundIds: string[] = ['storm', 'bird'];
 
-const natureSubscribers = new Set<() => void>();
+// Exactly one widget instance exists at a time — a single listener slot suffices.
+let onNatureChange: (() => void) | null = null;
 function notifyNatureSubscribers() {
-  natureSubscribers.forEach((cb) => cb());
+  onNatureChange?.();
 }
 
 if (typeof window !== 'undefined') {
@@ -1467,9 +1400,9 @@ function NatureRadioWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
 
   React.useEffect(() => {
     const handler = () => forceUpdate();
-    natureSubscribers.add(handler);
+    onNatureChange = handler;
     return () => {
-      natureSubscribers.delete(handler);
+      if (onNatureChange === handler) onNatureChange = null;
     };
   }, []);
 

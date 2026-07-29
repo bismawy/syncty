@@ -70,22 +70,3 @@ function base64ToBytes(b64: string): Uint8Array {
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
   return out;
 }
-
-// --- Self-check ---------------------------------------------------------------
-// ponytail: one runnable check that the round-trip works. Run via `npx tsx lib/crypto.ts`.
-// Guard: only execute when running under Node.js CLI — skip in the browser.
-if (typeof process !== 'undefined' && typeof process.argv !== 'undefined') {
-  import('node:url').then(({ fileURLToPath }) => {
-    if (process.argv[1] === fileURLToPath(import.meta.url)) {
-      const demo = async () => {
-        const { authId, encKey } = await deriveKeys('gunung kopi laut bulan hutan api sungai daun batu angin bumi cahaya');
-        const blob = await encryptJSON({ hi: 'syncty', n: 42 }, encKey);
-        const back = await decryptJSON<{ hi: string; n: number }>(blob, encKey);
-        console.assert(authId.length === 64, 'authId should be 64 hex chars');
-        console.assert(back.hi === 'syncty' && back.n === 42, 'round-trip mismatch');
-        console.log('crypto self-check OK', authId.slice(0, 12) + '…');
-      };
-      demo().catch((e) => { console.error(e); process.exit(1); });
-    }
-  }).catch(() => {});
-}

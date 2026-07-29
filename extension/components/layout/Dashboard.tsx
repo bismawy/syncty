@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { createAvatar } from '@dicebear/core';
-import { glass } from '@dicebear/collection';
 import {
   LayoutDashboard,
   Bookmark,
@@ -12,9 +10,11 @@ import {
   RefreshCw,
   PanelLeftClose,
   FolderGit2,
+  Heart,
 } from 'lucide-react';
 import { toolbarId } from '@/components/bookmark/useBookmarks';
 import { SettingsModal } from '@/components/modals/SettingsModal';
+import { SupportModal } from '@/components/modals/SupportModal';
 import { Header } from './Header';
 import { DashboardView } from '@/components/dashboard/DashboardView';
 import { BookmarkView } from '@/components/bookmark/BookmarkView';
@@ -26,7 +26,7 @@ import { EMPTY_STATUS } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { clearSession } from '@/lib/storage';
 import { getDeviceLabel } from '@/lib/device';
-import { cn } from '@/lib/utils';
+import { cn, formatSyncAgo } from '@/lib/utils';
 import { loadThemeConfig, saveThemeConfig, applyThemeConfig, getEffectiveIsDark } from '@/lib/theme';
 import { LanguageProvider, useTranslation } from '@/lib/i18n';
 
@@ -146,16 +146,28 @@ function SidebarHeader({
   );
 }
 
+function AvatarInitial({ label, size }: { label: string; size: 'sm' | 'md' }) {
+  return (
+    <div
+      title={label}
+      className={cn(
+        'rounded-full border border-[var(--color-border)] bg-[var(--color-accent)] text-[var(--color-foreground)] shrink-0 shadow-xs flex items-center justify-center font-bold uppercase select-none',
+        size === 'sm' ? 'h-8 w-8 text-xs' : 'h-10 w-10 text-sm'
+      )}
+    >
+      {label.trim().charAt(0) || 'S'}
+    </div>
+  );
+}
+
 function SidebarProfileCard({
   collapsed,
-  avatarDataUri,
   deviceLabel,
   lastSyncText,
   syncing,
   onSync,
 }: {
   collapsed: boolean;
-  avatarDataUri: string;
   deviceLabel: string;
   lastSyncText: string;
   syncing: boolean;
@@ -166,12 +178,7 @@ function SidebarProfileCard({
   if (collapsed) {
     return (
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)]/60 p-2 flex flex-col items-center gap-2 shadow-xs w-full">
-        <img
-          src={avatarDataUri}
-          alt="Avatar"
-          className="h-8 w-8 rounded-full border border-[var(--color-border)] bg-[var(--color-card)] shrink-0 shadow-xs object-cover"
-          title={deviceLabel}
-        />
+        <AvatarInitial label={deviceLabel} size="sm" />
         <IconButton
           variant="outline"
           size="sm"
@@ -188,11 +195,7 @@ function SidebarProfileCard({
   return (
     <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)]/60 p-3 space-y-3 shadow-xs">
       <div className="flex items-center gap-3">
-        <img
-          src={avatarDataUri}
-          alt="Avatar"
-          className="h-10 w-10 rounded-full border border-[var(--color-border)] bg-[var(--color-card)] shrink-0 shadow-xs object-cover"
-        />
+        <AvatarInitial label={deviceLabel} size="md" />
         <div className="flex flex-col min-w-0 flex-1">
           <span className="text-xs font-semibold text-[var(--color-foreground)] truncate">
             {deviceLabel}
@@ -247,39 +250,59 @@ function SidebarFooter({
   collapsed,
   themeMode,
   onOpenSettings,
+  onOpenSupport,
   onToggleTheme,
 }: {
   collapsed: boolean;
   themeMode: 'dark' | 'light' | 'system';
   onOpenSettings: () => void;
+  onOpenSupport: () => void;
   onToggleTheme: () => void;
 }) {
   const { t } = useTranslation();
 
   if (collapsed) {
     return (
-      <div className="flex flex-col items-center gap-2 pt-2 border-t border-[var(--color-border)]/60 w-full">
+      <div className="flex flex-col items-center gap-2 w-full">
         <SidebarNavItem
-          icon={<Settings className="h-4.5 w-4.5" />}
-          label={t('navSettings')}
-          onClick={onOpenSettings}
+          icon={<Heart className="h-4.5 w-4.5 text-rose-500 fill-rose-500/20" />}
+          label={t('headerSupport')}
+          onClick={onOpenSupport}
           collapsed={true}
         />
+        <IconButton
+          variant="ghost"
+          size="lg"
+          onClick={onOpenSettings}
+          title={t('navSettings')}
+        >
+          <Settings className="h-4.5 w-4.5" />
+        </IconButton>
         <ThemeToggleButton themeMode={themeMode} onToggle={onToggleTheme} />
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-between gap-2 pt-2 border-t border-[var(--color-border)]/60">
+    <div className="flex items-center justify-between gap-1 w-full">
       <SidebarNavItem
-        icon={<Settings className="h-4.5 w-4.5" />}
-        label={t('navSettings')}
-        onClick={onOpenSettings}
+        icon={<Heart className="h-4.5 w-4.5 text-rose-500 fill-rose-500/20" />}
+        label={t('headerSupport')}
+        onClick={onOpenSupport}
         collapsed={false}
-        className="flex-1"
+        className="flex-1 text-rose-500 hover:text-rose-500"
       />
-      <ThemeToggleButton themeMode={themeMode} onToggle={onToggleTheme} />
+      <div className="flex items-center gap-1">
+        <IconButton
+          variant="ghost"
+          size="lg"
+          onClick={onOpenSettings}
+          title={t('navSettings')}
+        >
+          <Settings className="h-4.5 w-4.5" />
+        </IconButton>
+        <ThemeToggleButton themeMode={themeMode} onToggle={onToggleTheme} />
+      </div>
     </div>
   );
 }
@@ -298,6 +321,7 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
   const [status, setStatus] = React.useState<SyncStatus>(EMPTY_STATUS);
   const [syncing, setSyncing] = React.useState(false);
   const [showSettings, setShowSettings] = React.useState(false);
+  const [showSupportModal, setShowSupportModal] = React.useState(false);
   const [showWidgetSettings, setShowWidgetSettings] = React.useState(false);
   const [deviceLabel, setDeviceLabel] = React.useState(() => getDeviceLabel());
   const [totalLocalCount, setTotalLocalCount] = React.useState<number>(0);
@@ -322,20 +346,6 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
   // Search & Filter state for Bookmark tab
   const [query, setQuery] = React.useState('');
   const [filter, setFilter] = React.useState<'all' | 'folders' | 'bookmarks'>('all');
-
-  const avatarDataUri = React.useMemo(() => {
-    return createAvatar(glass, {
-      seed: deviceLabel || 'SynctyUser',
-    }).toDataUri();
-  }, [deviceLabel]);
-
-  const formatLastSync = (n: number | null) => {
-    if (!n) return t('syncStatusNotSynced');
-    const d = Date.now() - n;
-    if (d < 60_000) return t('syncStatusSyncedJustNow');
-    if (d < 3_600_000) return t('syncStatusSyncedAgo', { time: `${Math.floor(d / 60_000)}m` });
-    return t('syncStatusSyncedAgo', { time: `${Math.floor(d / 3_600_000)}h` });
-  };
 
   React.useEffect(() => {
     const onChange = (changes: Record<string, any>) => {
@@ -495,8 +505,7 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
         </div>
 
         {/* Sidebar Profile & Sync Box */}
-        <div className={cn('space-y-3 w-full flex flex-col', sidebarCollapsed && 'items-center')}>
-          {/* Tong Sampah Button (Placed directly above Profile Box) */}
+        <div className={cn('w-full flex flex-col', sidebarCollapsed ? 'items-center gap-2' : 'gap-3')}>
           <SidebarNavItem
             icon={<Trash2 className="h-4.5 w-4.5" />}
             label={t('navTrash')}
@@ -520,17 +529,20 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
 
           <SidebarProfileCard
             collapsed={sidebarCollapsed}
-            avatarDataUri={avatarDataUri}
             deviceLabel={deviceLabel}
-            lastSyncText={formatLastSync(status.lastSync)}
+            lastSyncText={formatSyncAgo(t, status.lastSync)}
             syncing={syncing}
             onSync={onSync}
           />
+
+          {/* Full-width divider between profile and footer controls */}
+          <div className={cn('h-px bg-[var(--color-border)]/60', sidebarCollapsed ? '-mx-2' : '-mx-3.5')} />
 
           <SidebarFooter
             collapsed={sidebarCollapsed}
             themeMode={themeMode}
             onOpenSettings={() => setShowSettings(true)}
+            onOpenSupport={() => setShowSupportModal(true)}
             onToggleTheme={handleToggleThemeMode}
           />
         </div>
@@ -575,6 +587,10 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
         onOpenChange={setShowSettings}
         onLabelChange={setDeviceLabel}
         onLogout={handleLogout}
+      />
+      <SupportModal
+        open={showSupportModal}
+        onOpenChange={setShowSupportModal}
       />
     </div>
   );

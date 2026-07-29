@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { Folder, RefreshCw, CheckCircle2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Folder, ChevronDown, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { SplitFolderCandidate, splitFolderByDomain } from '@/lib/bookmarkManagement';
+import { ScanTableState } from './ScanTableState';
 
 interface DomainGroupingTabProps {
   splitCandidates: SplitFolderCandidate[];
@@ -62,49 +63,31 @@ export function DomainGroupingTab({
 
   if (!hasScanned && !isScanning) {
     return (
-      <tr key="not-scanned">
-        <td colSpan={5} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
-          <div className="flex flex-col items-center justify-center space-y-2">
-            <Folder className="h-6 w-6 text-[var(--color-muted-foreground)]/40" />
-            <p className="font-semibold text-[var(--color-foreground)]">
-              {language === 'id' ? 'Belum Ada Data Pemindaian' : 'No Scan Data Yet'}
-            </p>
-            <p className="text-[11px] text-[var(--color-muted-foreground)] max-w-xs">
-              {language === 'id'
-                ? 'Klik tombol Pindai untuk menganalisis pengelompokan domain Anda.'
-                : 'Click Scan to analyze domain grouping.'}
-            </p>
-          </div>
-        </td>
-      </tr>
+      <ScanTableState
+        state="notScanned"
+        language={language}
+        subtitleId="Klik tombol Pindai untuk menganalisis pengelompokan domain Anda."
+        subtitleEn="Click Scan to analyze domain grouping."
+        emptyId="Tidak Ada Folder Yang Perlu Dikelompokkan!"
+        emptyEn="No Folders Need Domain Grouping!"
+      />
     );
   }
 
   if (isScanning) {
-    return (
-      <tr key="scanning">
-        <td colSpan={5} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
-          <div className="flex items-center justify-center gap-2">
-            <RefreshCw className="h-4 w-4 animate-spin text-[var(--color-primary)]" />
-            <span>{language === 'id' ? 'Memindai pengelompokan domain...' : 'Scanning domain grouping...'}</span>
-          </div>
-        </td>
-      </tr>
-    );
+    return <ScanTableState state="scanning" language={language} subtitleId="" subtitleEn="" emptyId="" emptyEn="" />;
   }
 
   if (hasScanned && splitCandidates.length === 0) {
     return (
-      <tr key="empty">
-        <td colSpan={5} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
-          <div className="flex flex-col items-center justify-center space-y-1.5">
-            <CheckCircle2 className="h-6 w-6 text-emerald-500" />
-            <p className="font-semibold text-[var(--color-foreground)]">
-              {language === 'id' ? 'Tidak Ada Folder Yang Perlu Dikelompokkan!' : 'No Folders Need Domain Grouping!'}
-            </p>
-          </div>
-        </td>
-      </tr>
+      <ScanTableState
+        state="empty"
+        language={language}
+        subtitleId=""
+        subtitleEn=""
+        emptyId="Tidak Ada Folder Yang Perlu Dikelompokkan!"
+        emptyEn="No Folders Need Domain Grouping!"
+      />
     );
   }
 

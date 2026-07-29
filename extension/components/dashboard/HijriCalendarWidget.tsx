@@ -84,17 +84,7 @@ function getTodayHijri() {
       if (p.type === 'year') year = parseInt(p.value, 10);
     });
   } catch {
-    // Fallback calculation
-    const julian = Math.floor(now.getTime() / 86400000) + 2440587.5;
-    const l = Math.floor(julian) - 1948440 + 10632;
-    const n = Math.floor((l - 1) / 10631);
-    const l1 = l - 10631 * n + 354;
-    const j = Math.floor((10985 - l1) / 5316) * Math.floor((50 * l1) / 17719) + Math.floor(l1 / 5670) * Math.floor((43 * l1) / 15238);
-    const l2 = l1 - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50) - Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
-    monthIndex = Math.floor((24 * l2) / 709);
-    day = l2 - Math.floor((709 * monthIndex) / 24);
-    year = 30 * n + j - 30;
-    monthIndex = Math.min(11, Math.max(0, monthIndex - 1));
+    // Intl islamic-umalqura is supported by all targeted browsers; keep defaults if not.
   }
 
   return { day, monthIndex, year, dayOfWeek, gregorianDate: now };
@@ -212,7 +202,8 @@ export function HijriCalendarWidget({ dragHandle }: { dragHandle?: React.ReactNo
     return cells;
   }, [firstDayOfWeek, daysInViewMonth]);
 
-  // Helper to check non-weekly fasts & events
+  // Helper to check non-weekly fasts & events.
+  // Named events come from ISLAMIC_EVENTS; only recurring fast rules are computed here.
   const getDayDetails = React.useCallback(
     (d: number, mIndex: number) => {
       const nonWeeklyEvents: string[] = [];
@@ -225,26 +216,18 @@ export function HijriCalendarWidget({ dragHandle }: { dragHandle?: React.ReactNo
         }
       });
 
+      // Days where fasting is forbidden (Eid al-Fitr, Eid al-Adha, Tashreeq).
       const isForbidden = (mIndex === 9 && d === 1) || (mIndex === 11 && d >= 10 && d <= 13);
 
-      if (isForbidden) {
-        if (mIndex === 9 && d === 1) nonWeeklyEvents.push(isId ? 'Hari Raya Idul Fitri' : 'Eid al-Fitr');
-        if (mIndex === 11 && d === 10) nonWeeklyEvents.push(isId ? 'Hari Raya Idul Adha' : 'Eid al-Adha');
-        if (mIndex === 11 && d >= 11 && d <= 13) nonWeeklyEvents.push(isId ? 'Hari Tasyrik' : 'Tashreeq Day');
-      } else {
+      if (!isForbidden) {
         if (mIndex === 8) {
           nonWeeklyEvents.push(isId ? 'Puasa Ramadan' : 'Ramadan Fasting');
         } else {
           if ((d === 13 || d === 14 || d === 15) && !(mIndex === 11 && d === 13)) {
             nonWeeklyEvents.push(isId ? 'Puasa Ayyamul Bidh' : 'Ayyamul Bidh Fasting');
           }
-          if (mIndex === 0) {
-            if (d === 9) nonWeeklyEvents.push(isId ? 'Puasa Tasu\'a' : 'Tasu\'a Fasting');
-            if (d === 10) nonWeeklyEvents.push(isId ? 'Puasa Asyura' : 'Ashura Fasting');
-          }
-          if (mIndex === 7 && d === 15) nonWeeklyEvents.push(isId ? 'Puasa Nisfu Sya\'ban' : 'Nisfu Sya\'ban Night & Fasting');
-          if (mIndex === 11 && d >= 1 && d <= 9) {
-            nonWeeklyEvents.push(d === 9 ? (isId ? 'Puasa Arafah' : 'Arafah Fasting') : (isId ? 'Puasa Dzulhijjah' : 'Dhu al-Hijjah Fasting'));
+          if (mIndex === 11 && d >= 1 && d <= 8) {
+            nonWeeklyEvents.push(isId ? 'Puasa Dzulhijjah' : 'Dhu al-Hijjah Fasting');
           }
           if (mIndex === 9 && d >= 2 && d <= 7) {
             nonWeeklyEvents.push(isId ? 'Puasa 6 Hari Syawal' : '6 Days Shawwal Fasting');

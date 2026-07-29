@@ -1,6 +1,4 @@
-import * as React from 'react';
-import { Heart, Languages, Check, LayoutGrid } from 'lucide-react';
-import { SupportModal } from '@/components/modals/SupportModal';
+import { Languages, Check, LayoutGrid } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import {
   DropdownMenu,
@@ -19,7 +17,6 @@ export function Header({
   onOpenWidgetSettings?: () => void;
 }) {
   const { language, setLanguage, t } = useTranslation();
-  const [showSupportModal, setShowSupportModal] = React.useState(false);
 
   return (
     <header className="absolute top-0 left-0 right-0 z-30 h-[57px] shrink-0 border-b border-[var(--color-border)]/80 bg-[var(--color-card)]/60 backdrop-blur-md backdrop-saturate-150 px-8 flex items-center justify-between gap-4 select-none">
@@ -38,7 +35,7 @@ export function Header({
         </div>
       </div>
 
-      {/* Right Section: Edit Widgets, Language Selector & Support Button */}
+      {/* Right Section: Edit Widgets & Language Selector */}
       <div className="flex items-center gap-2.5 text-xs shrink-0 select-none">
         {/* Edit Widgets Icon Button (only visible in Dashboard tab) */}
         {activeTab === 'dashboard' && onOpenWidgetSettings && (
@@ -87,20 +84,7 @@ export function Header({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
-        {/* Support & Donation Button */}
-        <button
-          type="button"
-          onClick={() => setShowSupportModal(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-500/10 to-pink-500/10 hover:from-rose-500/20 hover:to-pink-500/20 border border-rose-500/30 text-rose-500 font-semibold transition-all cursor-pointer shadow-xs active:scale-95 text-xs"
-        >
-          <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500 animate-pulse shrink-0" />
-          <span>{t('headerSupport')}</span>
-        </button>
       </div>
-
-      {/* Support & Donation Modal */}
-      <SupportModal open={showSupportModal} onOpenChange={setShowSupportModal} />
     </header>
   );
 }

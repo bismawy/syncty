@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Globe } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, domainOf } from '@/lib/utils';
 
 export interface FaviconImageProps {
   url?: string | null;
@@ -18,15 +18,7 @@ export function FaviconImage({
   alt = '',
   className = 'h-4 w-4 object-contain shrink-0',
 }: FaviconImageProps) {
-  const domain = React.useMemo(() => {
-    if (!url) return '';
-    try {
-      const u = new URL(url);
-      return u.hostname.replace(/^www\./, '');
-    } catch {
-      return '';
-    }
-  }, [url]);
+  const domain = React.useMemo(() => domainOf(url), [url]);
 
   const providers = React.useMemo(() => {
     if (!domain) return [];

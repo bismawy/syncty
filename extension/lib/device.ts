@@ -8,28 +8,16 @@ function detectLabel(): string {
   let browser = 'Browser';
   if ((navigator as any).brave) {
     browser = 'Brave';
-  } else if (/Vivaldi/i.test(ua)) {
-    browser = 'Vivaldi';
-  } else if (/Helium/i.test(ua)) {
-    browser = 'Helium';
-  } else if (/Comet/i.test(ua)) {
-    browser = 'Comet';
-  } else if (/YaBrowser/i.test(ua)) {
-    browser = 'Yandex';
-  } else if (/CocCoc/i.test(ua)) {
-    browser = 'Cốc Cốc';
-  } else if (/SamsungBrowser/i.test(ua)) {
-    browser = 'Samsung Internet';
   } else if (/OPR|Opera/i.test(ua)) {
     browser = 'Opera';
   } else if (/Edg/i.test(ua)) {
     browser = 'Edge';
-  } else if (/Chrome/i.test(ua)) {
-    browser = 'Chrome';
   } else if (/Firefox/i.test(ua)) {
     browser = 'Firefox';
   } else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) {
     browser = 'Safari';
+  } else if (/Chrome/i.test(ua)) {
+    browser = 'Chrome';
   }
 
   let os = 'OS';

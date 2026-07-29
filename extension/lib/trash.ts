@@ -1,10 +1,10 @@
-import { setDirty, toolbarId } from './sync';
+import { setDirty, toolbarId, serializeNode, restoreTree, type TreeNode } from './sync';
 
 export interface TrashItem {
   id: string;
   title: string;
   url?: string;
-  children?: any[];
+  children?: TreeNode[];
   deletedAt: number; // timestamp in ms when deleted
   originalParentId?: string;
 }
@@ -35,20 +35,6 @@ export async function saveTrashItems(items: TrashItem[]): Promise<void> {
   await browser.storage.local.set({ [TRASH_STORAGE_KEY]: items });
 }
 
-async function serializeBookmarkTree(node: Browser.bookmarks.BookmarkTreeNode): Promise<any> {
-  const out: any = node.url
-    ? { title: node.title ?? '', url: node.url }
-    : { title: node.title ?? '', children: [] };
-  if (!node.url) {
-    const kids = node.children ?? (await browser.bookmarks.getChildren(node.id).catch(() => []));
-    out.children = [];
-    for (const k of kids) {
-      out.children.push(await serializeBookmarkTree(k));
-    }
-  }
-  return out;
-}
-
 export async function moveToTrash(id: string): Promise<void> {
   try {
     // 1. Fetch current node details before deleting
@@ -57,13 +43,13 @@ export async function moveToTrash(id: string): Promise<void> {
     const node = nodes[0];
 
     // Build serialized structure for folder/children if folder
-    let children: any[] | undefined = undefined;
+    let children: TreeNode[] | undefined = undefined;
     if (!node.url) {
       const fullSubtree = await browser.bookmarks.getSubTree(id).catch(() => []);
       if (fullSubtree[0] && fullSubtree[0].children) {
         children = [];
         for (const k of fullSubtree[0].children) {
-          children.push(await serializeBookmarkTree(k));
+          children.push(await serializeNode(k));
         }
       }
     }
@@ -96,19 +82,6 @@ export async function moveToTrash(id: string): Promise<void> {
   }
 }
 
-async function recreateTree(parentId: string, nodes: any[]): Promise<void> {
-  for (const node of nodes) {
-    const created = await browser.bookmarks.create({
-      parentId,
-      title: node.title,
-      ...(node.url ? { url: node.url } : {}),
-    });
-    if (!node.url && node.children?.length) {
-      await recreateTree(created.id, node.children);
-    }
-  }
-}
-
 export async function restoreFromTrash(trashId: string): Promise<void> {
   try {
     const currentTrash = await getTrashItems();
@@ -136,7 +109,7 @@ export async function restoreFromTrash(trashId: string): Promise<void> {
     });
 
     if (!targetItem.url && targetItem.children?.length) {
-      await recreateTree(created.id, targetItem.children);
+      await restoreTree(created.id, targetItem.children);
     }
 
     // Remove from trash list
@@ -170,7 +143,3 @@ export async function emptyTrash(): Promise<void> {
   }
 }
 
-export async function purgeExpiredTrash(): Promise<TrashItem[]> {
-  const currentTrash = await getTrashItems();
-  return currentTrash;
-}

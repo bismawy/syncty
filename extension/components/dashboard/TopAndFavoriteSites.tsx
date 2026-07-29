@@ -3,6 +3,7 @@ import { Plus, Trash2, History, Star } from 'lucide-react';
 import { DashboardCard } from './DashboardCard';
 import { FaviconImage } from '@/components/ui/FaviconImage';
 import { Pagination } from '@/components/bookmark/Pagination';
+import { domainOf } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
@@ -36,21 +37,12 @@ const FALLBACK_TOP_SITES: SiteItem[] = [
   { title: 'Wikipedia', url: 'https://www.wikipedia.org' },
 ];
 
-function getDomain(urlStr: string) {
-  try {
-    const u = new URL(urlStr);
-    return u.hostname.replace(/^www\./, '');
-  } catch {
-    return '';
-  }
-}
-
 function getCleanTitle(title: string, url: string) {
   if (!title || title.toLowerCase().includes('just a moment')) {
-    return getDomain(url);
+    return domainOf(url);
   }
   const clean = title.split(/[-|•:]/)[0].trim();
-  return clean || getDomain(url);
+  return clean || domainOf(url);
 }
 
 // 1. Top Sites Widget (Sering Diakses)
@@ -109,7 +101,7 @@ export function TopSitesWidget({ dragHandle }: { dragHandle?: React.ReactNode })
           <div className="card-inner-box divide-y divide-[var(--color-border)] overflow-hidden">
             {topSites.map((site, index) => {
               const displayTitle = getCleanTitle(site.title, site.url);
-              const domain = getDomain(site.url);
+              const domain = domainOf(site.url);
 
               return (
                 <a
@@ -299,11 +291,3 @@ export function FavoriteSitesWidget({ dragHandle }: { dragHandle?: React.ReactNo
   );
 }
 
-export function TopAndFavoriteSites() {
-  return (
-    <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch my-0">
-      <TopSitesWidget />
-      <FavoriteSitesWidget />
-    </div>
-  );
-}

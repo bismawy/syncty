@@ -49,7 +49,7 @@ function toolbarId(): string {
 }
 export { toolbarId };
 
-async function serializeNode(node: Browser.bookmarks.BookmarkTreeNode): Promise<TreeNode> {
+export async function serializeNode(node: Browser.bookmarks.BookmarkTreeNode): Promise<TreeNode> {
   const out: TreeNode = node.url
     ? { title: node.title ?? '', url: node.url }
     : { title: node.title ?? '', children: [] };
@@ -74,7 +74,7 @@ async function clearToolbar(): Promise<void> {
   await Promise.all(children.map((c) => browser.bookmarks.removeTree(c.id).catch(() => browser.bookmarks.remove(c.id).catch(() => {}))));
 }
 
-async function restoreTree(parentId: string, nodes: TreeNode[]): Promise<void> {
+export async function restoreTree(parentId: string, nodes: TreeNode[]): Promise<void> {
   for (const node of nodes) {
     const created = await browser.bookmarks.create({
       parentId,
@@ -101,88 +101,10 @@ export async function countLocalBookmarks(): Promise<number> {
   }
 }
 
-export interface SyncResult extends SyncStatus {}
-
-function normalizeTitle(title: string | undefined): string {
-  return (title ?? '').trim().toLowerCase();
-}
-
-function normalizeUrl(url: string): string {
-  try {
-    const u = new URL(url);
-    return u.href.replace(/\/$/, '').toLowerCase();
-  } catch {
-    return url.trim().replace(/\/$/, '').toLowerCase();
-  }
-}
-
-export function mergeTrees(remote: TreeNode, local: TreeNode): TreeNode {
-  if (remote.url || local.url) {
-    return remote.url ? remote : local;
-  }
-
-  const localFoldersMap = new Map<string, TreeNode[]>();
-  const localBookmarksMap = new Map<string, TreeNode[]>();
-  const usedLocalNodes = new Set<TreeNode>();
-
-  for (const child of local.children ?? []) {
-    if (child.url) {
-      const normUrl = normalizeUrl(child.url);
-      const list = localBookmarksMap.get(normUrl) ?? [];
-      list.push(child);
-      localBookmarksMap.set(normUrl, list);
-    } else {
-      const normTitle = normalizeTitle(child.title);
-      const list = localFoldersMap.get(normTitle) ?? [];
-      list.push(child);
-      localFoldersMap.set(normTitle, list);
-    }
-  }
-
-  const mergedChildren: TreeNode[] = [];
-
-  for (const remoteChild of remote.children ?? []) {
-    if (remoteChild.url) {
-      const normUrl = normalizeUrl(remoteChild.url);
-      const matchingLocalBookmarks = localBookmarksMap.get(normUrl);
-      if (matchingLocalBookmarks && matchingLocalBookmarks.length > 0) {
-        for (const b of matchingLocalBookmarks) {
-          usedLocalNodes.add(b);
-        }
-      }
-      mergedChildren.push(remoteChild);
-    } else {
-      const normTitle = normalizeTitle(remoteChild.title);
-      const matchingLocalFolders = localFoldersMap.get(normTitle);
-      if (matchingLocalFolders && matchingLocalFolders.length > 0) {
-        let mergedFolder = remoteChild;
-        for (const localFolder of matchingLocalFolders) {
-          usedLocalNodes.add(localFolder);
-          mergedFolder = mergeTrees(mergedFolder, localFolder);
-        }
-        mergedChildren.push(mergedFolder);
-      } else {
-        mergedChildren.push(remoteChild);
-      }
-    }
-  }
-
-  for (const localChild of local.children ?? []) {
-    if (!usedLocalNodes.has(localChild)) {
-      mergedChildren.push(localChild);
-    }
-  }
-
-  return {
-    title: remote.title || local.title,
-    children: mergedChildren,
-  };
-}
-
 // Guard against concurrent syncNow() calls (alarm + popup click firing together).
 let syncing = false;
 
-export async function syncNow(): Promise<SyncResult> {
+export async function syncNow(): Promise<SyncStatus> {
   if (syncing) return getStatus();
   const session = await loadSession();
   if (!session) return { ...EMPTY_STATUS, error: 'not-onboarded' };
@@ -287,7 +209,7 @@ export async function syncNow(): Promise<SyncResult> {
   }
 }
 
-export async function getStatus(): Promise<SyncResult> {
+export async function getStatus(): Promise<SyncStatus> {
   const session = await loadSession();
   if (!session) return { ...EMPTY_STATUS };
   const data = await browser.storage.local.get([KEYS.lastSync, KEYS.version]);

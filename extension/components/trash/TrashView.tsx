@@ -4,7 +4,6 @@ import {
   RotateCcw,
   Search,
   Folder,
-  Globe,
   Clock,
   ExternalLink,
   CheckCircle2,
@@ -22,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { FaviconImage } from '@/components/ui/FaviconImage';
 import { Pagination } from '@/components/bookmark/Pagination';
 
 const ITEMS_PER_PAGE = 12;
@@ -171,16 +171,6 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
       }
       return next;
     });
-  };
-
-  const getFaviconUrl = (url?: string) => {
-    if (!url) return null;
-    try {
-      const origin = new URL(url).origin;
-      return `https://www.google.com/s2/favicons?domain=${origin}&sz=64`;
-    } catch {
-      return null;
-    }
   };
 
   const now = Date.now();
@@ -390,7 +380,6 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                       0,
                       Math.ceil((THIRTY_DAYS_MS - (now - item.deletedAt)) / (24 * 60 * 60 * 1000))
                     );
-                    const favicon = getFaviconUrl(item.url);
 
                     return (
                       <tr
@@ -412,18 +401,7 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                           <div className="flex items-center gap-2.5 min-w-0">
                             <div className="p-1.5 rounded-lg bg-[var(--color-accent)] shrink-0 border border-[var(--color-border)] flex items-center justify-center h-8 w-8">
                               {item.url ? (
-                                favicon ? (
-                                  <img
-                                    src={favicon}
-                                    alt=""
-                                    className="h-4 w-4 object-contain"
-                                    onError={(e) => {
-                                      (e.target as HTMLElement).style.display = 'none';
-                                    }}
-                                  />
-                                ) : (
-                                  <Globe className="h-4 w-4 text-[var(--color-primary)]" />
-                                )
+                                <FaviconImage url={item.url} className="h-4 w-4 object-contain" />
                               ) : (
                                 <Folder className="h-4 w-4 text-amber-500" />
                               )}

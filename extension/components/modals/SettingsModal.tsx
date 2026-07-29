@@ -16,7 +16,7 @@ import { ListItemCard } from '@/components/ui/list-item-card';
 import { AlertBox } from '@/components/ui/alert-box';
 import { MutedText } from '@/components/ui/muted-text';
 import { SettingField, SettingSectionTitle } from './SettingField';
-import { loadSession } from '@/lib/storage';
+import { loadSession, KEYS } from '@/lib/storage';
 import { mnemonicToTextFile } from '@/lib/mnemonic';
 import { getDeviceLabel, getDeviceId } from '@/lib/device';
 import { listDevices, removeDevice, upsertDevice } from '@/lib/api';
@@ -31,8 +31,8 @@ import {
   type ThemeConfig,
 } from '@/lib/theme';
 import { toolbarId } from '@/components/bookmark/useBookmarks';
-import { cn } from '@/lib/utils';
-import { useTranslation } from '@/lib/i18n';
+import { cn, formatSyncAgo } from '@/lib/utils';
+import { useTranslation, type TranslationKey } from '@/lib/i18n';
 import {
   Sliders,
   ShieldCheck,
@@ -73,6 +73,14 @@ interface SettingsModalProps {
 }
 
 type TabType = 'general' | 'security' | 'sessions' | 'storage' | 'credits' | 'about';
+
+const CREDITS: { icon: React.ComponentType<{ className?: string }>; titleKey: TranslationKey; sourceKey: TranslationKey; descKey: TranslationKey; href: string }[] = [
+  { icon: CloudRain, titleKey: 'creditsNatureRadioTitle', sourceKey: 'creditsNatureRadioSource', descKey: 'creditsNatureRadioDesc', href: 'https://noisekun.com' },
+  { icon: Radio, titleKey: 'creditsQuranRadioTitle', sourceKey: 'creditsQuranRadioSource', descKey: 'creditsQuranRadioDesc', href: 'https://qurango.net' },
+  { icon: Quote, titleKey: 'creditsMotivationalQuotesTitle', sourceKey: 'creditsMotivationalQuotesSource', descKey: 'creditsMotivationalQuotesDesc', href: 'https://quotes.liupurnomo.com' },
+  { icon: BookOpen, titleKey: 'creditsIslamicQuotesTitle', sourceKey: 'creditsIslamicQuotesSource', descKey: 'creditsIslamicQuotesDesc', href: 'https://myquran.com' },
+  { icon: Heart, titleKey: 'creditsIconsTitle', sourceKey: 'creditsIconsSource', descKey: 'creditsIconsDesc', href: 'https://lucide.dev' },
+];
 
 export function SettingsModal({ open, onOpenChange, onLabelChange, onLogout }: SettingsModalProps) {
   const { t, language } = useTranslation();
@@ -147,15 +155,6 @@ export function SettingsModal({ open, onOpenChange, onLabelChange, onLogout }: S
     } catch (err) {
       console.error('Failed to remove device:', err);
     }
-  };
-
-  const formatLastSync = (n: number | null) => {
-    if (!n) return t('syncStatusNotSynced');
-    const d = Date.now() - n;
-    if (d < 60_000) return t('syncStatusSyncedJustNow');
-    if (d < 3_600_000) return t('syncStatusSyncedAgo', { time: `${Math.floor(d / 60_000)}m` });
-    if (d < 86_400_000) return t('syncStatusSyncedAgo', { time: `${Math.floor(d / 3_600_000)}h` });
-    return t('syncStatusSyncedAgo', { time: `${Math.floor(d / 86_400_000)}d` });
   };
 
   const initialThemeRef = React.useRef<ThemeConfig | null>(null);
@@ -305,7 +304,7 @@ export function SettingsModal({ open, onOpenChange, onLabelChange, onLogout }: S
 
   const handleClearCache = async () => {
     if (confirm(t('clearCacheConfirm'))) {
-      await browser.storage.local.remove(['syncty.lastSyncTime', 'syncty.vaultHash']);
+      await browser.storage.local.remove([KEYS.version, KEYS.lastSync, 'syncty.dirty']);
       alert(t('clearCacheSuccess'));
     }
   };
@@ -615,7 +614,7 @@ export function SettingsModal({ open, onOpenChange, onLabelChange, onLogout }: S
                           <div className="flex flex-col min-w-0 pr-3">
                             <span className="font-semibold text-[var(--color-foreground)] truncate">{dev.label}</span>
                             <MutedText size="2xs" as="span" className="leading-none mt-1.5 font-mono">
-                              {t('activeAgo', { time: formatLastSync(dev.last_sync) })}
+                              {t('activeAgo', { time: formatSyncAgo(t, dev.last_sync) })}
                             </MutedText>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
@@ -730,125 +729,33 @@ export function SettingsModal({ open, onOpenChange, onLabelChange, onLogout }: S
 
                 {/* Credits Cards List */}
                 <div className="space-y-2 max-h-[490px] overflow-y-auto pr-1">
-                  {/* 1. Nature Radio */}
-                  <Panel className="p-2.5 space-y-1 flex items-start gap-3 transition-colors hover:border-[var(--color-primary)]/40">
-                    <div className="h-8 w-8 rounded-lg bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 flex items-center justify-center shrink-0 mt-0.5 text-[var(--color-primary)]">
-                      <CloudRain className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-xs text-[var(--color-foreground)]">{t('creditsNatureRadioTitle')}</span>
-                        <a
-                          href="https://noisekun.com"
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-[10px] font-mono text-[var(--color-primary)] hover:underline flex items-center gap-1 shrink-0"
-                        >
-                          <span>{t('creditsNatureRadioSource')}</span>
-                          <ExternalLink className="h-2.5 w-2.5 opacity-60" />
-                        </a>
-                      </div>
-                      <p className="text-[10px] text-[var(--color-muted-foreground)] mt-0.5 leading-relaxed">
-                        {t('creditsNatureRadioDesc')}
-                      </p>
-                    </div>
-                  </Panel>
-
-                  {/* 2. Quran Radio */}
-                  <Panel className="p-2.5 space-y-1 flex items-start gap-3 transition-colors hover:border-[var(--color-primary)]/40">
-                    <div className="h-8 w-8 rounded-lg bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 flex items-center justify-center shrink-0 mt-0.5 text-[var(--color-primary)]">
-                      <Radio className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-xs text-[var(--color-foreground)]">{t('creditsQuranRadioTitle')}</span>
-                        <a
-                          href="https://qurango.net"
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-[10px] font-mono text-[var(--color-primary)] hover:underline flex items-center gap-1 shrink-0"
-                        >
-                          <span>{t('creditsQuranRadioSource')}</span>
-                          <ExternalLink className="h-2.5 w-2.5 opacity-60" />
-                        </a>
-                      </div>
-                      <p className="text-[10px] text-[var(--color-muted-foreground)] mt-0.5 leading-relaxed">
-                        {t('creditsQuranRadioDesc')}
-                      </p>
-                    </div>
-                  </Panel>
-
-                  {/* 3. Motivational Quotes */}
-                  <Panel className="p-2.5 space-y-1 flex items-start gap-3 transition-colors hover:border-[var(--color-primary)]/40">
-                    <div className="h-8 w-8 rounded-lg bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 flex items-center justify-center shrink-0 mt-0.5 text-[var(--color-primary)]">
-                      <Quote className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-xs text-[var(--color-foreground)]">{t('creditsMotivationalQuotesTitle')}</span>
-                        <a
-                          href="https://quotes.liupurnomo.com"
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-[10px] font-mono text-[var(--color-primary)] hover:underline flex items-center gap-1 shrink-0"
-                        >
-                          <span>{t('creditsMotivationalQuotesSource')}</span>
-                          <ExternalLink className="h-2.5 w-2.5 opacity-60" />
-                        </a>
-                      </div>
-                      <p className="text-[10px] text-[var(--color-muted-foreground)] mt-0.5 leading-relaxed">
-                        {t('creditsMotivationalQuotesDesc')}
-                      </p>
-                    </div>
-                  </Panel>
-
-                  {/* 4. Islamic Wisdom & Hadith */}
-                  <Panel className="p-2.5 space-y-1 flex items-start gap-3 transition-colors hover:border-[var(--color-primary)]/40">
-                    <div className="h-8 w-8 rounded-lg bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 flex items-center justify-center shrink-0 mt-0.5 text-[var(--color-primary)]">
-                      <BookOpen className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-xs text-[var(--color-foreground)]">{t('creditsIslamicQuotesTitle')}</span>
-                        <a
-                          href="https://myquran.com"
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-[10px] font-mono text-[var(--color-primary)] hover:underline flex items-center gap-1 shrink-0"
-                        >
-                          <span>{t('creditsIslamicQuotesSource')}</span>
-                          <ExternalLink className="h-2.5 w-2.5 opacity-60" />
-                        </a>
-                      </div>
-                      <p className="text-[10px] text-[var(--color-muted-foreground)] mt-0.5 leading-relaxed">
-                        {t('creditsIslamicQuotesDesc')}
-                      </p>
-                    </div>
-                  </Panel>
-
-                  {/* 5. Icons */}
-                  <Panel className="p-2.5 space-y-1 flex items-start gap-3 transition-colors hover:border-[var(--color-primary)]/40">
-                    <div className="h-8 w-8 rounded-lg bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 flex items-center justify-center shrink-0 mt-0.5 text-[var(--color-primary)]">
-                      <Heart className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-xs text-[var(--color-foreground)]">{t('creditsIconsTitle')}</span>
-                        <a
-                          href="https://lucide.dev"
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-[10px] font-mono text-[var(--color-primary)] hover:underline flex items-center gap-1 shrink-0"
-                        >
-                          <span>{t('creditsIconsSource')}</span>
-                          <ExternalLink className="h-2.5 w-2.5 opacity-60" />
-                        </a>
-                      </div>
-                      <p className="text-[10px] text-[var(--color-muted-foreground)] mt-0.5 leading-relaxed">
-                        {t('creditsIconsDesc')}
-                      </p>
-                    </div>
-                  </Panel>
+                  {CREDITS.map((credit) => {
+                    const Icon = credit.icon;
+                    return (
+                      <Panel key={credit.href} className="p-2.5 space-y-1 flex items-start gap-3 transition-colors hover:border-[var(--color-primary)]/40">
+                        <div className="h-8 w-8 rounded-lg bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 flex items-center justify-center shrink-0 mt-0.5 text-[var(--color-primary)]">
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-semibold text-xs text-[var(--color-foreground)]">{t(credit.titleKey)}</span>
+                            <a
+                              href={credit.href}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-[10px] font-mono text-[var(--color-primary)] hover:underline flex items-center gap-1 shrink-0"
+                            >
+                              <span>{t(credit.sourceKey)}</span>
+                              <ExternalLink className="h-2.5 w-2.5 opacity-60" />
+                            </a>
+                          </div>
+                          <p className="text-[10px] text-[var(--color-muted-foreground)] mt-0.5 leading-relaxed">
+                            {t(credit.descKey)}
+                          </p>
+                        </div>
+                      </Panel>
+                    );
+                  })}
                 </div>
               </div>
             )}
