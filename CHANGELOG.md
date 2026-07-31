@@ -4,6 +4,16 @@ All notable changes to the **Syncty** project will be documented in this file.
 
 ---
 
+## [1.1.4] - 2026-07-31
+
+### 🎨 Custom UI Dropdown Component Refinement
+- **Replaced Native `<select>`**: Upgraded base `Select` component (`select.tsx`) from HTML native select elements to custom Radix UI `DropdownMenu` components, matching the sleek design of the Search Engine bar.
+- **Dark Aesthetic Alignment**: Standardized background (`var(--color-card)`), borders (`var(--color-border)`), rounded corners (`rounded-2xl`), hover states, and active option checkmark indicators across all app dropdowns.
+- **Clean Scrollbar Clipping**: Wrapped options list in an inner scrollable container (`max-h-60 overflow-y-auto custom-scrollbar p-1`) inside an outer `overflow-hidden` container to prevent scrollbar bleeding/offsetting over rounded borders.
+- **Universal Application**: Instantly enhanced Radio Al-Quran reciter dropdown, Theme preset selector, and Bookmark management filter controls.
+
+---
+
 ## [1.1.3] - 2026-07-29
 
 ### 🎨 Sidebar & Footer UX Refinements
