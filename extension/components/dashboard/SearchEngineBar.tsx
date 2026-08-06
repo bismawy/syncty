@@ -35,11 +35,11 @@ const DEFAULT_PROVIDERS: SearchProvider[] = [
 export function SearchEngineBar() {
   const { t } = useTranslation();
   const [providerId, setProviderId] = React.useState<string>(() => {
-    return localStorage.getItem('syncty.searchProviderId') || 'google';
+    return localStorage.getItem('syntive.searchProviderId') || 'google';
   });
 
   const [customUrl, setCustomUrl] = React.useState<string>(() => {
-    return localStorage.getItem('syncty.customSearchUrl') || 'https://duckduckgo.com/?q=';
+    return localStorage.getItem('syntive.customSearchUrl') || 'https://duckduckgo.com/?q=';
   });
 
   const [query, setQuery] = React.useState('');
@@ -47,11 +47,11 @@ export function SearchEngineBar() {
   const [tempCustomUrl, setTempCustomUrl] = React.useState(customUrl);
 
   React.useEffect(() => {
-    localStorage.setItem('syncty.searchProviderId', providerId);
+    localStorage.setItem('syntive.searchProviderId', providerId);
   }, [providerId]);
 
   React.useEffect(() => {
-    localStorage.setItem('syncty.customSearchUrl', customUrl);
+    localStorage.setItem('syntive.customSearchUrl', customUrl);
   }, [customUrl]);
 
   const activeProvider = React.useMemo(() => {

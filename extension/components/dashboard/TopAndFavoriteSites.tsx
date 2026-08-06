@@ -133,7 +133,7 @@ export function TopSitesWidget({ dragHandle }: { dragHandle?: React.ReactNode })
 export function FavoriteSitesWidget({ dragHandle }: { dragHandle?: React.ReactNode }) {
   const { t } = useTranslation();
   const [pinnedSites, setPinnedSites] = React.useState<SiteItem[]>(() => {
-    const saved = localStorage.getItem('syncty.pinnedSites');
+    const saved = localStorage.getItem('syntive.pinnedSites');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -161,7 +161,7 @@ export function FavoriteSitesWidget({ dragHandle }: { dragHandle?: React.ReactNo
   }, [page, pageCount]);
 
   React.useEffect(() => {
-    localStorage.setItem('syncty.pinnedSites', JSON.stringify(pinnedSites));
+    localStorage.setItem('syntive.pinnedSites', JSON.stringify(pinnedSites));
   }, [pinnedSites]);
 
   const handleAddPinned = () => {

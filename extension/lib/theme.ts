@@ -1,4 +1,4 @@
-// Theme management helper for Syncty
+// Theme management helper for Syntive
 
 export interface ThemePreset {
   id: string;
@@ -69,16 +69,16 @@ export function hexToOklch(hex: string): { l: number; c: number; h: number } {
 export async function loadThemeConfig(): Promise<ThemeConfig> {
   try {
     const data = await browser.storage.local.get([
-      'syncty.themeMode',
-      'syncty.themePreset',
-      'syncty.customAccent',
-      'syncty.githubAccentUrl',
+      'syntive.themeMode',
+      'syntive.themePreset',
+      'syntive.customAccent',
+      'syntive.githubAccentUrl',
     ]);
     return {
-      mode: (data['syncty.themeMode'] as ThemeConfig['mode']) || 'system',
-      presetId: (data['syncty.themePreset'] as string) || 'default',
-      customAccent: (data['syncty.customAccent'] as string) || '#6366f1',
-      githubUrl: (data['syncty.githubAccentUrl'] as string) || '',
+      mode: (data['syntive.themeMode'] as ThemeConfig['mode']) || 'system',
+      presetId: (data['syntive.themePreset'] as string) || 'default',
+      customAccent: (data['syntive.customAccent'] as string) || '#6366f1',
+      githubUrl: (data['syntive.githubAccentUrl'] as string) || '',
     };
   } catch (err) {
     console.error('Failed to load theme config:', err);
@@ -89,12 +89,12 @@ export async function loadThemeConfig(): Promise<ThemeConfig> {
 export async function saveThemeConfig(config: ThemeConfig): Promise<void> {
   try {
     await browser.storage.local.set({
-      'syncty.themeMode': config.mode,
-      'syncty.themePreset': config.presetId,
-      'syncty.customAccent': config.customAccent,
-      'syncty.githubAccentUrl': config.githubUrl || '',
+      'syntive.themeMode': config.mode,
+      'syntive.themePreset': config.presetId,
+      'syntive.customAccent': config.customAccent,
+      'syntive.githubAccentUrl': config.githubUrl || '',
     });
-    localStorage.setItem('syncty.theme', config.mode);
+    localStorage.setItem('syntive.theme', config.mode);
     applyThemeConfig(config);
   } catch (err) {
     console.error('Failed to save theme config:', err);
@@ -153,6 +153,56 @@ export function applyThemeConfig(config?: ThemeConfig | null): void {
       root.style.setProperty('--accent', `oklch(0.94 0.014 ${roundH})`);
     }
   }
+
+  // 3. Dynamic real-time tab favicon refresh for instant browser tab strip update on theme toggle
+  const markColor = isDark ? '#e4decb' : '#2b2b2b';
+  const svgDataUri = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2134 2134"><style>.mark{fill:${markColor};opacity:0.80;}</style><path class="mark" d="M145.627,1186.242c0,-655.143 531.099,-1186.242 1186.242,-1186.242l-0,72.132c-453.999,166.424 -777.959,602.434 -777.959,1114.11l-0,373.29c193.257,-80.135 329.19,-270.626 329.19,-492.866c0,-294.551 238.781,-533.331 533.331,-533.331l0,-166.215c-0.002,-97.366 38.674,-190.745 107.522,-259.595c68.847,-68.849 162.232,-107.525 259.598,-107.526l0.007,533.336l204.148,0.001l0,413.754c-0,655.143 -531.099,1186.242 -1186.242,1186.242l0,-72.132c453.999,-166.424 777.959,-602.434 777.959,-1114.11l0,-373.293c-193.261,80.134 -329.196,270.626 -329.196,492.868c-0,294.551 -238.781,533.331 -533.331,533.331l0,166.215c0.002,97.366 -38.674,190.745 -107.522,259.595c-68.847,68.849 -162.232,107.525 -259.598,107.526l-0.007,-533.336l-204.142,-0.001l0,-413.754Z"/></svg>`
+  )}`;
+
+  const existingLinks = document.querySelectorAll<HTMLLinkElement>("link[rel~='icon']");
+  existingLinks.forEach((link) => link.remove());
+
+  const newFavicon = document.createElement('link');
+  newFavicon.rel = 'icon';
+  newFavicon.type = 'image/svg+xml';
+  newFavicon.href = svgDataUri;
+  document.head.appendChild(newFavicon);
+}
+
+/**
+ * Initializes cross-tab theme storage listener & OS system color scheme listener.
+ * Ensures ALL open tabs immediately & dynamically update theme & favicon in real-time.
+ */
+export function initThemeListeners(): () => void {
+  loadThemeConfig().then((cfg) => applyThemeConfig(cfg));
+
+  const onStorageChange = (changes: Record<string, any>) => {
+    if (
+      changes['syntive.themeMode'] ||
+      changes['syntive.themePreset'] ||
+      changes['syntive.customAccent'] ||
+      changes['syntive.githubAccentUrl']
+    ) {
+      loadThemeConfig().then((cfg) => applyThemeConfig(cfg));
+    }
+  };
+  browser.storage.onChanged.addListener(onStorageChange);
+
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  const onMediaChange = () => {
+    loadThemeConfig().then((cfg) => {
+      if (cfg.mode === 'system') {
+        applyThemeConfig(cfg);
+      }
+    });
+  };
+  mediaQuery.addEventListener?.('change', onMediaChange);
+
+  return () => {
+    browser.storage.onChanged.removeListener(onStorageChange);
+    mediaQuery.removeEventListener?.('change', onMediaChange);
+  };
 }
 
 export async function fetchGitHubAccentColor(url: string): Promise<string | null> {

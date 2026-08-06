@@ -34,7 +34,7 @@ export const DICTIONARY = {
     headerOrganize: 'MANAJEMEN BOOKMARK',
     headerTrash: 'TONG SAMPAH',
     headerSupport: 'Support',
-    githubRepoTooltip: 'Repositori GitHub (bismawy/syncty)',
+    githubRepoTooltip: 'Repositori GitHub (bismawy/syntive)',
     editWidgetsTooltip: 'Sunting Widget',
     collapseSidebar: 'Ciutkan Sidebar',
     expandSidebar: 'Buka Sidebar',
@@ -261,10 +261,10 @@ export const DICTIONARY = {
     cacheCleanupLabel: 'Pembersihan Cache',
     cacheCleanupDesc: 'Bersihkan status cache sinkronisasi lokal jika Anda mengalami kendala data tidak sesuai.',
     clearLocalCacheBtn: 'Clear Local Cache',
-    clearCacheConfirm: 'Apakah Anda yakin ingin membersihkan cache lokal Syncty?',
+    clearCacheConfirm: 'Apakah Anda yakin ingin membersihkan cache lokal Syntive?',
     clearCacheSuccess: 'Cache data lokal telah dibersihkan.',
     aboutAppDescTitle: 'Penjelasan Aplikasi',
-    aboutAppDesc: 'Syncty adalah ekstensi peramban modern untuk menyinkronkan bookmark secara aman antar perangkat tanpa perantara server yang dapat membaca data Anda. Semua bookmark dienkripsi di sisi klien menggunakan enkripsi AES-GCM 256-bit berbasis Secret Key (12 Kata Mnemonic).',
+    aboutAppDesc: 'Syntive adalah ekstensi peramban modern untuk menyinkronkan bookmark secara aman antar perangkat tanpa perantara server yang dapat membaca data Anda. Semua bookmark dienkripsi di sisi klien menggunakan enkripsi AES-GCM 256-bit berbasis Secret Key (12 Kata Mnemonic).',
     developerLabel: 'Pengembang:',
     databaseServerLabel: 'Server Database:',
     databaseServerValue: 'Cloudflare',
@@ -276,7 +276,7 @@ export const DICTIONARY = {
 
     // Credits Tab
     creditsTitle: 'Kredit & Atribusi',
-    creditsSubtitle: 'Apresiasi dan atribusi atas penyedia API, audio stream, dan layanan data publik yang digunakan oleh Syncty:',
+    creditsSubtitle: 'Apresiasi dan atribusi atas penyedia API, audio stream, dan layanan data publik yang digunakan oleh Syntive:',
     creditsQuranRadioTitle: 'Radio Qur\'an 24/7',
     creditsQuranRadioDesc: 'Audio stream Tilawah Al-Qur\'an dari Syaikh Mishary Al-Afasy, Al-Sudais, Al-Ghamdi, Al-Muaiqly, Al-Dosari, & Radio Utama.',
     creditsQuranRadioSource: 'Qurango Radio Network',
@@ -295,7 +295,7 @@ export const DICTIONARY = {
 
     // Support Modal
     supportModalTitle: 'Dukungan & Donasi',
-    supportModalDesc: 'Terima kasih telah menggunakan Syncty! Jika aplikasi ini bermanfaat untuk Anda, dukung pengembangan proyek ini melalui pilihan donasi di bawah:',
+    supportModalDesc: 'Terima kasih telah menggunakan Syntive! Jika aplikasi ini bermanfaat untuk Anda, dukung pengembangan proyek ini melalui pilihan donasi di bawah:',
     indonesiaQris: 'Indonesia (QRIS)',
     indonesiaBadge: 'Indonesia',
     qrisDesc: 'Scan QRIS donasi menggunakan GoPay, OVO, DANA, ShopeePay, LinkAja, BCA, Mandiri, atau aplikasi m-Banking Indonesia lainnya.',
@@ -353,7 +353,7 @@ export const DICTIONARY = {
     headerOrganize: 'BOOKMARK MANAGEMENT',
     headerTrash: 'TRASH BIN',
     headerSupport: 'Support',
-    githubRepoTooltip: 'GitHub Repository (bismawy/syncty)',
+    githubRepoTooltip: 'GitHub Repository (bismawy/syntive)',
     editWidgetsTooltip: 'Edit Widgets',
     collapseSidebar: 'Collapse Sidebar',
     expandSidebar: 'Expand Sidebar',
@@ -579,10 +579,10 @@ export const DICTIONARY = {
     cacheCleanupLabel: 'Cache Cleanup',
     cacheCleanupDesc: 'Clear local sync cache if you encounter data discrepancy issues.',
     clearLocalCacheBtn: 'Clear Local Cache',
-    clearCacheConfirm: 'Are you sure you want to clear Syncty local cache?',
+    clearCacheConfirm: 'Are you sure you want to clear Syntive local cache?',
     clearCacheSuccess: 'Local data cache has been cleared.',
     aboutAppDescTitle: 'About Application',
-    aboutAppDesc: 'Syncty is a modern browser extension designed to securely synchronize bookmarks across your devices without server intermediaries reading your data. All bookmarks are encrypted client-side using 256-bit AES-GCM encryption based on your Secret Key (12 Mnemonic Words).',
+    aboutAppDesc: 'Syntive is a modern browser extension designed to securely synchronize bookmarks across your devices without server intermediaries reading your data. All bookmarks are encrypted client-side using 256-bit AES-GCM encryption based on your Secret Key (12 Mnemonic Words).',
     developerLabel: 'Developer:',
     databaseServerLabel: 'Database Server:',
     databaseServerValue: 'Cloudflare',
@@ -594,7 +594,7 @@ export const DICTIONARY = {
 
     // Credits Tab
     creditsTitle: 'Credits & Attribution',
-    creditsSubtitle: 'Appreciation and attribution for public APIs, audio streams, and data services powering Syncty:',
+    creditsSubtitle: 'Appreciation and attribution for public APIs, audio streams, and data services powering Syntive:',
     creditsQuranRadioTitle: '24/7 Quran Radio',
     creditsQuranRadioDesc: 'Quran recitation audio streams from Sheikh Mishary Al-Afasy, Al-Sudais, Al-Ghamdi, Al-Muaiqly, Al-Dosari, & Main Radio.',
     creditsQuranRadioSource: 'Qurango Radio Network',
@@ -613,7 +613,7 @@ export const DICTIONARY = {
 
     // Support Modal
     supportModalTitle: 'Support & Donate',
-    supportModalDesc: 'Thank you for using Syncty! If you find this app helpful, please consider supporting its development via the donation options below:',
+    supportModalDesc: 'Thank you for using Syntive! If you find this app helpful, please consider supporting its development via the donation options below:',
     indonesiaQris: 'Indonesia (QRIS)',
     indonesiaBadge: 'Indonesia',
     qrisDesc: 'Scan QRIS donation using GoPay, OVO, DANA, ShopeePay, LinkAja, BCA, Mandiri, or other Indonesian m-Banking apps.',
@@ -676,16 +676,16 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = React.useState<Language>('id');
 
   React.useEffect(() => {
-    browser.storage.local.get('syncty.language').then((data) => {
-      if (data['syncty.language'] === 'en' || data['syncty.language'] === 'id') {
-        setLanguageState(data['syncty.language']);
+    browser.storage.local.get('syntive.language').then((data) => {
+      if (data['syntive.language'] === 'en' || data['syntive.language'] === 'id') {
+        setLanguageState(data['syntive.language']);
       }
     }).catch(() => {});
   }, []);
 
   const setLanguage = React.useCallback((lang: Language) => {
     setLanguageState(lang);
-    browser.storage.local.set({ 'syncty.language': lang }).catch(() => {});
+    browser.storage.local.set({ 'syntive.language': lang }).catch(() => {});
   }, []);
 
   const t = React.useCallback(

@@ -31,6 +31,9 @@ import { loadThemeConfig, saveThemeConfig, applyThemeConfig, getEffectiveIsDark 
 import { LanguageProvider, useTranslation } from '@/lib/i18n';
 
 import { IconButton } from '@/components/ui/icon-button';
+import logoDark from '@/assets/logo-dark.svg';
+import logoLight from '@/assets/logo-light.svg';
+import logoIcon from '@/assets/logo-icon.svg';
 
 interface SidebarNavItemProps {
   icon: React.ReactNode;
@@ -117,8 +120,8 @@ function SidebarHeader({
           title={t('expandSidebar')}
         >
           <img
-            src={isDark ? '/icons/Syncty_Logo_Mark_Light.svg' : '/icons/Syncty_Logo_Mark_Dark.svg'}
-            alt="Syncty"
+            src={logoIcon}
+            alt="Syntive"
             className="h-5 w-5 shrink-0 select-none"
           />
         </IconButton>
@@ -129,9 +132,9 @@ function SidebarHeader({
   return (
     <div className="flex items-center justify-between px-1 pt-1">
       <img
-        src={isDark ? '/icons/Syncty_Logo_Primary_Light.svg' : '/icons/Syncty_Logo_Primary_Dark.svg'}
-        alt="Syncty"
-        className="h-7 w-auto select-none shrink-0"
+        src={isDark ? logoDark : logoLight}
+        alt="Syntive"
+        className="h-6 w-auto select-none shrink-0"
       />
 
       <IconButton
@@ -332,13 +335,13 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
 
   // Sidebar collapsed state (persisted in localStorage)
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState<boolean>(() => {
-    return localStorage.getItem('syncty.sidebarCollapsed') === 'true';
+    return localStorage.getItem('syntive.sidebarCollapsed') === 'true';
   });
 
   const toggleSidebarCollapse = () => {
     setSidebarCollapsed((prev) => {
       const next = !prev;
-      localStorage.setItem('syncty.sidebarCollapsed', String(next));
+      localStorage.setItem('syntive.sidebarCollapsed', String(next));
       return next;
     });
   };
@@ -349,7 +352,7 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
 
   React.useEffect(() => {
     const onChange = (changes: Record<string, any>) => {
-      if (changes['syncty.customDeviceLabel']) {
+      if (changes['syntive.customDeviceLabel']) {
         setDeviceLabel(getDeviceLabel());
       }
     };
@@ -424,6 +427,23 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
       applyThemeConfig(cfg);
     });
   }, []);
+
+  // Keep the theme (and UI isDark state) in sync when the OS/browser scheme
+  // changes while mode === 'system'. Without this, the sidebar logo and
+  // .light/.dark classes would stay stale until a manual re-render.
+  const [, forceThemeSync] = React.useReducer((x: number) => x + 1, 0);
+  React.useEffect(() => {
+    if (themeMode !== 'system') return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = () => {
+      loadThemeConfig().then((cfg) => {
+        applyThemeConfig(cfg);
+        forceThemeSync();
+      });
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, [themeMode]);
 
   const handleToggleThemeMode = async () => {
     const nextMode: 'dark' | 'light' | 'system' =

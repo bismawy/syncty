@@ -1,4 +1,4 @@
-// Syncty backend — Cloudflare Worker + D1.
+// Syntive backend — Cloudflare Worker + D1.
 // Zero-knowledge: stores only opaque AES-GCM ciphertext blobs keyed by authId.
 // ponytail: native fetch handler + tiny router. No framework dep. Add Hono if
 // middleware (validation/sessions) grows beyond a few routes.

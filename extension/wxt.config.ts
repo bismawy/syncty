@@ -1,7 +1,7 @@
 import { defineConfig } from 'wxt';
 import tailwindcss from '@tailwindcss/vite';
 
-// Syncty extension config. Targets Chromium + Firefox from one codebase.
+// Syntive extension config. Targets Chromium + Firefox from one codebase.
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   webExt: {
@@ -12,11 +12,11 @@ export default defineConfig({
     define: {
       // ponytail: API base injected at build time from .env (VITE_API_BASE).
       // Falls back to localhost for `wxt dev`.
-      __API_BASE__: JSON.stringify(process.env.VITE_API_BASE ?? 'https://syncty.byztma.workers.dev'),
+      __API_BASE__: JSON.stringify(process.env.VITE_API_BASE ?? 'https://syntive.byztma.workers.dev'),
     },
   }),
   manifest: {
-    name: 'Syncty',
+    name: 'Syntive',
     description: 'Encrypted bookmark synchronization across browsers & OS.',
     permissions: ['bookmarks', 'storage', 'alarms', 'topSites'],
     host_permissions: ['https://*/*'],
@@ -33,11 +33,11 @@ export default defineConfig({
         '48': 'icons/logo-48.png',
       },
     },
-    // ponytail: override the new-tab page so the Syncty dashboard replaces it.
+    // ponytail: override the new-tab page so the Syntive dashboard replaces it.
     chrome_url_overrides: { newtab: 'newtab.html' },
     browser_specific_settings: {
       gecko: {
-        id: 'syncty@extension.id',
+        id: 'syntive@extension.id',
       },
     },
   },

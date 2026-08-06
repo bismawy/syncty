@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the **Syncty** project will be documented in this file.
+All notable changes to the **Syntive** project will be documented in this file.
 
 ---
 
@@ -46,7 +46,7 @@ All notable changes to the **Syncty** project will be documented in this file.
 - Widget config migration: 18-branch if-chain → Map lookup; `DEFAULT_ORDER` derived.
 
 ### 🐛 Fixes
-- **`Clear Local Cache` now actually works** — was removing nonexistent storage keys (`syncty.lastSyncTime`, `syncty.vaultHash`); now removes real keys (`syncty.version`, `syncty.lastSync`, `syncty.dirty`).
+- **`Clear Local Cache` now actually works** — was removing nonexistent storage keys (`syntive.lastSyncTime`, `syntive.vaultHash`); now removes real keys (`syntive.version`, `syntive.lastSync`, `syntive.dirty`).
 - Fixed pre-existing typecheck failure (CSS side-effect imports) via `globals.d.ts`.
 - Crypto self-check moved out of production bundle (removed `node:url` build warning).
 
@@ -61,7 +61,7 @@ All notable changes to the **Syncty** project will be documented in this file.
 ## [1.1.0] - 2026-07-27
 
 ### 🚀 Highlights
-- **Initial Public Release of Syncty** — Zero-Knowledge End-to-End Encrypted bookmark synchronization extension for Chromium & Firefox browsers.
+- **Initial Public Release of Syntive** — Zero-Knowledge End-to-End Encrypted bookmark synchronization extension for Chromium & Firefox browsers.
 
 ### ✨ Key Features
 

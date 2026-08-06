@@ -9,7 +9,7 @@ export interface TrashItem {
   originalParentId?: string;
 }
 
-const TRASH_STORAGE_KEY = 'syncty.trash';
+const TRASH_STORAGE_KEY = 'syntive.trash';
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 export async function getTrashItems(): Promise<TrashItem[]> {

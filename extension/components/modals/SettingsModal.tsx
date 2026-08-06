@@ -26,7 +26,6 @@ import {
   saveThemeConfig,
   applyThemeConfig,
   fetchGitHubAccentColor,
-  getEffectiveIsDark,
   PRESET_THEMES,
   type ThemeConfig,
 } from '@/lib/theme';
@@ -64,6 +63,7 @@ import {
   CloudRain,
   Quote,
 } from 'lucide-react';
+import logoIcon from '@/assets/logo-icon.svg';
 
 interface SettingsModalProps {
   open: boolean;
@@ -175,11 +175,11 @@ export function SettingsModal({ open, onOpenChange, onLabelChange, onLogout }: S
       }
     });
 
-    browser.storage.local.get(['syncty.customDeviceLabel', 'syncty.syncInterval']).then((data) => {
-      const customLabel = data['syncty.customDeviceLabel'] as string | undefined;
+    browser.storage.local.get(['syntive.customDeviceLabel', 'syntive.syncInterval']).then((data) => {
+      const customLabel = data['syntive.customDeviceLabel'] as string | undefined;
       setDeviceName(customLabel || getDeviceLabel());
 
-      const interval = data['syncty.syncInterval'] as number | undefined;
+      const interval = data['syntive.syncInterval'] as number | undefined;
       setSyncInterval(interval !== undefined ? interval : 15);
     });
 
@@ -216,7 +216,7 @@ export function SettingsModal({ open, onOpenChange, onLabelChange, onLogout }: S
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `syncty-secret-key-${Date.now()}.txt`;
+    a.download = `syntive-secret-key-${Date.now()}.txt`;
     a.click();
     URL.revokeObjectURL(url);
     setDownloaded(true);
@@ -253,7 +253,7 @@ export function SettingsModal({ open, onOpenChange, onLabelChange, onLogout }: S
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `syncty-bookmarks-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `syntive-bookmarks-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (err) {
@@ -304,7 +304,7 @@ export function SettingsModal({ open, onOpenChange, onLabelChange, onLogout }: S
 
   const handleClearCache = async () => {
     if (confirm(t('clearCacheConfirm'))) {
-      await browser.storage.local.remove([KEYS.version, KEYS.lastSync, 'syncty.dirty']);
+      await browser.storage.local.remove([KEYS.version, KEYS.lastSync, 'syntive.dirty']);
       alert(t('clearCacheSuccess'));
     }
   };
@@ -315,8 +315,8 @@ export function SettingsModal({ open, onOpenChange, onLabelChange, onLogout }: S
       const cleanName = deviceName.trim();
 
       await browser.storage.local.set({
-        'syncty.customDeviceLabel': cleanName,
-        'syncty.syncInterval': syncInterval,
+        'syntive.customDeviceLabel': cleanName,
+        'syntive.syncInterval': syncInterval,
       });
 
       initialThemeRef.current = themeConfig;
@@ -327,7 +327,7 @@ export function SettingsModal({ open, onOpenChange, onLabelChange, onLogout }: S
         const devId = await getDeviceId();
         const finalLabel = cleanName || getDeviceLabel();
         await upsertDevice(session.authId, devId, finalLabel);
-        await browser.storage.local.set({ ['syncty.lastDeviceLabel']: finalLabel });
+        await browser.storage.local.set({ ['syntive.lastDeviceLabel']: finalLabel });
       }
 
       onLabelChange(cleanName || getDeviceLabel());
@@ -767,14 +767,14 @@ export function SettingsModal({ open, onOpenChange, onLabelChange, onLogout }: S
                 <div className="flex items-center gap-3.5 border-b border-[var(--color-border)] pb-4">
                   <div className="h-11 w-11 rounded-xl bg-[var(--color-background)] border border-[var(--color-border)] flex items-center justify-center shrink-0 p-2 shadow-xs">
                     <img
-                      src={getEffectiveIsDark(themeConfig.mode) ? '/icons/Syncty_Logo_Mark_Light.svg' : '/icons/Syncty_Logo_Mark_Dark.svg'}
-                      alt="Syncty Logo"
+                      src={logoIcon}
+                      alt="Syntive Logo"
                       className="h-full w-full object-contain"
                     />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-bold tracking-tight text-[var(--color-foreground)]">SYNCTY</h3>
+                      <h3 className="text-sm font-bold tracking-tight text-[var(--color-foreground)]">SYNTIVE</h3>
                       <Badge color="accent" compact className="font-mono font-bold">v{appVersion}</Badge>
                     </div>
                     <p className="text-[10px] text-[var(--color-muted-foreground)] mt-0.5">
@@ -842,12 +842,12 @@ export function SettingsModal({ open, onOpenChange, onLabelChange, onLogout }: S
                   <div className="flex justify-between items-center">
                     <span>{t('repoLabel')}</span>
                     <a
-                      href="https://github.com/bismawy/syncty"
+                      href="https://github.com/bismawy/syntive"
                       target="_blank"
                       rel="noreferrer"
                       className="font-semibold text-[var(--color-primary)] hover:underline flex items-center gap-1"
                     >
-                      <span>github.com/bismawy/syncty</span>
+                      <span>github.com/bismawy/syntive</span>
                       <ExternalLink className="h-3 w-3 opacity-60" />
                     </a>
                   </div>

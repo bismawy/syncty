@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import logoDark from '@/assets/logo-dark.svg';
 
 type Mode = 'choose' | 'create';
 
@@ -62,7 +63,7 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `syncty-secret-key-${Date.now()}.txt`;
+    a.download = `syntive-secret-key-${Date.now()}.txt`;
     a.click();
     URL.revokeObjectURL(url);
     setSaved(true);
@@ -172,8 +173,8 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
           {/* Original Light Logo */}
           <div className="py-1">
             <img
-              src="/icons/Syncty_Logo_Primary_Light.svg"
-              alt="Syncty"
+              src={logoDark}
+              alt="Syntive"
               className="h-8 sm:h-9 select-none mx-auto drop-shadow-md"
             />
           </div>

@@ -1,4 +1,4 @@
--- Syncty D1 schema. Apply with: npx wrangler d1 migrations apply syncty --remote
+-- Syntive D1 schema. Apply with: npx wrangler d1 migrations apply syntive --remote
 
 CREATE TABLE IF NOT EXISTS vaults (
   auth_id    TEXT PRIMARY KEY,

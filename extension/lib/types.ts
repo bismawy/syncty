@@ -1,4 +1,4 @@
-// Shared domain types for Syncty.
+// Shared domain types for Syntive.
 
 export interface ServerVault {
   blob: string | null;

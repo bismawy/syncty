@@ -1,10 +1,10 @@
-# Syncty
+# Syntive
 
 Bookmark sync extension for Chromium & Firefox — zero-knowledge end-to-end encrypted. Your bookmarks are encrypted in the browser before they ever touch the server. The server (Cloudflare Worker + D1) only stores opaque encrypted blobs.
 
 ## Architecture
 
-- **`extension/`** — WXT + React + Tailwind + shadcn/ui. Overrides the new-tab page with the Syncty dashboard.
+- **`extension/`** — WXT + React + Tailwind + shadcn/ui. Overrides the new-tab page with the Syntive dashboard.
 - **`backend/`** — Cloudflare Worker (native fetch handler) + D1 (SQLite). Stores encrypted vault blobs + device registry.
 
 ## Security model
@@ -24,8 +24,8 @@ Conflict resolution is last-write-wins per device (version + timestamp). Sync ru
 cd backend
 npm install
 npx wrangler login
-npx wrangler d1 create syncty          # copy the database_id into wrangler.toml
-npx wrangler d1 migrations apply syncty --remote
+npx wrangler d1 create syntive          # copy the database_id into wrangler.toml
+npx wrangler d1 migrations apply syntive --remote
 npx wrangler deploy
 # set the Worker URL in extension/.env as VITE_API_BASE
 ```
@@ -42,7 +42,7 @@ npm run zip                           # package for store upload
 ```
 
 ## Env
-- `VITE_API_BASE` — the deployed Worker origin (e.g. `https://syncty.<sub>.workers.dev`)
+- `VITE_API_BASE` — the deployed Worker origin (e.g. `https://syntive.<sub>.workers.dev`)
 
 ## CI/CD
 - `.github/workflows/deploy-backend.yml` — deploys the Worker on push (needs `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` secrets).

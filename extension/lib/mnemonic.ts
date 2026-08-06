@@ -77,7 +77,7 @@ export function mnemonicToTextFile(mnemonic: string, opts: MnemonicExportOptions
   if (isId) {
     return [
       '--------------------------------------------------',
-      'SYNCTY • CADANGAN SECRET KEY',
+      'SYNTIVE • CADANGAN SECRET KEY',
       '--------------------------------------------------',
       `Dibuat    : ${createdDateStr}`,
       `Perangkat : ${deviceStr}`,
@@ -100,7 +100,7 @@ export function mnemonicToTextFile(mnemonic: string, opts: MnemonicExportOptions
 
   return [
     '--------------------------------------------------',
-    'SYNCTY • SECRET KEY BACKUP',
+    'SYNTIVE • SECRET KEY BACKUP',
     '--------------------------------------------------',
     `Created   : ${createdDateStr}`,
     `Device    : ${deviceStr}`,

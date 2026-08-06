@@ -8,21 +8,23 @@ import { getDeviceLabel } from '@/lib/device';
 import type { SyncStatus } from '@/lib/types';
 import { EMPTY_STATUS } from '@/lib/types';
 
-import { loadThemeConfig, getEffectiveIsDark } from '@/lib/theme';
+import logoIcon from '@/assets/logo-icon.svg';
 
 function send<T>(type: string): Promise<T> {
   return browser.runtime.sendMessage({ type });
 }
 
+import { initThemeListeners } from '@/lib/theme';
+
 export default function App() {
   const [status, setStatus] = React.useState<SyncStatus>(EMPTY_STATUS);
   const [syncing, setSyncing] = React.useState(false);
   const [label] = React.useState(getDeviceLabel());
-  const [mode, setMode] = React.useState<'dark' | 'light' | 'system'>('system');
 
   React.useEffect(() => {
+    const cleanupTheme = initThemeListeners();
     send<SyncStatus>('status').then(setStatus).catch(() => {});
-    loadThemeConfig().then((c) => setMode(c.mode)).catch(() => {});
+    return () => cleanupTheme();
   }, []);
 
   const onSync = async () => {
@@ -41,12 +43,12 @@ export default function App() {
     <div className="p-3">
       <div className="mb-3 flex items-center gap-2">
         <img
-          src={getEffectiveIsDark(mode) ? '/icons/Syncty_Logo_Mark_Light.svg' : '/icons/Syncty_Logo_Mark_Dark.svg'}
+          src={logoIcon}
           alt=""
           className="h-7 w-7"
         />
         <div className="flex-1">
-          <div className="text-sm font-semibold leading-tight">Syncty</div>
+          <div className="text-sm font-semibold leading-tight">Syntive</div>
           <div className="text-[11px] text-[var(--color-muted-foreground)]">Bookmark sync</div>
         </div>
       </div>

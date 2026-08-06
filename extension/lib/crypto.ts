@@ -1,14 +1,14 @@
-// Zero-knowledge crypto for Syncty. Web Crypto only — no deps.
+// Zero-knowledge crypto for Syntive. Web Crypto only — no deps.
 //
 // Secret Key (12-word Indonesian mnemonic)
-//   └─ PBKDF2-SHA512(mnemonic, salt="syncty/v1", 210k iters, 64 bytes) = seed
+//   └─ PBKDF2-SHA512(mnemonic, salt="syntive/v1", 210k iters, 64 bytes) = seed
 //        ├─ seed[0:32]  -> authId (hex) sent to the server as identity/bearer
 //        └─ seed[32:64] -> AES-GCM key (encrypts the bookmark tree locally)
 //
 // The server only ever sees authId + the encrypted blob. The mnemonic never
 // leaves the device. Losing the mnemonic = losing access (no recovery).
 
-const PBKDF2_SALT = 'syncty/v1';
+const PBKDF2_SALT = 'syntive/v1';
 const PBKDF2_ITERS = 210_000;
 
 const encoder = new TextEncoder();

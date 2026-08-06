@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input';
 import { FaviconImage } from '@/components/ui/FaviconImage';
 import { cn, domainOf } from '@/lib/utils';
 import { useTranslation } from '@/lib/i18n';
+import logoIcon from '@/assets/logo-icon.svg';
 
 /**
  * 2D Grid Collision Detection for Folder Cards:
@@ -275,7 +276,7 @@ export function BookmarkView({
   if (loading) {
     return (
       <div className="flex h-full flex-1 items-center justify-center">
-        <img src="/icons/logo.svg" alt="" className="h-10 w-10 animate-pulse" />
+        <img src={logoIcon} alt="" className="h-10 w-10 animate-pulse" />
       </div>
     );
   }

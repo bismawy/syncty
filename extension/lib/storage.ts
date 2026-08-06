@@ -2,11 +2,11 @@ import { deriveKeys, type DerivedKeys } from './crypto';
 
 // Local persisted state keys.
 export const KEYS = {
-  mnemonic: 'syncty.mnemonic', // the 12-word Secret Key (kept locally only)
-  authId: 'syncty.authId',
-  version: 'syncty.version', // last-known server vault version
-  lastSync: 'syncty.lastSync',
-  createdAt: 'syncty.createdAt', // creation timestamp (ms) of secret key
+  mnemonic: 'syntive.mnemonic', // the 12-word Secret Key (kept locally only)
+  authId: 'syntive.authId',
+  version: 'syntive.version', // last-known server vault version
+  lastSync: 'syntive.lastSync',
+  createdAt: 'syntive.createdAt', // creation timestamp (ms) of secret key
 } as const;
 
 export interface StoredSession {

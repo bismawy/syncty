@@ -2,8 +2,8 @@ import { defineBackground } from 'wxt/utils/define-background';
 import { syncNow, getStatus, setDirty, isSuppressed } from '@/lib/sync';
 import { loadSession } from '@/lib/storage';
 
-const ALARM = 'syncty-sync';
-const INTERVAL_KEY = 'syncty.syncInterval';
+const ALARM = 'syntive-sync';
+const INTERVAL_KEY = 'syntive.syncInterval';
 const DEFAULT_INTERVAL_MIN = 15;
 
 async function setupAlarm(force = false) {
@@ -23,7 +23,7 @@ export default defineBackground(() => {
   // Ensure the alarm is created or maintained when the service worker wakes up/loads.
   setupAlarm(false);
 
-  // On install: open the Syncty new-tab page for onboarding.
+  // On install: open the Syntive new-tab page for onboarding.
   browser.runtime.onInstalled.addListener(async (details: Browser.runtime.InstalledDetails) => {
     if (details.reason === 'install') {
       await browser.tabs.create({ url: browser.runtime.getURL('/newtab.html') });

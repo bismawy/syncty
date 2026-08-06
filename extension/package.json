@@ -1,12 +1,13 @@
 {
-  "name": "syncty-extension",
-  "version": "1.1.4",
+  "name": "syntive-extension",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
     "build": "wxt build",
+    "build:ext": "wxt build",
     "build:firefox": "wxt build -b firefox",
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
@@ -34,6 +35,7 @@
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@wxt-dev/module-react": "^1.1.2",
+    "sharp": "^0.35.3",
     "tailwindcss": "^4.0.0",
     "typescript": "^7.0.2",
     "wxt": "^0.20.0"

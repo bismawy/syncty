@@ -1,4 +1,4 @@
-// Syncty sync engine — last-write-wins per device.
+// Syntive sync engine — last-write-wins per device.
 //
 // Model: the browser's bookmark *toolbar* subtree is serialized to a plain tree,
 // encrypted (AES-GCM) and pushed as a single blob. The server only stores the
@@ -20,7 +20,7 @@ import { EMPTY_STATUS } from './types';
 
 // ponytail: track last-written device label to avoid redundant D1 writes.
 // Device label only changes on OS/browser upgrade — not every sync.
-const LAST_LABEL_KEY = 'syncty.lastDeviceLabel';
+const LAST_LABEL_KEY = 'syntive.lastDeviceLabel';
 
 export interface TreeNode {
   title: string;
@@ -28,7 +28,7 @@ export interface TreeNode {
   children?: TreeNode[];
 }
 
-const DIRTY_KEY = 'syncty.dirty';
+const DIRTY_KEY = 'syntive.dirty';
 
 export async function isDirty(): Promise<boolean> {
   const data = await browser.storage.local.get(DIRTY_KEY);

@@ -19,7 +19,7 @@ interface SupportModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const WORKER_ENDPOINT = 'https://syncty-resonance-c21f.byztma.workers.dev/';
+const WORKER_ENDPOINT = 'https://syntive-resonance-c21f.byztma.workers.dev/';
 
 export function SupportModal({ open, onOpenChange }: SupportModalProps) {
   const { t } = useTranslation();

@@ -153,7 +153,7 @@ export function WidgetsSection({
 }) {
   const { t } = useTranslation();
   const [configs, setConfigs] = React.useState<WidgetConfig[]>(() => {
-    const saved = localStorage.getItem('syncty.widgetConfigs');
+    const saved = localStorage.getItem('syntive.widgetConfigs');
     if (saved) {
       try {
         const parsed: any[] = JSON.parse(saved);
@@ -179,7 +179,7 @@ export function WidgetsSection({
   });
 
   const [widgetOrder, setWidgetOrder] = React.useState<string[]>(() => {
-    const saved = localStorage.getItem('syncty.widgetOrder');
+    const saved = localStorage.getItem('syntive.widgetOrder');
     if (saved) {
       try {
         const parsed: string[] = JSON.parse(saved);
@@ -214,11 +214,11 @@ export function WidgetsSection({
   };
 
   React.useEffect(() => {
-    localStorage.setItem('syncty.widgetConfigs', JSON.stringify(configs));
+    localStorage.setItem('syntive.widgetConfigs', JSON.stringify(configs));
   }, [configs]);
 
   React.useEffect(() => {
-    localStorage.setItem('syncty.widgetOrder', JSON.stringify(widgetOrder));
+    localStorage.setItem('syntive.widgetOrder', JSON.stringify(widgetOrder));
   }, [widgetOrder]);
 
   const toggleWidget = (id: string) => {
@@ -522,13 +522,13 @@ function ClockWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
 function NotesWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
   const { t } = useTranslation();
   const [notes, setNotes] = React.useState(() => {
-    return localStorage.getItem('syncty.quickNotes') || '';
+    return localStorage.getItem('syntive.quickNotes') || '';
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
     setNotes(val);
-    localStorage.setItem('syncty.quickNotes', val);
+    localStorage.setItem('syntive.quickNotes', val);
   };
 
   return (
@@ -631,7 +631,7 @@ interface TodoItem {
 function TodoWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
   const { t } = useTranslation();
   const [todos, setTodos] = React.useState<TodoItem[]>(() => {
-    const saved = localStorage.getItem('syncty.todoItems');
+    const saved = localStorage.getItem('syntive.todoItems');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -647,7 +647,7 @@ function TodoWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
   const [inputText, setInputText] = React.useState('');
 
   React.useEffect(() => {
-    localStorage.setItem('syncty.todoItems', JSON.stringify(todos));
+    localStorage.setItem('syntive.todoItems', JSON.stringify(todos));
   }, [todos]);
 
   const handleAdd = () => {
@@ -1143,7 +1143,7 @@ const QURAN_QARIS = [
   { id: 'cairo', name: 'Radio Al-Quran Utama 24/7', stream: 'https://backup.qurango.net/radio/mix' },
 ];
 
-const QURAN_RADIO_STORAGE_KEY = 'syncty.quranRadioQari';
+const QURAN_RADIO_STORAGE_KEY = 'syntive.quranRadioQari';
 
 // Persistent Module-Level Audio Singleton for Quran Radio
 let globalQuranAudio: HTMLAudioElement | null = null;
@@ -1585,7 +1585,7 @@ function PomodoroWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
   const { t } = useTranslation();
 
   const [timerState, setTimerState] = React.useState<PomodoroState>(() => {
-    const saved = localStorage.getItem('syncty.pomodoroState');
+    const saved = localStorage.getItem('syntive.pomodoroState');
     if (saved) {
       try {
         const parsed: PomodoroState = JSON.parse(saved);
@@ -1610,7 +1610,7 @@ function PomodoroWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
   const { mode, endTimestamp, remainingSeconds, isRunning } = timerState;
 
   React.useEffect(() => {
-    localStorage.setItem('syncty.pomodoroState', JSON.stringify(timerState));
+    localStorage.setItem('syntive.pomodoroState', JSON.stringify(timerState));
   }, [timerState]);
 
   React.useEffect(() => {
@@ -1825,7 +1825,7 @@ const AVAILABLE_WORLD_CITIES: WorldCity[] = [
 function WorldClockWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
   const { t } = useTranslation();
   const [selectedZones, setSelectedZones] = React.useState<string[]>(() => {
-    const saved = localStorage.getItem('syncty.worldClockZones');
+    const saved = localStorage.getItem('syntive.worldClockZones');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -1846,7 +1846,7 @@ function WorldClockWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
   }, []);
 
   React.useEffect(() => {
-    localStorage.setItem('syncty.worldClockZones', JSON.stringify(selectedZones));
+    localStorage.setItem('syntive.worldClockZones', JSON.stringify(selectedZones));
   }, [selectedZones]);
 
   const toggleZone = (tz: string) => {
