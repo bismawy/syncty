@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ExternalLink, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import { ArrowUpRight, Trash2, AngleDown, AngleRight } from 'reicon-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -73,7 +73,7 @@ export function DuplicateLinksTab({
         return (
           <React.Fragment key={group.key + groupIdx}>
             {/* Duplicate Group Header Row */}
-            <tr className="bg-[var(--color-accent)]/30 hover:bg-[var(--color-accent)]/50 transition-colors">
+            <tr className="bg-accent/30 hover:bg-accent/50 transition-colors">
               <td className="py-2.5 px-4 text-center">
                 <Checkbox
                   checked={groupCheckedState}
@@ -91,12 +91,12 @@ export function DuplicateLinksTab({
                 />
               </td>
               <td colSpan={4} className="py-2.5 px-4">
-                <div className="flex items-center justify-between font-mono font-semibold text-[var(--color-foreground)]">
+                <div className="flex items-center justify-between font-mono font-semibold text-foreground">
                   <div className="flex items-center gap-2 min-w-0 pr-4">
                     <button
                       type="button"
                       onClick={() => toggleExpandLinkGroup(group.key)}
-                      className="p-0.5 rounded-md hover:bg-[var(--color-accent)] text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] transition-colors cursor-pointer"
+                      className="p-0.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                       title={
                         isGroupExpanded
                           ? (language === 'id' ? 'Sembunyikan detail' : 'Hide details')
@@ -104,12 +104,12 @@ export function DuplicateLinksTab({
                       }
                     >
                       {isGroupExpanded ? (
-                        <ChevronDown className="h-4 w-4 text-current shrink-0" />
+                        <AngleDown className="h-4 w-4 text-current shrink-0" />
                       ) : (
-                        <ChevronRight className="h-4 w-4 text-current shrink-0" />
+                        <AngleRight className="h-4 w-4 text-current shrink-0" />
                       )}
                     </button>
-                    <span className="text-[var(--color-muted-foreground)] font-bold text-xs shrink-0">
+                    <span className="tint-text font-medium text-xs shrink-0">
                       #{(page - 1) * itemsPerPage + groupIdx + 1}
                     </span>
                     <span
@@ -120,7 +120,7 @@ export function DuplicateLinksTab({
                       {group.displayUrl}
                     </span>
                   </div>
-                  <Badge variant="outline" className="text-[10px] font-mono border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-foreground)] shrink-0 ml-2">
+                  <Badge variant="outline" className="text-[10px] font-mono border-border bg-card text-foreground shrink-0 ml-2">
                     {group.items.length} {language === 'id' ? 'duplikat' : 'duplicates'}
                   </Badge>
                 </div>
@@ -134,7 +134,7 @@ export function DuplicateLinksTab({
                 const isOriginal = idx === 0;
 
                 return (
-                  <tr key={item.id} className="bg-[var(--color-card)]/40 hover:bg-[var(--color-accent)]/20 transition-colors animate-in fade-in duration-150">
+                  <tr key={item.id} className="bg-card/40 hover:bg-accent/20 transition-colors animate-in fade-in duration-150">
                     <td className="py-2.5 px-4 text-center">
                       <Checkbox
                         checked={isSelected}
@@ -150,30 +150,30 @@ export function DuplicateLinksTab({
                     </td>
                     <td className="py-2.5 px-4 min-w-0">
                       <div className="flex flex-col min-w-0 pl-6">
-                        <span className="font-semibold text-[var(--color-foreground)] truncate" title={item.title}>
+                        <span className="font-semibold text-foreground truncate" title={item.title}>
                           {item.title}
                         </span>
                         <a
                           href={item.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-[11px] text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] font-mono truncate flex items-center gap-1 mt-0.5"
+                          className="text-[11px] text-muted-foreground hover:text-foreground font-mono truncate flex items-center gap-1 mt-0.5"
                         >
                           <span>{item.url}</span>
-                          <ExternalLink className="h-3 w-3 shrink-0 text-current" />
+                          <ArrowUpRight className="h-3 w-3 shrink-0 text-current" />
                         </a>
                       </div>
                     </td>
-                    <td className="py-2.5 px-4 text-[var(--color-muted-foreground)] font-mono text-[11px] truncate" title={item.folderPath}>
+                    <td className="py-2.5 px-4 tint-text font-mono text-[11px] truncate" title={item.folderPath}>
                       {item.folderPath}
                     </td>
                     <td className="py-2.5 px-4 text-center">
                       {isOriginal ? (
-                        <Badge className="bg-[var(--color-primary)] text-[var(--color-primary-foreground)] text-[9px] uppercase font-bold px-1.5 py-0.5 rounded-md">
+                        <Badge className="bg-primary text-primary-foreground text-[9px] uppercase font-medium px-1.5 py-0.5 rounded-md">
                           {language === 'id' ? 'Simpan' : 'Keep Original'}
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="text-[9px] uppercase font-bold text-rose-500 border-rose-500/30 bg-rose-500/10 rounded-md">
+                        <Badge variant="outline" className="text-[9px] uppercase font-medium text-destructive border-destructive/30 bg-destructive/10 rounded-md">
                           {language === 'id' ? 'Duplikat' : 'Duplicate'}
                         </Badge>
                       )}
@@ -186,7 +186,7 @@ export function DuplicateLinksTab({
                           await moveToTrash(item.id);
                           handleScanDuplicateLinks();
                         }}
-                        className="h-7 w-7 p-0 rounded-lg text-rose-500 hover:bg-rose-500/10 cursor-pointer"
+                        className="h-7 w-7 p-0 rounded-lg text-destructive hover:bg-destructive/10 cursor-pointer"
                         title="Buang ke Tong Sampah"
                       >
                         <Trash2 className="h-3.5 w-3.5 text-current" />

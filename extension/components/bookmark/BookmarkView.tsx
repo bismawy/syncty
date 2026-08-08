@@ -15,7 +15,7 @@ import {
   type CollisionDetection,
 } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy, arrayMove } from '@dnd-kit/sortable';
-import { ArrowLeft, Folder as FolderIcon, Link2, Search, Filter, Folder } from 'lucide-react';
+import { ArrowLeft, Folder as FolderIcon, FolderBookmark, Link2, Search4, Filter } from 'reicon-react';
 import { useBookmarks, toolbarId, type Bm } from './useBookmarks';
 import { FolderCard, FolderCardStatic } from './FolderCard';
 import { BookmarkList } from './BookmarkList';
@@ -285,7 +285,7 @@ export function BookmarkView({
   const showBookmarks = filter === 'all' || filter === 'bookmarks';
 
   return (
-    <div className="flex-1 overflow-y-auto px-8 pt-[89px] pb-8 w-full">
+    <div className="flex-1 overflow-y-auto px-8 pt-22.25 pb-8 w-full">
       <DndContext
         sensors={sensors}
         collisionDetection={folderGridCollision}
@@ -298,33 +298,33 @@ export function BookmarkView({
           <div className="flex flex-wrap items-center gap-3 select-none">
             {/* Search Input */}
             <div className="relative w-64 sm:w-72">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-muted-foreground)]" />
+              <Search4 className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 tint-text" />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t('searchBookmarkPlaceholder')}
-                className="pl-9 h-8 text-xs rounded-xl border-[var(--color-border)] bg-[var(--color-card)]/50 focus:border-[var(--color-ring)] shadow-xs"
+                className="pl-9 h-8 text-xs rounded-xl border-border bg-card focus:border-ring"
               />
             </div>
 
             {/* Segmented Filter Control */}
-            <div className="flex items-center rounded-xl border border-[var(--color-border)] p-1 bg-[var(--color-card)]/60 shrink-0 gap-1 shadow-xs">
+            <div className="flex items-center rounded-xl border border-border p-1 bg-card/60 shrink-0 gap-1">
               <FilterBtn
                 active={filter === 'all'}
                 onClick={() => setFilter('all')}
-                icon={<Filter className="h-3.5 w-3.5" />}
+                icon={<Filter className="h-3.5 w-3.5 text-current" weight="Filled" />}
                 label={t('filterAll')}
               />
               <FilterBtn
                 active={filter === 'folders'}
                 onClick={() => setFilter('folders')}
-                icon={<Folder className="h-3.5 w-3.5" />}
+                icon={<FolderBookmark className="h-3.5 w-3.5 text-current" weight="Filled" />}
                 label={t('filterFolders')}
               />
               <FilterBtn
                 active={filter === 'bookmarks'}
                 onClick={() => setFilter('bookmarks')}
-                icon={<Link2 className="h-3.5 w-3.5" />}
+                icon={<Link2 className="h-3.5 w-3.5 text-current" weight="Filled" />}
                 label={t('filterLinks')}
               />
             </div>
@@ -336,15 +336,15 @@ export function BookmarkView({
                 variant="outline"
                 size="sm"
                 onClick={handleGoBack}
-                className="h-7 text-xs gap-1.5 bg-[var(--color-card)]/50 border-[var(--color-border)] text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] cursor-pointer"
+                className="h-7 text-xs gap-1.5 bg-card/50 border-border text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 {t('back')}
               </Button>
-              <div className="flex items-center gap-1.5 text-[var(--color-muted-foreground)] font-mono text-[11px] overflow-hidden truncate">
+              <div className="flex items-center gap-1.5 tint-text font-mono text-[11px] overflow-hidden truncate">
                 <button
                   onClick={() => setCurrentFolderId(toolbarId())}
-                  className="hover:underline text-[var(--color-foreground)]"
+                  className="hover:underline text-foreground"
                 >
                   {t('rootFolder')}
                 </button>
@@ -354,10 +354,10 @@ export function BookmarkView({
                     <button
                       onClick={() => setCurrentFolderId(b.id)}
                       className={cn(
-                        'hover:underline truncate max-w-[150px]',
+                        'hover:underline truncate max-w-37.5',
                         idx === breadcrumbs.length - 1
-                          ? 'text-[var(--color-primary)] font-semibold'
-                          : 'text-[var(--color-foreground)]'
+                          ? 'text-primary font-semibold'
+                          : 'text-foreground'
                       )}
                     >
                       {b.title}
@@ -375,7 +375,7 @@ export function BookmarkView({
                   <div className="space-y-3 w-full relative">
                     <div className="h-7 flex items-center justify-between px-1">
                       <span className="section-label flex items-center gap-2">
-                        <FolderIcon className="h-3.5 w-3.5 text-[var(--color-muted-foreground)]" />
+                        <FolderIcon className="h-3.5 w-3.5 tint-text" />
                         {t('sectionFolder')}
                       </span>
                     </div>
@@ -404,7 +404,7 @@ export function BookmarkView({
                         </div>
                       </SortableContext>
                     ) : (
-                      <div className="rounded-2xl border border-dashed border-[var(--color-border)] p-8 text-center text-xs text-[var(--color-muted-foreground)]">
+                      <div className="rounded-2xl border border-dashed border-border p-8 text-center text-xs tint-text">
                         {t('noFoldersFound')}
                       </div>
                     )}
@@ -419,7 +419,7 @@ export function BookmarkView({
                   <div className="space-y-3 w-full">
                     <div className="h-7 flex items-center justify-between px-1">
                       <span className="section-label flex items-center gap-2">
-                        <Link2 className="h-3.5 w-3.5 text-[var(--color-muted-foreground)]" />
+                        <Link2 className="h-3.5 w-3.5 tint-text" />
                         {t('sectionLinks')}
                       </span>
                       {bookmarkPageCount > 1 && (
@@ -441,7 +441,7 @@ export function BookmarkView({
                           onNavigate={(id) => setCurrentFolderId(id)}
                         />
                       ) : (
-                        <div className="card-inner-box py-8 text-center text-xs text-[var(--color-muted-foreground)]">
+                        <div className="card-inner-box py-8 text-center text-xs tint-text">
                           {t('noLinksFound')}
                         </div>
                       )}
@@ -457,17 +457,17 @@ export function BookmarkView({
           ? createPortal(
               <DragOverlay dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)' }}>
                 {activeFolder ? (
-                  <div className="w-[360px] max-w-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] rotate-3 scale-105 pointer-events-none opacity-95 ring-2 ring-[var(--color-primary)] rounded-2xl overflow-hidden backdrop-blur-md bg-[var(--color-card)] transition-transform duration-100">
+                  <div className="w-90 max-w-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] rotate-3 scale-105 pointer-events-none opacity-95 ring-2 ring-primary rounded-2xl overflow-hidden backdrop-blur-md bg-card transition-transform duration-100">
                     <FolderCardStatic folder={activeFolder} />
                   </div>
                 ) : activeBookmark ? (
-                  <div className="flex items-center gap-2.5 rounded-xl border-2 border-[var(--color-primary)] bg-[var(--color-card)]/90 backdrop-blur-xl px-4 py-2.5 shadow-[0_15px_30px_rgba(0,0,0,0.4)] scale-110 rotate-3 pointer-events-none text-xs z-50 transition-transform duration-100">
+                  <div className="flex items-center gap-2.5 rounded-xl border-2 border-primary bg-card/90 backdrop-blur-xl px-4 py-2.5 shadow-[0_15px_30px_rgba(0,0,0,0.4)] scale-110 rotate-3 pointer-events-none text-xs z-50 transition-transform duration-100">
                     {!activeBookmark.url ? (
-                      <FolderIcon className="h-4 w-4 shrink-0 text-[var(--color-primary)]" />
+                      <FolderIcon className="h-4 w-4 shrink-0 text-primary" />
                     ) : (
                       <FaviconImage url={activeBookmark.url} className="h-4 w-4 shrink-0 rounded-sm" />
                     )}
-                    <span className="font-semibold text-[var(--color-foreground)] max-w-[220px] truncate">
+                    <span className="font-semibold text-foreground max-w-55 truncate">
                       {activeBookmark.title || domainOf(activeBookmark.url) || t('untitled')}
                     </span>
                   </div>
@@ -522,8 +522,8 @@ function FilterBtn({
       className={cn(
         'flex items-center gap-1.5 rounded-lg px-3 h-6 text-xs font-medium transition-all select-none cursor-pointer',
         active
-          ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] font-semibold border border-[var(--color-border)]/60 shadow-xs'
-          : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)]/30'
+          ? 'bg-accent text-primary font-semibold border border-border'
+          : 'tint-text hover:text-foreground hover:bg-accent/30'
       )}
     >
       {icon}

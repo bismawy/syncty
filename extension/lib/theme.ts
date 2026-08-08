@@ -112,6 +112,9 @@ export function applyThemeConfig(config?: ThemeConfig | null): void {
   if (!config) return;
   const root = document.documentElement;
 
+  // Disable all transitions during theme application to prevent flicker
+  root.classList.add('theme-transitioning');
+
   // 1. Mode application
   const isDark = getEffectiveIsDark(config.mode);
   root.classList.toggle('light', !isDark);
@@ -123,18 +126,24 @@ export function applyThemeConfig(config?: ThemeConfig | null): void {
   if (preset.id === 'default') {
     root.style.removeProperty('--accent');
     root.style.removeProperty('--primary');
+    root.style.removeProperty('--primary-foreground');
     root.style.removeProperty('--ring');
     root.style.removeProperty('--background');
     root.style.removeProperty('--card');
     root.style.removeProperty('--popover');
     root.style.removeProperty('--muted');
+    root.style.removeProperty('--tint-foreground');
     root.style.removeProperty('--border');
   } else {
     root.style.setProperty('--primary', accentColor);
     root.style.setProperty('--ring', accentColor);
 
-    const { h } = hexToOklch(accentColor);
+    const { l, h } = hexToOklch(accentColor);
     const roundH = Math.round(h * 10) / 10;
+
+    // Dynamically set --primary-foreground based on accent lightness (WCAG AA compliance)
+    const primaryFg = l < 0.68 ? '#ffffff' : '#0f172a';
+    root.style.setProperty('--primary-foreground', primaryFg);
 
     if (isDark) {
       // Ultra-subtle, sleek OKLCH surface tinting using identical Hue H to eliminate reddish distortion
@@ -142,6 +151,7 @@ export function applyThemeConfig(config?: ThemeConfig | null): void {
       root.style.setProperty('--card', `oklch(0.14 0.008 ${roundH})`);
       root.style.setProperty('--popover', `oklch(0.14 0.008 ${roundH})`);
       root.style.setProperty('--muted', `oklch(0.17 0.012 ${roundH})`);
+      root.style.setProperty('--tint-foreground', `oklch(0.72 0.045 ${roundH})`);
       root.style.setProperty('--border', `oklch(0.23 0.015 ${roundH})`);
       root.style.setProperty('--accent', `oklch(0.19 0.020 ${roundH})`);
     } else {
@@ -149,6 +159,7 @@ export function applyThemeConfig(config?: ThemeConfig | null): void {
       root.style.setProperty('--card', `oklch(0.97 0.007 ${roundH})`);
       root.style.setProperty('--popover', `oklch(0.97 0.007 ${roundH})`);
       root.style.setProperty('--muted', `oklch(0.93 0.010 ${roundH})`);
+      root.style.setProperty('--tint-foreground', `oklch(0.45 0.060 ${roundH})`);
       root.style.setProperty('--border', `oklch(0.88 0.012 ${roundH})`);
       root.style.setProperty('--accent', `oklch(0.94 0.014 ${roundH})`);
     }
@@ -168,6 +179,9 @@ export function applyThemeConfig(config?: ThemeConfig | null): void {
   newFavicon.type = 'image/svg+xml';
   newFavicon.href = svgDataUri;
   document.head.appendChild(newFavicon);
+
+  // Re-enable transitions on next frame so the theme snap is instant
+  requestAnimationFrame(() => root.classList.remove('theme-transitioning'));
 }
 
 /**

@@ -1,20 +1,21 @@
 import * as React from 'react';
 import {
-  CopyCheck,
-  FolderGit2,
-  Split,
-  FolderX,
-  RefreshCw,
-  Search,
-  CheckCircle2,
+  ClipboardCheck,
+  FolderAdd,
+  FolderOpen3,
+  FolderMinus3,
+  Refresh,
+  Search4,
+  CheckCircle,
   Sparkles,
   Trash2,
-} from 'lucide-react';
+} from 'reicon-react';
 import { useTranslation } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select } from '@/components/ui/select';
 import { Pagination } from '@/components/bookmark/Pagination';
+import { cn } from '@/lib/utils';
 import { moveToTrash } from '@/lib/trash';
 import {
   scanDuplicateFolders,
@@ -74,7 +75,7 @@ export function BookmarkManagementView() {
     });
   }, []);
 
-  // Sub-tab 3: Split Folders state
+  // Sub-tab 3: Group Folders state
   const [splitCandidates, setSplitCandidates] = React.useState<SplitFolderCandidate[]>([]);
 
   // Sub-tab 4: Empty Folders state
@@ -357,12 +358,12 @@ export function BookmarkManagementView() {
   }, [emptyFolders.length, selectedEmptyFolderIds.size]);
 
   return (
-    <div className="flex-1 w-full min-w-0 h-full overflow-y-auto px-8 pt-[89px] pb-8 select-none">
+    <div className="flex-1 w-full min-w-0 h-full overflow-y-auto px-8 pt-22.25 pb-8 select-none">
       <div className="w-full space-y-3">
         {/* Notice Banner */}
         {notice && (
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold animate-in fade-in duration-200">
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-current" />
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-success/10 border border-success/20 text-success text-xs font-semibold animate-in fade-in duration-200">
+            <CheckCircle className="h-4 w-4 shrink-0 text-current" />
             <span>{notice}</span>
           </div>
         )}
@@ -372,56 +373,60 @@ export function BookmarkManagementView() {
           {/* Left Side: Sub-tab Pills & Sub-filters */}
           <div className="flex flex-wrap items-center gap-2 text-xs">
             {/* Sub-Tab Navigation Pill Container */}
-            <div className="flex items-center gap-1 bg-[var(--color-accent)]/60 p-1 rounded-xl border border-[var(--color-border)]/50">
+            <div className="flex items-center rounded-xl border border-border p-1 bg-card/60 shrink-0 gap-1 select-none">
               <button
                 type="button"
                 onClick={() => setActiveSubTab('duplicates')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+                className={cn(
+                  'flex items-center gap-1.5 rounded-lg px-3 h-6 text-xs font-medium transition-all select-none cursor-pointer',
                   activeSubTab === 'duplicates'
-                    ? 'bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xs border-[var(--color-border)]/60'
-                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] border-transparent'
-                }`}
+                    ? 'bg-accent text-primary font-semibold border border-border'
+                    : 'tint-text hover:text-foreground hover:bg-accent/30'
+                )}
               >
-                <CopyCheck className="h-3.5 w-3.5 text-current" />
+                <ClipboardCheck className="h-3.5 w-3.5 text-current" weight="Filled" />
                 <span>{language === 'id' ? 'Duplikat Link' : 'Duplicate Links'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveSubTab('merge')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+                className={cn(
+                  'flex items-center gap-1.5 rounded-lg px-3 h-6 text-xs font-medium transition-all select-none cursor-pointer',
                   activeSubTab === 'merge'
-                    ? 'bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xs border-[var(--color-border)]/60'
-                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] border-transparent'
-                }`}
+                    ? 'bg-accent text-primary font-semibold border border-border'
+                    : 'tint-text hover:text-foreground hover:bg-accent/30'
+                )}
               >
-                <FolderGit2 className="h-3.5 w-3.5 text-current" />
+                <FolderAdd className="h-3.5 w-3.5 text-current" weight="Filled" />
                 <span>{language === 'id' ? 'Gabung Folder' : 'Merge Folders'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveSubTab('split')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+                className={cn(
+                  'flex items-center gap-1.5 rounded-lg px-3 h-6 text-xs font-medium transition-all select-none cursor-pointer',
                   activeSubTab === 'split'
-                    ? 'bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xs border-[var(--color-border)]/60'
-                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] border-transparent'
-                }`}
+                    ? 'bg-accent text-primary font-semibold border border-border'
+                    : 'tint-text hover:text-foreground hover:bg-accent/30'
+                )}
               >
-                <Split className="h-3.5 w-3.5 text-current" />
+                <FolderOpen3 className="h-3.5 w-3.5 text-current" weight="Filled" />
                 <span>{language === 'id' ? 'Kelompokkan Domain' : 'Group by Domain'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveSubTab('empty')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+                className={cn(
+                  'flex items-center gap-1.5 rounded-lg px-3 h-6 text-xs font-medium transition-all select-none cursor-pointer',
                   activeSubTab === 'empty'
-                    ? 'bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xs border-[var(--color-border)]/60'
-                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] border-transparent'
-                }`}
+                    ? 'bg-accent text-primary font-semibold border border-border'
+                    : 'tint-text hover:text-foreground hover:bg-accent/30'
+                )}
               >
-                <FolderX className="h-3.5 w-3.5 text-current" />
+                <FolderMinus3 className="h-3.5 w-3.5 text-current" weight="Filled" />
                 <span>{language === 'id' ? 'Folder Kosong' : 'Empty Folders'}</span>
               </button>
             </div>
@@ -433,7 +438,7 @@ export function BookmarkManagementView() {
                   value={matchStrategy}
                   onValueChange={(val) => setMatchStrategy(val as 'strict' | 'normalized' | 'smart')}
                   options={matchOptions}
-                  className="h-8 text-xs rounded-xl bg-[var(--color-card)] border-[var(--color-border)] text-[var(--color-foreground)]"
+                  className="h-8 text-xs rounded-xl bg-card border-border text-foreground"
                 />
               </div>
             )}
@@ -447,12 +452,12 @@ export function BookmarkManagementView() {
                 else handleScanEmpty();
               }}
               disabled={isScanning}
-              className="flex items-center gap-1.5 h-8 px-3.5 text-xs rounded-xl bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:opacity-90 font-semibold cursor-pointer shadow-xs active:scale-95 transition-all"
+              className="flex items-center gap-1.5 h-8 px-3.5 text-xs rounded-xl bg-primary text-primary-foreground hover:opacity-90 font-semibold cursor-pointer active:scale-95 transition-all"
             >
               {isScanning ? (
-                <RefreshCw className="h-3.5 w-3.5 animate-spin text-current" />
+                <Refresh className="h-3.5 w-3.5 animate-spin text-current" />
               ) : (
-                <Search className="h-3.5 w-3.5 text-current" />
+                <Search4 className="h-3.5 w-3.5 text-current" />
               )}
               <span>{hasScanned ? (language === 'id' ? 'Pindai Ulang' : 'Rescan') : (language === 'id' ? 'Pindai' : 'Scan')}</span>
             </Button>
@@ -464,7 +469,7 @@ export function BookmarkManagementView() {
                   onClick={handleAutoSelectDuplicates}
                   disabled={isProcessing}
                   variant="outline"
-                  className="flex items-center gap-1.5 h-8 px-3.5 bg-[var(--color-card)] text-[var(--color-foreground)] hover:bg-[var(--color-accent)] font-semibold text-xs rounded-xl border border-[var(--color-border)] shadow-xs transition-all active:scale-95 cursor-pointer"
+                  className="flex items-center gap-1.5 h-8 px-3.5 bg-card text-foreground hover:bg-accent font-semibold text-xs rounded-xl border border-border transition-all active:scale-95 cursor-pointer"
                 >
                   <Sparkles className="h-3.5 w-3.5 text-current" />
                   <span>{language === 'id' ? 'Pilih Otomatis' : 'Auto Select'}</span>
@@ -473,10 +478,10 @@ export function BookmarkManagementView() {
                 <Button
                   onClick={handleDeleteDuplicateLinks}
                   disabled={selectedLinkIds.size === 0 || isProcessing}
-                  className="flex items-center gap-1.5 h-8 px-3.5 bg-rose-500 hover:bg-rose-600 text-white font-semibold text-xs rounded-xl shadow-xs disabled:opacity-40 transition-all active:scale-95 cursor-pointer"
+                  className="flex items-center gap-1.5 h-8 px-3.5 bg-destructive hover:opacity-90 text-white font-semibold text-xs rounded-xl disabled:opacity-40 transition-all active:scale-95 cursor-pointer"
                 >
                   {isProcessing ? (
-                    <RefreshCw className="h-3.5 w-3.5 animate-spin text-white" />
+                    <Refresh className="h-3.5 w-3.5 animate-spin text-white" />
                   ) : (
                     <Trash2 className="h-3.5 w-3.5 text-white" />
                   )}
@@ -493,12 +498,12 @@ export function BookmarkManagementView() {
               <Button
                 onClick={handleMergeSelected}
                 disabled={selectedGroupKeys.size === 0 || isProcessing}
-                className="flex items-center gap-1.5 h-8 px-3.5 bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:opacity-90 font-semibold text-xs rounded-xl shadow-xs disabled:opacity-40 transition-all active:scale-95 cursor-pointer"
+                className="flex items-center gap-1.5 h-8 px-3.5 bg-primary text-primary-foreground hover:opacity-90 font-semibold text-xs rounded-xl disabled:opacity-40 transition-all active:scale-95 cursor-pointer"
               >
                 {isProcessing ? (
-                  <RefreshCw className="h-3.5 w-3.5 animate-spin text-current" />
+                  <Refresh className="h-3.5 w-3.5 animate-spin text-current" />
                 ) : (
-                  <FolderGit2 className="h-3.5 w-3.5 text-current" />
+<FolderAdd className="h-3.5 w-3.5 text-current" weight="Filled" />
                 )}
                 <span>
                   {language === 'id'
@@ -512,10 +517,10 @@ export function BookmarkManagementView() {
               <Button
                 onClick={handleDeleteEmptyFolders}
                 disabled={selectedEmptyFolderIds.size === 0 || isProcessing}
-                className="flex items-center gap-1.5 h-8 px-3.5 bg-rose-500 hover:bg-rose-600 text-white font-semibold text-xs rounded-xl shadow-xs disabled:opacity-40 transition-all active:scale-95 cursor-pointer"
+                className="flex items-center gap-1.5 h-8 px-3.5 bg-destructive hover:opacity-90 text-white font-semibold text-xs rounded-xl disabled:opacity-40 transition-all active:scale-95 cursor-pointer"
               >
                 {isProcessing ? (
-                  <RefreshCw className="h-3.5 w-3.5 animate-spin text-white" />
+                  <Refresh className="h-3.5 w-3.5 animate-spin text-white" />
                 ) : (
                   <Trash2 className="h-3.5 w-3.5 text-white" />
                 )}
@@ -529,19 +534,19 @@ export function BookmarkManagementView() {
           </div>
 
           {/* Right Side: Summary & Pagination */}
-          <div className="flex items-center gap-3 text-xs font-semibold text-[var(--color-foreground)] shrink-0">
+          <div className="flex items-center gap-3 text-xs font-semibold text-foreground shrink-0">
             {isScanning ? (
-              <span className="flex items-center gap-2 text-[var(--color-muted-foreground)]">
-                <RefreshCw className="h-3.5 w-3.5 animate-spin text-[var(--color-primary)]" />
+              <span className="flex items-center gap-2 tint-text">
+                <Refresh className="h-3.5 w-3.5 animate-spin text-primary" />
                 <span>{language === 'id' ? 'Memindai...' : 'Scanning...'}</span>
               </span>
             ) : !hasScanned ? (
-              <span className="text-[var(--color-muted-foreground)] font-medium">
+              <span className="tint-text font-medium">
                 {language === 'id' ? 'Klik pindai untuk memulai' : 'Click scan to start'}
               </span>
             ) : currentTotalItems > 0 ? (
               <div className="flex items-center gap-2.5">
-                <span className="text-xs font-medium text-[var(--color-muted-foreground)]">
+                <span className="text-xs font-medium tint-text">
                   {language === 'id'
                     ? `${currentTotalItems} item ditemukan`
                     : `${currentTotalItems} items found`}
@@ -549,7 +554,7 @@ export function BookmarkManagementView() {
                 {pageCount > 1 && <Pagination page={page} pageCount={pageCount} onChange={setPage} />}
               </div>
             ) : (
-              <span className="text-[var(--color-muted-foreground)] font-medium">
+              <span className="tint-text font-medium">
                 {language === 'id' ? 'Tidak ada data ditemukan' : 'No items found'}
               </span>
             )}
@@ -557,11 +562,11 @@ export function BookmarkManagementView() {
         </div>
 
         {/* Fixed Table Layout Container (Strict 1-Word Column Headers) */}
-        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] overflow-hidden shadow-xs">
+        <div className="rounded-2xl border border-border bg-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse table-fixed">
               <thead>
-                <tr className="border-b border-[var(--color-border)] bg-[var(--color-background)]/60 text-[var(--color-muted-foreground)] font-semibold select-none">
+                <tr className="border-b border-border bg-background/60 tint-text font-medium select-none">
                   {activeSubTab === 'duplicates' ? (
                     <>
                       <th className="py-2.5 px-4 w-12 text-center">
@@ -624,7 +629,7 @@ export function BookmarkManagementView() {
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--color-border)]/40">
+              <tbody className="divide-y divide-border/40">
                 {activeSubTab === 'duplicates' && (
                   <DuplicateLinksTab
                     dupLinkGroups={dupLinkGroups}

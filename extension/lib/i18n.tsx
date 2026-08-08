@@ -34,7 +34,7 @@ export const DICTIONARY = {
     headerOrganize: 'MANAJEMEN BOOKMARK',
     headerTrash: 'TONG SAMPAH',
     headerSupport: 'Support',
-    githubRepoTooltip: 'Repositori GitHub (bismawy/syntive)',
+    githubRepoTooltip: 'Repositori GitHub (arnative/syntive)',
     editWidgetsTooltip: 'Sunting Widget',
     collapseSidebar: 'Ciutkan Sidebar',
     expandSidebar: 'Buka Sidebar',
@@ -116,8 +116,8 @@ export const DICTIONARY = {
     noTasks: 'Belum ada tugas.',
 
     // Widget: Pomodoro
-    focusMode: 'Fokus 25m',
-    breakMode: 'Istirahat 5m',
+    focusMode: 'Fokus',
+    breakMode: 'Istirahat',
     startTimer: 'Mulai',
     pauseTimer: 'Jeda',
     resetTimer: 'Reset',
@@ -291,7 +291,7 @@ export const DICTIONARY = {
     creditsIslamicQuotesSource: 'MyQuran Hadits API',
     creditsIconsTitle: 'Set Ikon Antarmuka',
     creditsIconsDesc: 'Ikonografi antarmuka modern.',
-    creditsIconsSource: 'Lucide Icons',
+    creditsIconsSource: 'Reicon Icons',
 
     // Support Modal
     supportModalTitle: 'Dukungan & Donasi',
@@ -353,7 +353,7 @@ export const DICTIONARY = {
     headerOrganize: 'BOOKMARK MANAGEMENT',
     headerTrash: 'TRASH BIN',
     headerSupport: 'Support',
-    githubRepoTooltip: 'GitHub Repository (bismawy/syntive)',
+    githubRepoTooltip: 'GitHub Repository (arnative/syntive)',
     editWidgetsTooltip: 'Edit Widgets',
     collapseSidebar: 'Collapse Sidebar',
     expandSidebar: 'Expand Sidebar',
@@ -435,8 +435,8 @@ export const DICTIONARY = {
     noTasks: 'No tasks yet.',
 
     // Widget: Pomodoro
-    focusMode: 'Focus 25m',
-    breakMode: 'Break 5m',
+    focusMode: 'Focus',
+    breakMode: 'Break',
     startTimer: 'Start',
     pauseTimer: 'Pause',
     resetTimer: 'Reset',
@@ -609,7 +609,7 @@ export const DICTIONARY = {
     creditsIslamicQuotesSource: 'MyQuran Hadith API',
     creditsIconsTitle: 'UI Icon Set',
     creditsIconsDesc: 'Modern interface iconography.',
-    creditsIconsSource: 'Lucide Icons',
+    creditsIconsSource: 'Reicon Icons',
 
     // Support Modal
     supportModalTitle: 'Support & Donate',

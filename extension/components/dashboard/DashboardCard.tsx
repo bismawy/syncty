@@ -27,16 +27,16 @@ export function DashboardCard({
   return (
     <Card
       className={cn(
-        'flex flex-col min-w-0 overflow-hidden h-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-sm hover:border-[var(--color-ring)]/40 transition-all duration-200 w-full',
+        'group flex flex-col min-w-0 overflow-hidden h-full rounded-2xl border border-border bg-card hover:border-ring/40 transition-all duration-200 w-full',
         minHeight,
         className
       )}
       {...props}
     >
       {(title || headerAction || headerBadge) && (
-        <CardHeader className="h-[42px] px-4 py-0 flex flex-row items-center justify-between shrink-0 select-none space-y-0">
+        <CardHeader className="h-10.5 px-4 py-0 flex flex-row items-center justify-between shrink-0 select-none space-y-0">
           {title && (
-            <div className="section-label flex items-center gap-2 truncate">
+            <div className="section-label text-muted-foreground group-hover:text-primary transition-colors flex items-center gap-2 truncate">
               {icon}
               <span className="truncate">{title}</span>
             </div>
@@ -44,7 +44,7 @@ export function DashboardCard({
           <div className="flex items-center gap-2 shrink-0 ml-2">
             {headerBadge && (
               typeof headerBadge === 'string' ? (
-                <span className="text-[10px] text-[var(--color-muted-foreground)] font-mono">
+                <span className="text-[10px] tint-text font-mono">
                   {headerBadge}
                 </span>
               ) : (

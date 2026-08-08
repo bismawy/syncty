@@ -7,10 +7,10 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border-transparent bg-[var(--color-primary)] text-[var(--color-primary-foreground)]',
-        secondary: 'border-transparent bg-[var(--color-secondary)] text-[var(--color-secondary-foreground)]',
-        outline: 'border-[var(--color-border)] text-[var(--color-foreground)]',
-        success: 'border-transparent bg-[var(--color-success)] text-black',
+        default: 'border-transparent bg-(--color-primary) text-(--color-primary-foreground)',
+        secondary: 'border-transparent bg-(--color-secondary) text-(--color-secondary-foreground)',
+        outline: 'border-(--color-border) text-(--color-foreground)',
+        success: 'border-transparent bg-(--color-success) text-black',
       },
     },
     defaultVariants: { variant: 'default' },
@@ -19,10 +19,10 @@ const badgeVariants = cva(
 
 /** Predefined color schemes for colored status pills. */
 const colorStyles: Record<string, string> = {
-  emerald: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-  sky: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
-  rose: 'bg-rose-500/10 text-rose-500 border-rose-500/20',
-  accent: 'bg-[var(--color-accent)] text-[var(--color-foreground)] border-[var(--color-border)]',
+  emerald: 'bg-(--color-success)/10 text-(--color-success) border-(--color-success)/20',
+  sky: 'bg-(--color-info)/10 text-(--color-info) border-(--color-info)/20',
+  rose: 'bg-(--color-destructive)/10 text-(--color-destructive) border-(--color-destructive)/20',
+  accent: 'bg-(--color-accent) text-(--color-foreground) border-(--color-border)',
 };
 
 export interface BadgeProps

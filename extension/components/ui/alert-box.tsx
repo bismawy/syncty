@@ -7,19 +7,19 @@ interface AlertBoxProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const variantStyles = {
-  warning: 'border-rose-500/20 bg-rose-500/5',
-  info: 'border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5',
+  warning: 'border-(--color-destructive)/20 bg-(--color-destructive)/5',
+  info: 'border-(--color-primary)/20 bg-(--color-primary)/5',
 };
 
 /**
  * Colored alert/warning callout box. Replaces the inline:
- * `flex gap-3 rounded-xl border border-rose-500/20 bg-rose-500/5 p-3.5 text-[11px]`
+ * `flex gap-3 rounded-xl border border-(--color-destructive)/20 bg-(--color-destructive)/5 p-3.5 text-[11px]`
  */
 export function AlertBox({ icon, variant = 'warning', className, children, ...props }: AlertBoxProps) {
   return (
     <div
       className={cn(
-        'flex gap-3 rounded-xl border p-3.5 text-[11px] leading-relaxed text-[var(--color-muted-foreground)]',
+        'flex gap-3 rounded-xl border p-3.5 text-[11px] leading-relaxed text-muted-foreground',
         variantStyles[variant],
         className
       )}

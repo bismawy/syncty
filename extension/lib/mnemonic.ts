@@ -5,7 +5,7 @@ const MNEMONIC_WORDS = 12;
 
 // 12 words, each an independent uniform draw from the 2048-word list.
 // 12 × 11 bits = 132 bits of entropy — exceeds the 128-bit target.
-// ponytail: no BIP39 checksum; validation = every word is in the list + count.
+// No BIP39 checksum; validation = every word is in the list + count.
 export function generateMnemonic(): string {
   const words: string[] = [];
   const buf = new Uint8Array(2);

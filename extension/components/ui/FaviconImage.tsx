@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Globe } from 'lucide-react';
+import { Globe } from 'reicon-react';
 import { cn, domainOf } from '@/lib/utils';
 
 export interface FaviconImageProps {
@@ -13,7 +13,7 @@ export interface FaviconImageProps {
 // remote favicon services for them (avoids noisy 404s and wasted requests).
 const LOCAL_OR_IP = /^(localhost|::1|(?:0\.)?0\.0\.0\.0|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
 
-// ponytail: remember domains that exhausted every provider so re-renders skip
+// Remember domains that exhausted every provider so re-renders skip
 // straight to the fallback icon instead of re-firing the failed requests.
 const failedDomains = new Set<string>();
 
@@ -28,42 +28,42 @@ export function FaviconImage({
 }: FaviconImageProps) {
   const domain = React.useMemo(() => domainOf(url), [url]);
 
-  const providers = React.useMemo(() => {
-    if (!domain) return [];
-    return [
-      `https://icons.duckduckgo.com/ip3/${encodeURIComponent(domain)}.ico`,
-      `https://icon.horse/icon/${encodeURIComponent(domain)}`,
-      `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64`,
-      `https://favicon.im/${encodeURIComponent(domain)}`,
-    ];
+  const providerUrl = React.useMemo(() => {
+    if (!domain) return null;
+    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128&default_icon=none`;
   }, [domain]);
 
-  const [providerIndex, setProviderIndex] = React.useState(0);
-  const [failedAll, setFailedAll] = React.useState(() => (domain ? failedDomains.has(domain) : false));
+  const [hasError, setHasError] = React.useState(() => (domain ? failedDomains.has(domain) : false));
 
   React.useEffect(() => {
-    setProviderIndex(0);
-    setFailedAll(domain ? failedDomains.has(domain) : false);
+    setHasError(domain ? failedDomains.has(domain) : false);
   }, [domain]);
 
   const handleError = () => {
-    if (providerIndex < providers.length - 1) {
-      setProviderIndex((prev) => prev + 1);
-    } else {
+    if (domain) failedDomains.add(domain);
+    setHasError(true);
+  };
+
+  const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    // Google S2 API returns a 16x16 default icon when a domain has no public favicon.
+    // Since sz=128 was requested, naturalWidth <= 16 indicates no favicon -> fallback to Globe.
+    if (img.naturalWidth <= 16 && img.naturalHeight <= 16) {
       if (domain) failedDomains.add(domain);
-      setFailedAll(true);
+      setHasError(true);
     }
   };
 
-  if (failedAll || !domain || providers.length === 0 || LOCAL_OR_IP.test(domain)) {
-    return <Globe className={cn('text-[var(--color-muted-foreground)]', className)} />;
+  if (hasError || !domain || !providerUrl || LOCAL_OR_IP.test(domain)) {
+    return <Globe className={cn('text-muted-foreground shrink-0', className)} />;
   }
 
   return (
     <img
-      src={providers[providerIndex]}
+      src={providerUrl}
       alt={alt}
       className={className}
+      onLoad={handleLoad}
       onError={handleError}
       loading="lazy"
     />

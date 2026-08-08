@@ -1,4 +1,4 @@
-import { Folder, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Folder, Refresh, CheckCircle } from 'reicon-react';
 
 type ScanState = 'notScanned' | 'scanning' | 'empty';
 
@@ -24,9 +24,9 @@ export function ScanTableState({
   if (state === 'scanning') {
     return (
       <tr key="scanning">
-        <td colSpan={5} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
+        <td colSpan={5} className="py-14 px-4 text-center text-xs text-muted-foreground">
           <div className="flex items-center justify-center gap-2">
-            <RefreshCw className="h-4 w-4 animate-spin text-[var(--color-primary)]" />
+            <Refresh className="h-4 w-4 animate-spin text-primary" />
             <span>{isId ? 'Memindai...' : 'Scanning...'}</span>
           </div>
         </td>
@@ -37,10 +37,10 @@ export function ScanTableState({
   if (state === 'empty') {
     return (
       <tr key="empty">
-        <td colSpan={5} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
+        <td colSpan={5} className="py-14 px-4 text-center text-xs text-muted-foreground">
           <div className="flex flex-col items-center justify-center space-y-1.5">
-            <CheckCircle2 className="h-6 w-6 text-emerald-500" />
-            <p className="font-semibold text-[var(--color-foreground)]">
+            <CheckCircle className="h-6 w-6 text-success" />
+            <p className="font-semibold text-foreground">
               {isId ? emptyId : emptyEn}
             </p>
           </div>
@@ -51,13 +51,13 @@ export function ScanTableState({
 
   return (
     <tr key="not-scanned">
-      <td colSpan={5} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
+      <td colSpan={5} className="py-14 px-4 text-center text-xs text-muted-foreground">
         <div className="flex flex-col items-center justify-center space-y-2">
-          <Folder className="h-6 w-6 text-[var(--color-muted-foreground)]/40" />
-          <p className="font-semibold text-[var(--color-foreground)]">
+          <Folder className="h-6 w-6 tint-text/40" />
+          <p className="font-semibold text-foreground">
             {isId ? 'Belum Ada Data Pemindaian' : 'No Scan Data Yet'}
           </p>
-          <p className="text-[11px] text-[var(--color-muted-foreground)] max-w-xs">
+          <p className="text-[11px] tint-text max-w-xs">
             {isId ? subtitleId : subtitleEn}
           </p>
         </div>

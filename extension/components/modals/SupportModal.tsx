@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Panel } from '@/components/ui/panel';
 import { PanelHeader } from '@/components/ui/panel-header';
 import { MutedText } from '@/components/ui/muted-text';
-import { Heart, ExternalLink, QrCode, Globe, Copy, Check } from 'lucide-react';
+import { Heart, ArrowUpRight, Qr, Globe, Copy, Check } from 'reicon-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/lib/i18n';
 
@@ -52,10 +52,10 @@ export function SupportModal({ open, onOpenChange }: SupportModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] w-[95vw] bg-[var(--color-card)] border-[var(--color-border)] text-[var(--color-foreground)] rounded-2xl p-5 shadow-2xl flex flex-col gap-4">
+      <DialogContent className="sm:max-w-120 w-[95vw] bg-card border-border text-foreground rounded-2xl p-5 flex flex-col gap-4">
         <DialogHeader>
-          <DialogTitle className="text-base font-bold tracking-tight text-[var(--color-foreground)] flex items-center gap-2">
-            <Heart className="h-4.5 w-4.5 text-rose-500 fill-rose-500 animate-pulse" />
+          <DialogTitle className="text-base font-medium tracking-tight text-foreground flex items-center gap-2">
+            <Heart className="h-4.5 w-4.5 text-destructive fill-destructive animate-pulse" />
             <span>{t('supportModalTitle')}</span>
           </DialogTitle>
           <MutedText className="pt-1">{t('supportModalDesc')}</MutedText>
@@ -65,22 +65,22 @@ export function SupportModal({ open, onOpenChange }: SupportModalProps) {
           {/* Option 1: Indonesia (QRIS) */}
           <Panel hoverable>
             <PanelHeader
-              icon={<QrCode className="h-4 w-4 text-emerald-500" />}
+              icon={<Qr className="h-4 w-4 text-success" />}
               title={t('indonesiaQris')}
               action={<Badge color="emerald" compact>{t('indonesiaBadge')}</Badge>}
             />
 
             <MutedText>{t('qrisDesc')}</MutedText>
 
-            <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-3.5 flex flex-col items-center justify-center text-center space-y-2">
-              <div className="p-2 bg-white rounded-xl shadow-sm flex items-center justify-center min-h-[192px] h-[192px] w-[192px] shrink-0">
+            <div className="bg-card border border-border rounded-xl p-3.5 flex flex-col items-center justify-center text-center space-y-2">
+              <div className="p-2 bg-white rounded-xl shadow-sm flex items-center justify-center min-h-48 h-48 w-48 shrink-0">
                 <img
                   src={qrisImgSrc}
                   alt="QRIS Donasi Bisma"
                   width={176}
                   height={176}
                   onError={() => setQrisImgSrc('https://ik.imagekit.io/byzt/BISMA/QRIS.webp')}
-                  className="h-[176px] w-[176px] object-contain rounded-lg shrink-0"
+                  className="h-44 w-44 object-contain rounded-lg shrink-0"
                 />
               </div>
               <MutedText size="2xs" as="span" className="font-mono">{t('qrisFooter')}</MutedText>
@@ -90,7 +90,7 @@ export function SupportModal({ open, onOpenChange }: SupportModalProps) {
           {/* Option 2: Global (PayPal) */}
           <Panel hoverable>
             <PanelHeader
-              icon={<Globe className="h-4 w-4 text-sky-400" />}
+              icon={<Globe className="h-4 w-4 text-info" />}
               title={t('globalPaypal')}
               action={<Badge color="sky" compact>{t('globalBadge')}</Badge>}
             />
@@ -98,10 +98,10 @@ export function SupportModal({ open, onOpenChange }: SupportModalProps) {
             <MutedText>{t('paypalDesc')}</MutedText>
 
             <div className="flex items-center gap-2 pt-1">
-              <Button asChild className="flex-1 bg-sky-500 hover:bg-sky-600 text-white rounded-xl shadow-xs">
+              <Button asChild className="flex-1 bg-info hover:opacity-90 text-white rounded-xl shadow-xs">
                 <a href={paypalUrl} target="_blank" rel="noreferrer">
                   <span>{t('openPaypalBtn')}</span>
-                  <ExternalLink className="h-3.5 w-3.5" />
+                  <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </Button>
 
@@ -110,8 +110,8 @@ export function SupportModal({ open, onOpenChange }: SupportModalProps) {
                 size="icon"
                 onClick={handleCopyPaypal}
                 className={cn(
-                  'h-9 w-9 rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] shrink-0 cursor-pointer',
-                  copiedPaypal && 'text-emerald-500 border-emerald-500/30 bg-emerald-500/10'
+                  'h-9 w-9 rounded-xl border border-border bg-background shrink-0 cursor-pointer',
+                  copiedPaypal && 'text-success border-success/30 bg-success/10'
                 )}
                 title={t('copyPaypalTooltip')}
               >

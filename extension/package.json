@@ -12,6 +12,8 @@
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "postinstall": "wxt prepare"
   },
   "dependencies": {
@@ -23,18 +25,22 @@
     "@radix-ui/react-slot": "^1.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.469.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "reicon-react": "^1.1.302",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
+    "@tailwindcss/node": "^4.3.3",
     "@tailwindcss/vite": "^4.0.0",
     "@types/chrome": "^0.2.0",
     "@types/node": "^26.1.1",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
+    "@typescript-eslint/parser": "^8.66.0",
     "@wxt-dev/module-react": "^1.1.2",
+    "eslint": "^9",
+    "eslint-plugin-tailwind-canonical-classes": "^1.4.1",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.6.0",
     "wxt": "^0.20.0"

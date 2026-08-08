@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Moon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { DashboardCard } from './DashboardCard';
+import { Moon, AngleLeft, AngleRight } from 'reicon-react';
+import { DashboardCard } from '../DashboardCard';
 import { useTranslation } from '@/lib/i18n';
 
 const HIJRI_MONTHS_ID = [
@@ -107,6 +107,7 @@ export function HijriCalendarWidget({ dragHandle }: { dragHandle?: React.ReactNo
   const daysFull = isId ? DAYS_FULL_ID : DAYS_FULL_EN;
 
   const today = React.useMemo(() => getTodayHijri(), []);
+  const now = React.useMemo(() => new Date(), []);
 
   const [activeTab, setActiveTab] = React.useState<'today' | 'calendar'>('today');
 
@@ -281,7 +282,7 @@ export function HijriCalendarWidget({ dragHandle }: { dragHandle?: React.ReactNo
   return (
     <DashboardCard
       title={t('widgetHijriCalendarTitle')}
-      icon={<Moon className="h-3.5 w-3.5 text-[var(--color-muted-foreground)] shrink-0" />}
+      icon={<Moon className="h-3.5 w-3.5 tint-text shrink-0" weight="Filled" />}
       headerAction={dragHandle}
       minHeight="h-[234px]"
       contentClassName="p-3.5 pt-0.5 pb-2 flex flex-col justify-between min-h-0"
@@ -289,14 +290,14 @@ export function HijriCalendarWidget({ dragHandle }: { dragHandle?: React.ReactNo
       <div className="flex-1 flex flex-col justify-between h-full pt-0">
         {/* Timer-Style Tabs */}
         <div className="flex items-center justify-center mb-2 shrink-0">
-          <div className="flex items-center gap-1 p-0.5 bg-[var(--color-background)] border border-[var(--color-border)]/60 rounded-xl">
+          <div className="flex items-center gap-1 p-0.5 bg-background border border-border rounded-xl">
             <button
               type="button"
               onClick={() => setActiveTab('today')}
               className={`px-3 py-0.5 rounded-lg text-[10px] font-semibold transition-colors cursor-pointer ${
                 activeTab === 'today'
-                  ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] border border-[var(--color-border)]/50 shadow-xs'
-                  : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]'
+                  ? 'bg-(--color-accent) text-(--color-foreground) border border-(--color-border)'
+                  : 'tint-text hover:text-(--color-foreground)'
               }`}
             >
               {isId ? 'Hari Ini' : 'Today'}
@@ -306,8 +307,8 @@ export function HijriCalendarWidget({ dragHandle }: { dragHandle?: React.ReactNo
               onClick={() => setActiveTab('calendar')}
               className={`px-3 py-0.5 rounded-lg text-[10px] font-semibold transition-colors cursor-pointer ${
                 activeTab === 'calendar'
-                  ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] border border-[var(--color-border)]/50 shadow-xs'
-                  : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]'
+                  ? 'bg-(--color-accent) text-(--color-foreground) border border-(--color-border)'
+                  : 'tint-text hover:text-(--color-foreground)'
               }`}
             >
               {isId ? 'Kalender' : 'Calendar'}
@@ -315,27 +316,35 @@ export function HijriCalendarWidget({ dragHandle }: { dragHandle?: React.ReactNo
           </div>
         </div>
 
-        {/* Tab 1: Hari Ini - Left Aligned Banner */}
+        {/* Tab 1: Hari Ini - Symmetrical Inner Card */}
         {activeTab === 'today' ? (
-          <div className="flex-1 flex flex-col justify-between min-h-0">
-            {/* Left Aligned Banner */}
-            <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card-inner)] px-3.5 py-2.5 shadow-xs">
-              <div className="flex items-center justify-between">
-                <span className="px-2 py-0.5 rounded-md border border-[var(--color-border)] text-[9.5px] font-semibold uppercase text-emerald-400 font-mono tracking-wider">
+          <div className="card-inner-box flex-1 flex flex-col justify-between p-3.5 min-h-0 relative overflow-hidden">
+            {/* Top Bar: Hari (text-primary) | Tahun H & Masehi Date */}
+            <div className="flex items-center justify-between text-xs border-b border-border/60 pb-2 shrink-0">
+              <div className="flex items-center gap-1.5 font-medium">
+                <span className="font-semibold text-xs text-primary">
                   {daysFull[today.dayOfWeek]}
                 </span>
-                <span className="px-2 py-0.5 rounded-md border border-[var(--color-border)] text-[9.5px] font-mono text-[var(--color-muted-foreground)]">
+                <span className="text-muted-foreground/60">|</span>
+                <span className="font-mono text-xs text-muted-foreground">
                   {today.year}H
                 </span>
               </div>
-              <div className="text-2xl font-extrabold tracking-tight text-[var(--color-foreground)] mt-2.5 mb-0.5 text-left">
-                {today.day} <span className="font-semibold text-[var(--color-foreground)]">{monthNames[today.monthIndex]}</span>
+              <span className="text-[10px] font-mono text-muted-foreground bg-accent/50 border border-border/60 px-2 py-0.5 rounded-md">
+                {now.toLocaleDateString(isId ? 'id-ID' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </span>
+            </div>
+
+            {/* Middle: Hijri Date Display */}
+            <div className="flex-1 flex flex-col justify-center items-center py-2 text-center my-auto">
+              <div className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground font-sans">
+                {today.day} <span className="font-semibold text-foreground">{monthNames[today.monthIndex]}</span>
               </div>
             </div>
 
-            {/* Bottom Row */}
-            <div className="flex items-center justify-between text-[11px] px-1 mb-1">
-              <span className="text-[var(--color-foreground)] font-medium truncate">
+            {/* Bottom Bar: Optimal Islamic Event / Fasting Info */}
+            <div className="border-t border-border/60 pt-2 flex items-center justify-between text-xs shrink-0 select-none">
+              <span className="text-foreground font-normal text-[11px] truncate max-w-[65%]" title={todayDetails.nonWeeklyEvents.length > 0 ? todayDetails.nonWeeklyEvents.join(', ') : upcomingFastsList[0]?.label}>
                 {todayDetails.nonWeeklyEvents.length > 0
                   ? todayDetails.nonWeeklyEvents.join(', ')
                   : upcomingFastsList.length > 0
@@ -344,12 +353,14 @@ export function HijriCalendarWidget({ dragHandle }: { dragHandle?: React.ReactNo
                   ? 'Tidak ada puasa mendatang'
                   : 'No upcoming fasts'}
               </span>
-              <div className="flex items-center gap-2 font-mono text-[11px] font-bold text-emerald-400 shrink-0 ml-2">
+              <div className="flex items-center gap-1 font-mono text-[10px] font-semibold text-primary bg-primary/10 border border-primary/30 px-2 py-0.5 rounded-md shrink-0">
                 {todayDetails.nonWeeklyEvents.length > 0 ? (
-                  <span>{today.day}</span>
+                  <span>Tgl {today.day}</span>
                 ) : upcomingFastsList.length > 0 ? (
-                  upcomingFastsList[0].days.map((d) => <span key={d}>{d}</span>)
-                ) : null}
+                  <span>Tgl {upcomingFastsList[0].days.join(', ')}</span>
+                ) : (
+                  <span>—</span>
+                )}
               </div>
             </div>
           </div>
@@ -361,28 +372,28 @@ export function HijriCalendarWidget({ dragHandle }: { dragHandle?: React.ReactNo
               <button
                 type="button"
                 onClick={prevMonth}
-                className="p-0.5 rounded text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)] transition-colors cursor-pointer"
+                className="p-0.5 rounded tint-text hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
                 title={isId ? 'Bulan Sebelumnya' : 'Previous Month'}
               >
-                <ChevronLeft className="w-3.5 h-3.5" />
+                <AngleLeft className="w-3.5 h-3.5" />
               </button>
-              <span className="font-semibold text-[11px] tracking-tight text-[var(--color-foreground)]">
+              <span className="font-semibold text-[11px] tracking-tight text-foreground">
                 {monthNames[viewMonth]} {viewYear} H
               </span>
               <button
                 type="button"
                 onClick={nextMonth}
-                className="p-0.5 rounded text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)] transition-colors cursor-pointer"
+                className="p-0.5 rounded tint-text hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
                 title={isId ? 'Bulan Berikutnya' : 'Next Month'}
               >
-                <ChevronRight className="w-3.5 h-3.5" />
+                <AngleRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
             {/* Days Header */}
             <div className="grid grid-cols-7 text-center gap-y-0.5 mb-1">
               {daysShort.map((d, i) => (
-                <span key={i} className="text-[9px] font-mono text-[var(--color-muted-foreground)] font-semibold uppercase">
+                <span key={i} className="text-[9px] font-mono tint-text font-semibold uppercase">
                   {d}
                 </span>
               ))}
@@ -425,10 +436,10 @@ export function HijriCalendarWidget({ dragHandle }: { dragHandle?: React.ReactNo
                   popoverPositionClass = 'right-0 left-auto translate-x-0';
                 }
 
-                // Theme color matching date color (Amber for Holiday, Emerald for Sunnah/Today)
+                // Theme color matching date color (Primary Accent for Today & Events)
                 const tooltipThemeClass = isHoliday
-                  ? 'bg-amber-950/95 text-amber-300 border-amber-500/40'
-                  : 'bg-emerald-950/95 text-emerald-300 border-emerald-500/40';
+                  ? 'bg-amber-500/10 text-amber-500 border-amber-500/40'
+                  : 'bg-primary/10 text-primary border-primary/30';
 
                 return (
                   <div key={dayNum} className="relative">
@@ -450,24 +461,31 @@ export function HijriCalendarWidget({ dragHandle }: { dragHandle?: React.ReactNo
                           });
                         }
                       }}
-                      className={`h-4.5 w-5 text-[10px] font-mono flex items-center justify-center transition-colors ${
+                      className={`relative h-4.5 w-5 text-[10px] font-mono flex flex-col items-center justify-center transition-colors ${
                         isToday
-                          ? 'border border-emerald-400/90 text-emerald-400 font-bold rounded-full h-4.5 w-4.5 cursor-pointer'
+                          ? 'border border-primary text-primary bg-primary/10 font-bold rounded-full h-4.5 w-4.5 cursor-pointer'
                           : isHoliday
-                          ? 'text-amber-400 font-bold hover:text-amber-300 cursor-pointer'
+                          ? 'text-amber-500 font-semibold hover:text-amber-400 cursor-pointer'
                           : hasNonWeeklyEvent
-                          ? 'text-emerald-400 font-bold hover:text-emerald-300 cursor-pointer'
-                          : 'text-[var(--color-foreground)] cursor-default'
+                          ? 'text-primary font-semibold hover:text-primary/80 cursor-pointer'
+                          : 'text-foreground cursor-default'
                       }`}
                     >
-                      {dayNum}
+                      <span>{dayNum}</span>
+                      {(hasNonWeeklyEvent || isHoliday) && !isToday && (
+                        <span
+                          className={`absolute -bottom-0.5 h-1 w-1 rounded-full ${
+                            isHoliday ? 'bg-amber-500' : 'bg-primary'
+                          }`}
+                        />
+                      )}
                     </button>
 
                     {/* Clean Floating Mini Popover Tooltip */}
                     {isClicked && (
                       <div
                         ref={tooltipRef}
-                        className={`absolute bottom-full mb-1.5 z-30 whitespace-nowrap border text-[9.5px] font-semibold px-2.5 py-1 rounded-md shadow-xl backdrop-blur-xs animate-in fade-in zoom-in-95 duration-150 ${popoverPositionClass} ${tooltipThemeClass}`}
+                        className={`absolute bottom-full mb-1.5 z-30 whitespace-nowrap border text-[9.5px] font-semibold px-2.5 py-1 rounded-md backdrop-blur-xs animate-in fade-in zoom-in-95 duration-150 ${popoverPositionClass} ${tooltipThemeClass}`}
                       >
                         <span>{clickedTooltip.info}</span>
                       </div>

@@ -35,10 +35,10 @@ export default function App() {
 
   if (error) {
     return (
-      <div className="flex h-screen items-center justify-center p-8 text-center text-sm text-[var(--color-destructive)]">
+      <div className="flex h-screen items-center justify-center p-8 text-center text-sm text-destructive">
         <div>
           <p>Gagal memuat sesi</p>
-          <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">{error}</p>
+          <p className="mt-1 text-xs tint-text">{error}</p>
         </div>
       </div>
     );

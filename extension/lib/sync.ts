@@ -7,7 +7,7 @@
 // Conflict policy (user-approved): whichever device pushes last wins; unpushed
 // local edits on a device that then pulls are overwritten. Tracked via a "dirty"
 // flag set by bookmark change listeners.
-// ponytail: single blob per account, not per-item merge. Upgrade to granular
+// Single blob per account, not per-item merge. Upgrade to granular
 // merge if multi-user concurrent editing is ever needed.
 
 import { encryptJSON, decryptJSON } from './crypto';
@@ -18,7 +18,7 @@ import { getTrashItems, saveTrashItems, type TrashItem } from './trash';
 import type { SyncStatus } from './types';
 import { EMPTY_STATUS } from './types';
 
-// ponytail: track last-written device label to avoid redundant D1 writes.
+// Track last-written device label to avoid redundant D1 writes.
 // Device label only changes on OS/browser upgrade — not every sync.
 const LAST_LABEL_KEY = 'syntive.lastDeviceLabel';
 

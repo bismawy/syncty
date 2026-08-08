@@ -2,28 +2,30 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 export interface StatusBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  status?: 'online' | 'offline' | 'warning' | 'info' | 'neutral' | 'live';
+  status?: 'primary' | 'online' | 'offline' | 'warning' | 'info' | 'neutral' | 'live';
   showDot?: boolean;
   pulseDot?: boolean;
   compact?: boolean;
 }
 
 const statusStyles = {
-  online: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-  live: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 font-bold',
-  offline: 'bg-rose-500/10 text-rose-500 border-rose-500/20',
-  warning: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
-  info: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
-  neutral: 'bg-[var(--color-accent)] text-[var(--color-muted-foreground)] border-[var(--color-border)]',
+  primary: 'bg-primary/10 text-primary border-primary/30 font-medium',
+  online: 'bg-(--color-success)/10 text-(--color-success) border-(--color-success)/20',
+  live: 'bg-(--color-success)/10 text-(--color-success) border-(--color-success)/20 font-medium',
+  offline: 'bg-(--color-destructive)/10 text-(--color-destructive) border-(--color-destructive)/20',
+  warning: 'bg-(--color-warning)/10 text-(--color-warning) border-(--color-warning)/20',
+  info: 'bg-(--color-info)/10 text-(--color-info) border-(--color-info)/20',
+  neutral: 'bg-(--color-accent) text-(--color-muted-foreground) border-(--color-border)',
 };
 
 const dotStyles = {
-  online: 'bg-emerald-500',
-  live: 'bg-emerald-500',
-  offline: 'bg-rose-500',
-  warning: 'bg-amber-500',
-  info: 'bg-sky-400',
-  neutral: 'bg-[var(--color-muted-foreground)]',
+  primary: 'bg-primary',
+  online: 'bg-(--color-success)',
+  live: 'bg-(--color-success)',
+  offline: 'bg-(--color-destructive)',
+  warning: 'bg-(--color-warning)',
+  info: 'bg-(--color-info)',
+  neutral: 'bg-(--color-muted-foreground)',
 };
 
 /**

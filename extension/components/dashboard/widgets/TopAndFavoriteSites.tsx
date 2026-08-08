@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Plus, Trash2, History, Star } from 'lucide-react';
-import { DashboardCard } from './DashboardCard';
+import { History, Star } from 'reicon-react';
+import { DashboardCard } from '../DashboardCard';
 import { FaviconImage } from '@/components/ui/FaviconImage';
+import { SiteTile, AddSiteTile } from '@/components/ui/site-tile';
 import { Pagination } from '@/components/bookmark/Pagination';
 import { domainOf } from '@/lib/utils';
 import { useLocalStorageState } from '@/lib/hooks';
@@ -23,19 +24,19 @@ interface SiteItem {
 }
 
 const DEFAULT_PINNED_SITES: SiteItem[] = [
-  { id: '1', title: 'Google', url: 'https://www.google.com' },
-  { id: '2', title: 'YouTube', url: 'https://www.youtube.com' },
-  { id: '3', title: 'GitHub', url: 'https://github.com' },
-  { id: '4', title: 'ChatGPT', url: 'https://chatgpt.com' },
-  { id: '5', title: 'Wikipedia', url: 'https://www.wikipedia.org' },
+  { id: '1', title: 'YouTube', url: 'https://www.youtube.com' },
+  { id: '2', title: 'GitHub', url: 'https://github.com' },
+  { id: '3', title: 'Reddit', url: 'https://www.reddit.com' },
+  { id: '4', title: 'Gmail', url: 'https://mail.google.com' },
+  { id: '5', title: 'X', url: 'https://x.com' },
 ];
 
 const FALLBACK_TOP_SITES: SiteItem[] = [
-  { title: 'Google', url: 'https://www.google.com' },
   { title: 'YouTube', url: 'https://www.youtube.com' },
   { title: 'GitHub', url: 'https://github.com' },
   { title: 'Reddit', url: 'https://www.reddit.com' },
-  { title: 'Wikipedia', url: 'https://www.wikipedia.org' },
+  { title: 'Gmail', url: 'https://mail.google.com' },
+  { title: 'X', url: 'https://x.com' },
 ];
 
 function getCleanTitle(title: string, url: string) {
@@ -86,7 +87,7 @@ export function TopSitesWidget({ dragHandle }: { dragHandle?: React.ReactNode })
   return (
     <DashboardCard
       title={t('topSitesTitle')}
-      icon={<History className="h-3.5 w-3.5 text-[var(--color-muted-foreground)] shrink-0" />}
+      icon={<History className="h-3.5 w-3.5 tint-text shrink-0" weight="Filled" />}
       headerBadge={t('topSitesBadge')}
       headerAction={dragHandle}
       minHeight="h-[234px]"
@@ -95,11 +96,11 @@ export function TopSitesWidget({ dragHandle }: { dragHandle?: React.ReactNode })
         {loadingTop ? (
           <div className="space-y-2 py-1">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-8 rounded-md bg-[var(--color-background)]/50 animate-pulse" />
+              <div key={i} className="h-8 rounded-md bg-background/50 animate-pulse" />
             ))}
           </div>
         ) : (
-          <div className="card-inner-box divide-y divide-[var(--color-border)] overflow-hidden">
+          <div className="card-inner-box divide-y divide-border overflow-hidden">
             {topSites.map((site, index) => {
               const displayTitle = getCleanTitle(site.title, site.url);
               const domain = domainOf(site.url);
@@ -108,16 +109,16 @@ export function TopSitesWidget({ dragHandle }: { dragHandle?: React.ReactNode })
                 <a
                   key={index}
                   href={site.url}
-                  className="flex items-center justify-between px-3 py-2 hover:bg-[var(--color-accent)]/40 transition-colors group text-xs select-none"
+                  className="flex items-center justify-between px-3 py-2 hover:bg-accent/40 transition-colors group/item text-xs select-none"
                   title={site.title || site.url}
                 >
                   <div className="flex items-center gap-2.5 min-w-0 flex-1">
                     <FaviconImage url={site.url} className="h-4 w-4 object-contain shrink-0" />
-                    <span className="font-medium text-[var(--color-foreground)] truncate text-xs">
+                    <span className="font-medium text-foreground truncate text-xs">
                       {displayTitle}
                     </span>
                   </div>
-                  <span className="text-[10px] text-[var(--color-muted-foreground)] font-mono group-hover:text-[var(--color-foreground)] transition-colors shrink-0 ml-2">
+                  <span className="text-[10px] font-mono text-muted-foreground group-hover/item:text-primary transition-colors shrink-0 ml-2">
                     {domain}
                   </span>
                 </a>
@@ -185,7 +186,7 @@ export function FavoriteSitesWidget({ dragHandle }: { dragHandle?: React.ReactNo
   return (
     <DashboardCard
       title={t('favoriteSitesTitle')}
-      icon={<Star className="h-3.5 w-3.5 text-[var(--color-muted-foreground)] shrink-0" />}
+      icon={<Star className="h-3.5 w-3.5 tint-text shrink-0" weight="Filled" />}
       headerAction={
         <div className="flex items-center gap-1.5 shrink-0">
           <Pagination page={page} pageCount={pageCount} onChange={setPage} />
@@ -194,62 +195,31 @@ export function FavoriteSitesWidget({ dragHandle }: { dragHandle?: React.ReactNo
       }
       minHeight="h-[234px]"
     >
-      <div className="pt-0 flex flex-col justify-between h-full">
-        {/* 4 Columns Grid Layout */}
-        <div className="grid grid-cols-4 gap-2.5 items-center w-full">
-          {pageSites.map((site) => {
-            const displayTitle = getCleanTitle(site.title, site.url);
-
-            return (
-              <div
-                key={site.id || site.url}
-                className="card-inner-tile relative flex flex-col items-center justify-center h-18 p-1.5 group select-none"
-              >
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleRemovePinned(site.id, site.url);
-                  }}
-                  className="absolute top-1 right-1 h-4.5 w-4.5 rounded-full bg-[var(--color-card)] border border-[var(--color-border)] flex items-center justify-center text-[var(--color-muted-foreground)] hover:text-[var(--color-destructive)] opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10"
-                  title={t('removeFavoriteTooltip')}
-                >
-                  <Trash2 className="h-2.5 w-2.5" />
-                </button>
-
-                <a
-                  href={site.url}
-                  className="flex flex-col items-center justify-center w-full h-full"
-                  title={site.title || site.url}
-                >
-                  <FaviconImage
-                    url={site.url}
-                    className="h-5 w-5 object-contain shrink-0 mb-1"
-                  />
-                  <span className="text-[10px] font-medium text-[var(--color-foreground)] truncate w-full text-center px-0.5">
-                    {displayTitle}
-                  </span>
-                </a>
-              </div>
-            );
-          })}
+      <div className="p-0 flex-1 flex flex-col h-full min-h-0">
+        {/* 4 Columns Full Grid Layout (2 Rows x 4 Cols) */}
+        <div className="grid grid-cols-4 grid-rows-2 gap-2 w-full h-full flex-1">
+          {pageSites.map((site) => (
+            <SiteTile
+              key={site.id || site.url}
+              site={site}
+              onRemove={() => handleRemovePinned(site.id, site.url)}
+              removeTooltip={t('removeFavoriteTooltip')}
+            />
+          ))}
 
           {showAddTileOnThisPage && (
-            <button
+            <AddSiteTile
               onClick={() => setShowAddModal(true)}
-              className="flex flex-col items-center justify-center h-18 p-1.5 rounded-md border border-dashed border-[var(--color-border)]/80 hover:border-[var(--color-ring)]/60 bg-[var(--color-background)]/20 hover:bg-[var(--color-accent)]/40 text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] transition-all cursor-pointer group"
-              title={t('addFavoriteTooltip')}
-            >
-              <Plus className="h-4 w-4 mb-0.5 group-hover:scale-110 transition-transform" />
-              <span className="text-[9px] font-medium">{t('addFavoriteBtn', { count: '' }).split(' ')[0]}</span>
-            </button>
+              label={t('addFavoriteBtn', { count: '' }).split(' ')[0]}
+              tooltip={t('addFavoriteTooltip')}
+            />
           )}
         </div>
       </div>
 
       {/* Add Modal */}
       <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-        <DialogContent className="sm:max-w-md bg-[var(--color-card)] border-[var(--color-border)] text-[var(--color-foreground)]">
+        <DialogContent className="sm:max-w-md bg-card border-border text-foreground">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold">{t('addFavoriteModalTitle')}</DialogTitle>
           </DialogHeader>

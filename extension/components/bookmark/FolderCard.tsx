@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Pencil, Trash2, Folder as FolderIcon, Check, GripVertical } from 'lucide-react';
+import { Pen, Trash2, Folder as FolderIcon, FolderBookmark, Check, Menu4 } from 'reicon-react';
+import { DeleteAction } from '@/components/ui/delete-action';
 import type { Bm } from './useBookmarks';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { Button } from '@/components/ui/button';
@@ -103,10 +104,10 @@ export function FolderCard({
       <div
         ref={setNodeRef}
         style={{ transform: CSS.Translate.toString(transform), transition }}
-        className="border-2 border-dashed border-[var(--color-primary)]/70 bg-[var(--color-primary)]/5 rounded-2xl h-[234px] w-full flex items-center justify-center p-6 transition-all duration-200"
+        className="border-2 border-dashed border-primary/70 bg-primary/5 rounded-2xl h-58.5 w-full flex items-center justify-center p-6 transition-all duration-200"
       >
         <div className="flex flex-col items-center gap-1.5 text-center select-none">
-          <span className="text-xs font-mono text-[var(--color-primary)] font-semibold tracking-wide">
+          <span className="text-xs font-mono text-primary font-semibold tracking-wide">
             {t('dragHere')}
           </span>
         </div>
@@ -118,26 +119,26 @@ export function FolderCard({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform), transition }}
-      className="h-[234px] w-full relative group"
+      className="h-58.5 w-full relative group"
     >
       {isOver && isFolderDragging && (
         <div
           className={cn(
             'absolute inset-0 rounded-2xl z-30 flex flex-col items-center justify-center p-4 backdrop-blur-sm transition-all duration-150 pointer-events-none select-none text-center',
             isShiftPressed
-              ? 'bg-[var(--color-primary)]/20 border-2 border-dashed border-[var(--color-primary)]'
-              : 'bg-[var(--color-card)]/80 border-2 border-[var(--color-primary)]/60'
+              ? 'bg-primary/20 border-2 border-dashed border-primary'
+              : 'bg-card/80 border-2 border-primary/60'
           )}
         >
-          <FolderIcon className={cn('h-7 w-7 text-[var(--color-primary)] mb-1', isShiftPressed && 'animate-bounce')} />
+          <FolderIcon className={cn('h-7 w-7 text-primary mb-1', isShiftPressed && 'animate-bounce')} />
           {isShiftPressed ? (
-            <span className="text-xs font-bold text-[var(--color-primary)] font-mono">
+            <span className="text-xs font-medium text-primary font-mono">
               {t('dragDropToFolder', { title: folder.title })}
             </span>
           ) : (
             <div className="flex flex-col items-center gap-0.5">
-              <span className="text-xs font-medium text-[var(--color-foreground)]">{t('dragSwapGrid')}</span>
-              <span className="text-[10px] font-mono text-[var(--color-primary)] bg-[var(--color-primary)]/10 px-2 py-0.5 rounded-md mt-1 border border-[var(--color-primary)]/30">
+              <span className="text-xs font-medium text-foreground">{t('dragSwapGrid')}</span>
+              <span className="text-[10px] font-mono text-primary bg-primary/10 px-2 py-0.5 rounded-md mt-1 border border-primary/30">
                 {t('dragHoldShiftInfo')}
               </span>
             </div>
@@ -164,7 +165,7 @@ export function FolderCard({
               />
             ) : hasSubfolders ? (
               <button
-                className="text-left hover:text-[var(--color-foreground)] transition-colors min-w-0 truncate cursor-pointer"
+                className="text-left hover:text-foreground transition-colors min-w-0 truncate cursor-pointer"
                 onClick={() => onNavigate?.(folder.id)}
               >
                 <Marquee text={folder.title || t('untitledFolder')} className="section-label uppercase" />
@@ -176,7 +177,7 @@ export function FolderCard({
             )}
           </div>
         }
-        icon={<FolderIcon className="h-3.5 w-3.5 shrink-0 text-[var(--color-muted-foreground)] animate-fade-in" />}
+        icon={<FolderBookmark className="h-3.5 w-3.5 shrink-0 text-muted-foreground group-hover:text-primary transition-colors animate-fade-in" weight="Filled" />}
         headerAction={
           <div className="flex items-center gap-1.5 shrink-0">
             <Pagination page={page} pageCount={pageCount} onChange={setPage} />
@@ -185,11 +186,11 @@ export function FolderCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 text-[var(--color-destructive)] hover:bg-[var(--color-destructive)]/10 animate-fade-in"
+                  className="h-6 w-6 text-destructive hover:bg-destructive/10 animate-fade-in"
                   onClick={handleDeleteFolder}
                   title={t('deleteFolder')}
                 >
-                  <Trash2 className="h-3 w-3" />
+                  <Trash2 className="h-3 w-3" weight="Filled" />
                 </Button>
                 <Button
                   variant="ghost"
@@ -205,31 +206,31 @@ export function FolderCard({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 shrink-0 text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
+                className="h-6 w-6 shrink-0 text-muted-foreground hover:text-primary hover:bg-accent/60 transition-colors"
                 onClick={() => setEditing(true)}
                 title={t('renameFolder')}
               >
-                <Pencil className="h-3 w-3" />
+                <Pen className="h-3 w-3" />
               </Button>
             )}
             <button
               {...attributes}
               {...listeners}
-              className="p-1 rounded-md text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)] cursor-grab active:cursor-grabbing shrink-0 transition-colors"
+              className="p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-accent/60 cursor-grab active:cursor-grabbing shrink-0 transition-colors"
               title={t('dragFolderTooltip')}
             >
-              <GripVertical className="h-3.5 w-3.5" />
+              <Menu4 weight="Filled" className="h-3.5 w-3.5" />
             </button>
           </div>
         }
-        className={cn('h-full flex flex-col justify-between', isOver && 'ring-2 ring-[var(--color-primary)]')}
+        className={cn('group h-full flex flex-col justify-between', isOver && 'ring-2 ring-primary')}
         minHeight="h-full"
       >
         <div className="pt-0 flex flex-col">
           <div>
             {view.length > 0 ? (
               <SortableContext items={view.map((c) => `bm:${c.id}`)} strategy={verticalListSortingStrategy}>
-                <div className="card-inner-box divide-y divide-[var(--color-border)] overflow-hidden select-none">
+                <div className="card-inner-box divide-y divide-border overflow-hidden select-none">
                   {view.map((c) => (
                     <FolderBookmarkRow
                       key={c.id}
@@ -245,7 +246,7 @@ export function FolderCard({
               </SortableContext>
             ) : (
               <div className="card-inner-box py-4 flex items-center justify-center p-4 select-none">
-                <p className="text-center text-xs text-[var(--color-muted-foreground)]">{t('emptyFolder')}</p>
+                <p className="text-center text-xs tint-text">{t('emptyFolder')}</p>
               </div>
             )}
           </div>
@@ -266,7 +267,7 @@ export function FolderCardStatic({ folder }: { folder: Bm }) {
   const view = children.slice(0, PER_PAGE);
 
   return (
-    <div className="h-[234px] w-full">
+    <div className="h-58.5 w-full">
       <DashboardCard
         title={
           <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
@@ -275,49 +276,51 @@ export function FolderCardStatic({ folder }: { folder: Bm }) {
             </div>
           </div>
         }
-        icon={<FolderIcon className="h-3.5 w-3.5 shrink-0 text-[var(--color-muted-foreground)]" />}
+        icon={<FolderBookmark className="h-3.5 w-3.5 shrink-0 text-muted-foreground group-hover:text-primary transition-colors" weight="Filled" />}
         headerAction={
           <div className="flex items-center gap-1.5 shrink-0">
-            <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-[var(--color-muted-foreground)]">
-              <Pencil className="h-3 w-3" />
+            <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground">
+              <Pen className="h-3 w-3" />
             </Button>
-            <div className="p-1 rounded-md text-[var(--color-muted-foreground)]">
-              <GripVertical className="h-3.5 w-3.5" />
+            <div className="p-1 rounded-md text-muted-foreground">
+              <Menu4 weight="Filled" className="h-3.5 w-3.5" />
             </div>
           </div>
         }
-        className="h-full flex flex-col justify-between"
+        className="group h-full flex flex-col justify-between"
         minHeight="h-full"
       >
         <div className="pt-0 flex flex-col">
           <div>
             {view.length > 0 ? (
-              <div className="card-inner-box divide-y divide-[var(--color-border)] overflow-hidden select-none">
+              <div className="card-inner-box divide-y divide-border overflow-hidden select-none">
                 {view.map((c) => {
                   const isSubfolder = !c.url;
                   return (
-                    <div key={c.id} className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs h-[34px]">
-                      <GripVertical className="h-3.5 w-3.5 text-[var(--color-muted-foreground)] shrink-0 opacity-30" />
-                      {isSubfolder ? (
-                        <FolderIcon className="h-3.5 w-3.5 shrink-0 text-[var(--color-muted-foreground)]" />
-                      ) : (
-                        <FaviconImage url={c.url} className="h-3.5 w-3.5 shrink-0 rounded-sm" />
-                      )}
-                      <span
-                        className={cn(
-                          'truncate min-w-0 flex-1',
-                          isSubfolder ? 'font-medium text-[var(--color-foreground)]' : 'font-normal'
+                    <div key={c.id} className="flex items-center justify-between gap-2 py-2 px-3 text-xs h-8.5">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        {isSubfolder ? (
+                          <FolderIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                        ) : (
+                          <FaviconImage url={c.url} className="h-3.5 w-3.5 shrink-0 rounded-sm" />
                         )}
-                      >
-                        {c.title || domainOf(c.url) || t('untitled')}
-                      </span>
+                        <span
+                          className={cn(
+                            'truncate min-w-0 flex-1',
+                            isSubfolder ? 'font-medium text-foreground' : 'font-normal'
+                          )}
+                        >
+                          {c.title || domainOf(c.url) || t('untitled')}
+                        </span>
+                      </div>
+                      <Menu4 weight="Filled" className="h-3.5 w-3.5 text-muted-foreground shrink-0 opacity-30" />
                     </div>
                   );
                 })}
               </div>
             ) : (
               <div className="card-inner-box py-4 flex items-center justify-center p-4">
-                <p className="text-center text-xs text-[var(--color-muted-foreground)]">{t('emptyFolder')}</p>
+                <p className="text-center text-xs tint-text">{t('emptyFolder')}</p>
               </div>
             )}
           </div>
@@ -357,29 +360,21 @@ export function FolderBookmarkRow({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group flex items-center gap-1.5 px-2.5 py-1.5 hover:bg-[var(--color-accent)]/30 transition-colors relative text-xs h-[34px]",
-        isDragging && "opacity-40 bg-[var(--color-muted)]"
+        "group/item flex items-center justify-between gap-2 py-2 px-3 hover:bg-accent/30 relative text-xs h-8.5 select-none",
+        isDragging && "opacity-40 bg-muted"
       )}
     >
       {showDividerTop && (
-        <span className="absolute -top-px left-0 right-0 h-0.5 bg-[var(--color-primary)] z-10" />
+        <span className="absolute -top-px left-0 right-0 h-0.5 bg-primary z-10" />
       )}
-      <button
-        {...attributes}
-        {...listeners}
-        className="p-0.5 rounded text-[var(--color-muted-foreground)] opacity-30 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing shrink-0 hover:bg-[var(--color-accent)] hover:text-[var(--color-foreground)]"
-        title={t('dragBookmarkTooltip')}
-      >
-        <GripVertical className="h-3.5 w-3.5" />
-      </button>
       {isSubfolder ? (
         <button
-          className="flex min-w-0 flex-1 items-center gap-2 text-xs py-0.5 text-left font-medium hover:text-[var(--color-primary)] transition-colors"
+          className="flex min-w-0 flex-1 items-center gap-2 text-xs py-0.5 text-left font-medium"
           onClick={(e) => { e.stopPropagation(); onNavigate?.(c.id); }}
           draggable="false"
         >
-          <FolderIcon className="h-3.5 w-3.5 shrink-0 text-[var(--color-muted-foreground)]" />
-          <Marquee text={c.title} className="font-medium text-[var(--color-foreground)]" />
+          <FolderIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+          <Marquee text={c.title} className="font-medium text-foreground" />
         </button>
       ) : (
         <a
@@ -391,12 +386,22 @@ export function FolderBookmarkRow({
           draggable="false"
         >
           <FaviconImage url={c.url} className="h-3.5 w-3.5 shrink-0 rounded-sm" />
-          <Marquee text={c.title || domainOf(c.url) || t('untitled')} className="font-normal" />
+          <Marquee text={c.title || domainOf(c.url) || t('untitled')} className="font-normal text-foreground" />
         </a>
       )}
-      <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100 shrink-0" onClick={(e) => { e.stopPropagation(); onDeleteChild(c.id); }} title={t('deleteBookmarkTooltip')}>
-        <Trash2 className="h-3.5 w-3.5 text-[var(--color-destructive)]" />
-      </Button>
+
+      {/* Action buttons: DnD Drag Handle + Delete Button on the right */}
+      <div className="flex items-center gap-0.5 shrink-0">
+        <button
+          {...attributes}
+          {...listeners}
+          className="p-1 rounded text-muted-foreground opacity-0 group-hover/item:opacity-100 transition-opacity cursor-grab active:cursor-grabbing shrink-0 hover:bg-accent hover:text-primary flex items-center justify-center"
+          title={t('dragBookmarkTooltip')}
+        >
+          <Menu4 weight="Filled" className="h-3.5 w-3.5" />
+        </button>
+        <DeleteAction onClick={(e) => { e.stopPropagation(); onDeleteChild(c.id); }} title={t('deleteBookmarkTooltip')} iconSize="h-3.5 w-3.5" />
+      </div>
     </div>
   );
 }

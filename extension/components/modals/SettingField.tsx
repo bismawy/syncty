@@ -12,11 +12,11 @@ export function SettingField({ label, description, children, className }: Settin
   return (
     <div className={cn('space-y-2', className)}>
       <div className="space-y-0.5">
-        <label className="text-xs font-semibold text-[var(--color-foreground)] block tracking-wide">
+        <label className="text-xs font-semibold text-foreground block tracking-wide">
           {label}
         </label>
         {description && (
-          <p className="text-[10px] text-[var(--color-muted-foreground)] leading-relaxed">
+          <p className="text-[10px] tint-text leading-relaxed">
             {description}
           </p>
         )}
@@ -28,7 +28,7 @@ export function SettingField({ label, description, children, className }: Settin
 
 export function SettingSectionTitle({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <h4 className={cn('font-bold text-[var(--color-muted-foreground)] uppercase tracking-wider text-[10px] pb-1', className)}>
+    <h4 className={cn('font-medium text-muted-foreground uppercase tracking-wider text-[10px] pb-1', className)}>
       {children}
     </h4>
   );

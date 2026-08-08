@@ -9,14 +9,14 @@ export interface PanelProps extends React.HTMLAttributes<HTMLDivElement> {
 /**
  * Bordered content box — the standard "section container" used inside modals,
  * settings tabs, and card bodies. Replaces the repeated inline pattern:
- * `border border-[var(--color-border)] bg-[var(--color-background)]/60 rounded-xl p-4 space-y-3`
+ * `border border-(--color-border) bg-(--color-background)/60 rounded-xl p-4 space-y-3`
  */
 export function Panel({ hoverable = false, className, children, ...props }: PanelProps) {
   return (
     <div
       className={cn(
-        'border border-[var(--color-border)] bg-[var(--color-background)]/60 rounded-xl p-4 space-y-3',
-        hoverable && 'transition-all hover:border-[var(--color-primary)]/40',
+        'border border-border bg-background/60 rounded-xl p-4 space-y-3',
+        hoverable && 'transition-all hover:border-primary/40',
         className
       )}
       {...props}

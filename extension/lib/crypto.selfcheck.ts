@@ -1,4 +1,4 @@
-// ponytail: one runnable check that the round-trip works.
+// One runnable check that the round-trip works.
 // Run via: npx tsx lib/crypto.selfcheck.ts
 import { fileURLToPath } from 'node:url';
 import { deriveKeys, encryptJSON, decryptJSON } from './crypto';

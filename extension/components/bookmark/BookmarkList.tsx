@@ -17,7 +17,7 @@ export function BookmarkList({
 
   if (bookmarks.length === 0) {
     return (
-      <div className="card-inner-box py-8 text-center text-xs text-[var(--color-muted-foreground)]">
+      <div className="card-inner-box py-8 text-center text-xs tint-text">
         {t('noBookmarksToolbar')}
       </div>
     );
@@ -25,7 +25,7 @@ export function BookmarkList({
 
   return (
     <SortableContext items={ids} strategy={verticalListSortingStrategy}>
-      <div className="card-inner-box divide-y divide-[var(--color-border)] overflow-hidden select-none">
+      <div className="card-inner-box divide-y divide-border overflow-hidden select-none">
         {bookmarks.map((b) => (
           <FolderBookmarkRow
             key={b.id}

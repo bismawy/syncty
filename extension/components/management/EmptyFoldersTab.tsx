@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Folder, Trash2 } from 'lucide-react';
+import { Folder, Trash2 } from 'reicon-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -42,7 +42,7 @@ export function EmptyFoldersTab({
         const isSelected = selectedEmptyFolderIds.has(item.id);
 
         return (
-          <tr key={item.id} className="hover:bg-[var(--color-accent)]/40 transition-colors">
+          <tr key={item.id} className="hover:bg-accent/40 transition-colors">
             <td className="py-2.5 px-4 text-center">
               <Checkbox
                 checked={isSelected}
@@ -57,16 +57,16 @@ export function EmptyFoldersTab({
               />
             </td>
             <td className="py-2.5 px-4 min-w-0">
-              <div className="flex items-center gap-2 font-bold text-[var(--color-foreground)] truncate" title={item.folderName}>
-                <Folder className="h-4 w-4 text-[var(--color-muted-foreground)] shrink-0" />
+              <div className="flex items-center gap-2 font-medium text-foreground truncate" title={item.folderName}>
+                <Folder className="h-4 w-4 tint-text shrink-0" />
                 <span className="truncate">{item.folderName}</span>
               </div>
             </td>
-            <td className="py-2.5 px-4 text-[var(--color-muted-foreground)] font-mono text-[11px] truncate" title={item.folderPath}>
+            <td className="py-2.5 px-4 tint-text font-mono text-[11px] truncate" title={item.folderPath}>
               {item.folderPath}
             </td>
             <td className="py-2.5 px-4 text-center">
-              <Badge variant="outline" className="text-[9px] uppercase font-bold text-rose-500 border-rose-500/30 bg-rose-500/10 rounded-md">
+              <Badge variant="outline" className="text-[9px] uppercase font-medium text-destructive border-destructive/30 bg-destructive/10 rounded-md">
                 {language === 'id' ? 'Kosong' : 'Empty'}
               </Badge>
             </td>
@@ -78,7 +78,7 @@ export function EmptyFoldersTab({
                   await moveToTrash(item.id);
                   handleScanEmpty();
                 }}
-                className="h-7 w-7 p-0 rounded-lg text-rose-500 hover:bg-rose-500/10 cursor-pointer"
+                className="h-7 w-7 p-0 rounded-lg text-destructive hover:bg-destructive/10 cursor-pointer"
                 title="Buang ke Tong Sampah"
               >
                 <Trash2 className="h-3.5 w-3.5 text-current" />

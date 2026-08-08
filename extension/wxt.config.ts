@@ -10,11 +10,11 @@ export default defineConfig({
 vite: () => ({
     plugins: [tailwindcss()],
     define: {
-      // ponytail: API base injected at build time from .env (VITE_API_BASE).
+      // API base injected at build time from .env (VITE_API_BASE).
       // Falls back to localhost for `wxt dev`.
       __API_BASE__: JSON.stringify(process.env.VITE_API_BASE ?? 'https://syntive.byztma.workers.dev'),
     },
-    // ponytail: disable Vite's automatic <link rel="modulepreload"> injection.
+    // Disable Vite's automatic <link rel="modulepreload"> injection.
     // It preloads the shared globals chunk from a cross-world context, which
     // Chrome flags as a "cross-world extension resource mismatch" warning.
     build: {
@@ -39,7 +39,7 @@ vite: () => ({
         '48': 'icons/logo-48.png',
       },
     },
-    // ponytail: override the new-tab page so the Syntive dashboard replaces it.
+    // Override the new-tab page so the Syntive dashboard replaces it.
     chrome_url_overrides: { newtab: 'newtab.html' },
     browser_specific_settings: {
       gecko: {

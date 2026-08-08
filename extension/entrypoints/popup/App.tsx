@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RefreshCw, ExternalLink, BookmarkCheck, Clock, MonitorSmartphone } from 'lucide-react';
+import { Refresh, ArrowUpRight, BookmarkCheck, Clock, MonitorPhone } from 'reicon-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -49,7 +49,7 @@ export default function App() {
         />
         <div className="flex-1">
           <div className="text-sm font-semibold leading-tight">Syntive</div>
-          <div className="text-[11px] text-[var(--color-muted-foreground)]">Bookmark sync</div>
+          <div className="text-[11px] tint-text">Bookmark sync</div>
         </div>
       </div>
 
@@ -61,29 +61,29 @@ export default function App() {
           <Row icon={<BookmarkCheck className="h-4 w-4" />} label="Total bookmark">
             <Badge variant="secondary">{status.totalBookmarks}</Badge>
           </Row>
-          <Row icon={<MonitorSmartphone className="h-4 w-4" />} label="Perangkat ini">
+          <Row icon={<MonitorPhone className="h-4 w-4" />} label="Perangkat ini">
             <span className="text-xs">{label}</span>
           </Row>
         </CardContent>
       </Card>
 
       {status.error && (
-        <p className="mt-2 rounded-md bg-[var(--color-destructive)]/10 px-2 py-1 text-[11px] text-[var(--color-destructive)]">
+        <p className="mt-2 rounded-md bg-destructive/10 px-2 py-1 text-[11px] text-destructive">
           Galat: {status.error}
         </p>
       )}
 
       <div className="mt-3 flex gap-2">
         <Button className="flex-1" onClick={onSync} disabled={syncing}>
-          <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+          <Refresh className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
           {syncing ? 'Menyinkronkan…' : 'Sinkron sekarang'}
         </Button>
         <Button variant="outline" size="icon" onClick={openDashboard} title="Buka dashboard">
-          <ExternalLink className="h-4 w-4" />
+          <ArrowUpRight className="h-4 w-4" />
         </Button>
       </div>
 
-      <p className="mt-2 text-center text-[10px] text-[var(--color-muted-foreground)]">
+      <p className="mt-2 text-center text-[10px] tint-text">
         Sinkron otomatis tiap 15 menit
       </p>
     </div>
@@ -93,8 +93,8 @@ export default function App() {
 function Row({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[var(--color-muted-foreground)]">{icon}</span>
-      <span className="flex-1 text-xs text-[var(--color-muted-foreground)]">{label}</span>
+      <span className="tint-text">{icon}</span>
+      <span className="flex-1 text-xs tint-text">{label}</span>
       {children}
     </div>
   );

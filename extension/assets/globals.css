@@ -16,8 +16,24 @@
   font-display: swap;
   src: url('./fonts/Inter-Italic.woff2') format('woff2-variations');
 }
+/* Self-hosted Lilex variable mono font (wght axis 200-700). Used for
+   mono labels & section headings. Latin & cyrillic subset. */
+@font-face {
+  font-family: 'Lilex';
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+  src: url('./fonts/Lilex-Var.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'Lilex';
+  font-style: italic;
+  font-weight: 200 700;
+  font-display: swap;
+  src: url('./fonts/Lilex-Italic-Var.woff2') format('woff2-variations');
+}
 
-/* ponytail: single dark theme (Cloudflare-dashboard inspired). Add a light
+/* Single dark theme (Cloudflare-dashboard inspired). Add a light
    variant behind a `.light` class toggle when a theme switch is requested. */
 :root {
   --radius: 0.75rem; /* Soft & modern 12px radius for cards, inputs & buttons */
@@ -33,6 +49,7 @@
   /* Subtle / Muted */
   --muted: oklch(0.22 0 0); /* Dark gray container (zinc-800) */
   --muted-foreground: oklch(0.72 0 0); /* Bright, highly legible muted text (zinc-300) */
+  --tint-foreground: oklch(0.72 0 0); /* Muted text with preset hue tint (overridden by theme.ts) */
 
   /* Borders & Inputs */
   --border: oklch(0.26 0 0); /* Crisp, visible borders (zinc-700) */
@@ -50,7 +67,9 @@
   /* States */
   --destructive: oklch(0.55 0.15 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --success: oklch(0.75 0 0);
+  --success: oklch(0.70 0.17 162);
+  --warning: oklch(0.79 0.18 85);
+  --info: oklch(0.70 0.16 237);
 }
 
 .light {
@@ -65,6 +84,7 @@
   /* Subtle / Muted */
   --muted: oklch(0.94 0 0);
   --muted-foreground: oklch(0.45 0 0);
+  --tint-foreground: oklch(0.45 0 0);
 
   /* Borders & Inputs */
   --border: oklch(0.89 0 0);
@@ -82,12 +102,14 @@
   /* States */
   --destructive: oklch(0.55 0.15 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --success: oklch(0.40 0 0);
+  --success: oklch(0.55 0.14 162);
+  --warning: oklch(0.65 0.18 70);
+  --info: oklch(0.55 0.16 237);
 }
 
 @theme inline {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-mono: 'Lilex', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -96,7 +118,9 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
+  --color-muted-foreground: var(--tint-foreground);
+  --color-tint-foreground: var(--tint-foreground);
+  --color-card-inner: var(--muted);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -109,6 +133,8 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
 
   --radius-xl: calc(var(--radius) + 4px);
   --radius-lg: var(--radius);
@@ -120,6 +146,19 @@
   * {
     border-color: var(--color-border);
   }
+  svg {
+    color: inherit;
+    transition: color 0.2s ease, fill 0.2s ease, stroke 0.2s ease;
+  }
+}
+
+/* Disable all transitions during theme application to prevent flicker.
+   Toggled by applyThemeConfig() in lib/theme.ts. */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition: none !important;
 }
 
 html, body, #root {
@@ -140,19 +179,25 @@ body {
   overflow: hidden;
 }
 
-/* Reusable section label component (system mono — Inter has no mono variant) */
+/* Reusable section label component (Lilex mono) */
 .section-label {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: 'Lilex', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
-  line-height: 1;
+  line-height: 1.15;
   user-select: none;
+  transition: color 0.2s ease;
+}
+
+/* Standardized preset tint text utility */
+.tint-text {
+  color: var(--color-muted-foreground);
 }
 
 /* Reusable inner card box container (unified across Bookmark & Dashboard) */
@@ -161,7 +206,7 @@ body {
   border-width: 1px;
   border-style: solid;
   border-color: var(--color-border);
-  background-color: color-mix(in srgb, var(--color-muted) 85%, var(--color-card));
+  background-color: var(--color-muted);
 }
 
 /* Reusable inner card tile for site icons / buttons */

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ChevronDown, ChevronRight, Folder } from 'lucide-react';
+import { AngleDown, AngleRight, Folder } from 'reicon-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -74,7 +74,7 @@ export function MergeFoldersTab({
         return (
           <React.Fragment key={group.key + groupIdx}>
             {/* Primary Folder Summary Row */}
-            <tr className="hover:bg-[var(--color-accent)]/40 transition-colors">
+            <tr className="hover:bg-accent/40 transition-colors">
               <td className="py-3 px-4 text-center">
                 <Checkbox
                   checked={isSelected}
@@ -93,7 +93,7 @@ export function MergeFoldersTab({
                   <button
                     type="button"
                     onClick={() => toggleExpandGroup(group.key)}
-                    className="p-0.5 rounded-md hover:bg-[var(--color-accent)] text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] transition-colors cursor-pointer"
+                    className="p-0.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                     title={
                       isGroupExpanded
                         ? (language === 'id' ? 'Sembunyikan detail' : 'Hide details')
@@ -101,27 +101,27 @@ export function MergeFoldersTab({
                     }
                   >
                     {isGroupExpanded ? (
-                      <ChevronDown className="h-4 w-4 text-current shrink-0" />
+                      <AngleDown className="h-4 w-4 text-current shrink-0" />
                     ) : (
-                      <ChevronRight className="h-4 w-4 text-current shrink-0" />
+                      <AngleRight className="h-4 w-4 text-current shrink-0" />
                     )}
                   </button>
                   <Folder className="h-4 w-4 text-current shrink-0" />
-                  <span className="font-bold text-[var(--color-foreground)] truncate" title={group.folderName}>
+                  <span className="font-medium text-foreground truncate" title={group.folderName}>
                     {group.folderName}
                   </span>
-                  <Badge variant="outline" className="text-[10px] font-mono border-[var(--color-border)] text-[var(--color-muted-foreground)] shrink-0 ml-1">
+                  <Badge variant="outline" className="text-[10px] font-mono border-border text-muted-foreground shrink-0 ml-1">
                     {group.folders.length} {language === 'id' ? 'folder' : 'folders'}
                   </Badge>
                 </div>
               </td>
-              <td className="py-3 px-4 font-mono text-[11px] text-[var(--color-muted-foreground)] truncate" title={primaryFolder.folderPath}>
-                <span className="font-bold text-[var(--color-foreground)]">
+              <td className="py-3 px-4 font-mono text-[11px] tint-text truncate" title={primaryFolder.folderPath}>
+                <span className="font-medium text-foreground">
                   {language === 'id' ? 'Target: ' : 'Target: '}
                 </span>
                 {primaryFolder.folderPath}
               </td>
-              <td className="py-3 px-4 text-center font-mono text-[11px] text-[var(--color-foreground)] font-bold">
+              <td className="py-3 px-4 text-center font-mono text-[11px] text-foreground font-medium">
                 {totalItemsInGroup} items
               </td>
               <td className="py-3 px-4 text-center">
@@ -129,7 +129,7 @@ export function MergeFoldersTab({
                   size="sm"
                   onClick={() => handleMergeSingle(group)}
                   disabled={isProcessing}
-                  className="h-7 px-3 rounded-lg text-[11px] font-semibold bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:opacity-90 cursor-pointer shadow-xs"
+                  className="h-7 px-3 rounded-lg text-[11px] font-semibold bg-primary text-primary-foreground hover:opacity-90 cursor-pointer"
                 >
                   <span>{language === 'id' ? 'Gabungkan' : 'Merge'}</span>
                 </Button>
@@ -139,31 +139,31 @@ export function MergeFoldersTab({
             {/* Sub-Folders List (Rendered ONLY when expanded) */}
             {isGroupExpanded &&
               group.folders.map((sec, idx) => (
-                <tr key={sec.id + idx} className="bg-[var(--color-card)]/40 hover:bg-[var(--color-accent)]/20 transition-colors animate-in fade-in duration-150">
-                  <td className="py-2 px-4 text-center font-mono text-[10px] text-[var(--color-muted-foreground)]">
+                <tr key={sec.id + idx} className="bg-card/40 hover:bg-accent/20 transition-colors animate-in fade-in duration-150">
+                  <td className="py-2 px-4 text-center font-mono text-[10px] tint-text">
                     {idx === 0 ? 'Target' : `#${idx}`}
                   </td>
                   <td className="py-2 px-4 min-w-0">
                     <div className="flex items-center gap-2 pl-6">
-                      <Folder className="h-3.5 w-3.5 text-[var(--color-muted-foreground)] shrink-0" />
-                      <span className="font-medium text-[var(--color-foreground)] text-xs truncate" title={sec.title}>
+                      <Folder className="h-3.5 w-3.5 tint-text shrink-0" />
+                      <span className="font-medium text-foreground text-xs truncate" title={sec.title}>
                         {sec.title}
                       </span>
                     </div>
                   </td>
-                  <td className="py-2 px-4 text-[var(--color-muted-foreground)] font-mono text-[11px] truncate" title={sec.folderPath}>
+                  <td className="py-2 px-4 tint-text font-mono text-[11px] truncate" title={sec.folderPath}>
                     {sec.folderPath}
                   </td>
-                  <td className="py-2 px-4 text-center text-[var(--color-muted-foreground)] font-mono text-[11px]">
+                  <td className="py-2 px-4 text-center tint-text font-mono text-[11px]">
                     {sec.itemCount} items
                   </td>
                   <td className="py-2 px-4 text-center">
                     {idx === 0 ? (
-                      <Badge className="bg-[var(--color-primary)] text-[var(--color-primary-foreground)] text-[9px] uppercase font-bold px-1.5 py-0.5 rounded-md">
+                      <Badge className="bg-primary text-primary-foreground text-[9px] uppercase font-medium px-1.5 py-0.5 rounded-md">
                         {language === 'id' ? 'Folder Utama' : 'Primary'}
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="text-[9px] uppercase font-bold text-rose-500 border-rose-500/30 bg-rose-500/10 rounded-md">
+                      <Badge variant="outline" className="text-[9px] uppercase font-medium text-destructive border-destructive/30 bg-destructive/10 rounded-md">
                         {language === 'id' ? 'Akan Dibuang' : 'Will Trash'}
                       </Badge>
                     )}

@@ -1,6 +1,6 @@
 // Syntive backend — Cloudflare Worker + D1.
 // Zero-knowledge: stores only opaque AES-GCM ciphertext blobs keyed by authId.
-// ponytail: native fetch handler + tiny router. No framework dep. Add Hono if
+// Native fetch handler + tiny router. No framework dep. Add Hono if
 // middleware (validation/sessions) grows beyond a few routes.
 
 interface Env {
@@ -11,7 +11,7 @@ const AUTH_RE = /^[0-9a-f]{64}$/; // 32-byte authId as 64 hex chars
 const RATE_WINDOW_MS = 60_000;
 const RATE_MAX = 120; // requests per authId per minute
 
-// ponytail: in-memory rate limit. Resets on isolate cold start; good enough for
+// In-memory rate limit. Resets on isolate cold start; good enough for
 // an MVP. Upgrade to a Durable Object counter if abuse is observed.
 const rate = new Map<string, { count: number; reset: number }>();
 

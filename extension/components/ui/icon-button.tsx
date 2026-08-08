@@ -7,11 +7,11 @@ export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
 }
 
 const variantStyles = {
-  default: 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:opacity-90',
-  outline: 'border border-[var(--color-border)] bg-[var(--color-card)] hover:bg-[var(--color-accent)] text-[var(--color-foreground)] shadow-xs',
-  ghost: 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)]/50',
-  accent: 'bg-[var(--color-accent)] text-[var(--color-foreground)] border border-[var(--color-border)]/50 hover:bg-[var(--color-accent)]/80 shadow-xs',
-  destructive: 'bg-rose-500/10 text-rose-500 border border-rose-500/20 hover:bg-rose-500/20',
+  default: 'bg-(--color-primary) text-(--color-primary-foreground) hover:opacity-90',
+  outline: 'border border-(--color-border) bg-(--color-card) hover:bg-(--color-accent) text-(--color-foreground)',
+  ghost: 'tint-text hover:text-(--color-foreground) hover:bg-(--color-accent)/50',
+  accent: 'bg-(--color-accent) text-(--color-foreground) border border-(--color-border) hover:bg-(--color-accent)/80',
+  destructive: 'bg-(--color-destructive)/10 text-(--color-destructive) border border-(--color-destructive)/20 hover:bg-(--color-destructive)/20',
 };
 
 const sizeStyles = {
@@ -30,7 +30,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
         ref={ref}
         type="button"
         className={cn(
-          'flex items-center justify-center shrink-0 transition-all cursor-pointer select-none active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] disabled:pointer-events-none disabled:opacity-50',
+          'flex items-center justify-center shrink-0 transition-all cursor-pointer select-none active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
           variantStyles[variant],
           sizeStyles[size],
           className

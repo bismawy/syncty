@@ -18,8 +18,8 @@ export function ToggleChip({ selected = false, icon, children, className, ...pro
       className={cn(
         'flex items-center justify-center gap-2 py-2 px-3 rounded-xl border text-xs font-medium transition-all cursor-pointer select-none',
         selected
-          ? 'bg-[var(--color-accent)] border-[var(--color-border)] text-[var(--color-foreground)] font-semibold shadow-xs'
-          : 'bg-[var(--color-background)] border-[var(--color-border)]/60 text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
+          ? 'bg-accent border-border text-primary font-semibold'
+          : 'bg-background border-border tint-text hover:text-foreground hover:bg-accent/30',
         className
       )}
       {...props}

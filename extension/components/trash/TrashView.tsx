@@ -1,14 +1,14 @@
 import * as React from 'react';
 import {
   Trash2,
-  RotateCcw,
-  Search,
+  RotateLeft,
+Search4,
   Folder,
   Clock,
-  ExternalLink,
-  CheckCircle2,
-  RefreshCw,
-} from 'lucide-react';
+  ArrowUpRight,
+  CheckCircle,
+  Refresh,
+} from 'reicon-react';
 import {
   getTrashItems,
   restoreFromTrash,
@@ -23,6 +23,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { FaviconImage } from '@/components/ui/FaviconImage';
 import { Pagination } from '@/components/bookmark/Pagination';
+import { cn } from '@/lib/utils';
 
 const ITEMS_PER_PAGE = 12;
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
@@ -176,25 +177,25 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
   const now = Date.now();
 
   return (
-    <div className="flex-1 w-full min-w-0 h-full overflow-y-auto px-8 pt-[89px] pb-8 select-none">
+    <div className="flex-1 w-full min-w-0 h-full overflow-y-auto px-8 pt-22.25 pb-8 select-none">
       <div className="w-full space-y-3">
         {/* Notice Banner (Success notification) */}
         {notice && (
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold animate-in fade-in duration-200">
-            <CheckCircle2 className="h-4 w-4 shrink-0" />
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-success/10 border border-success/20 text-success text-xs font-semibold animate-in fade-in duration-200">
+            <CheckCircle className="h-4 w-4 shrink-0" />
             <span>{notice}</span>
           </div>
         )}
 
-        {/* 30-Day Auto Cleanup Info Alert Banner */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-2xl border border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5 text-xs backdrop-blur-md">
+        {/* 30-Day Auto Cleanup InfoCircle Alert Banner */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-2xl border border-primary/20 bg-primary/5 text-xs backdrop-blur-md">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="p-1.5 rounded-xl bg-[var(--color-primary)]/10 text-[var(--color-primary)] shrink-0">
+            <div className="p-1.5 rounded-xl bg-primary/10 text-primary shrink-0">
               <Clock className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <span className="font-bold text-[var(--color-foreground)]">{t('trashNoticeTitle')}</span>
-              <span className="text-[var(--color-muted-foreground)] ml-2 truncate block sm:inline">
+              <span className="font-medium text-foreground">{t('trashNoticeTitle')}</span>
+              <span className="tint-text ml-2 truncate block sm:inline">
                 {t('trashNoticeDesc')}
               </span>
             </div>
@@ -204,7 +205,7 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
               variant="destructive"
               size="sm"
               onClick={handleEmptyTrash}
-              className="rounded-xl h-7 px-3 text-xs font-semibold shrink-0 cursor-pointer flex items-center gap-1.5 shadow-xs self-start sm:self-auto"
+              className="rounded-xl h-7 px-3 text-xs font-semibold shrink-0 cursor-pointer flex items-center gap-1.5 self-start sm:self-auto"
             >
               <Trash2 className="h-3.5 w-3.5" />
               <span>{t('emptyTrashBtn')}</span>
@@ -218,7 +219,7 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
           <div className="flex flex-wrap items-center gap-2 text-xs">
             {/* Search Input */}
             <div className="relative w-56 shrink-0">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--color-muted-foreground)]" />
+              <Search4 className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 tint-text" />
               <Input
                 type="text"
                 value={query}
@@ -227,25 +228,26 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                   setPage(1);
                 }}
                 placeholder={t('searchTrashPlaceholder')}
-                className="pl-8 pr-3 h-8 text-xs rounded-xl bg-[var(--color-card)] border-[var(--color-border)] text-[var(--color-foreground)] placeholder:text-[var(--color-muted-foreground)]"
+                className="pl-8 pr-3 h-8 text-xs rounded-xl bg-card border-border text-foreground placeholder:text-tint-foreground"
               />
             </div>
 
             {/* Filter Pills */}
-            <div className="flex items-center gap-1 p-0.5 rounded-xl bg-[var(--color-card)] border border-[var(--color-border)]">
+            <div className="flex items-center rounded-xl border border-border p-1 bg-card/60 shrink-0 gap-1 select-none">
               <button
                 type="button"
                 onClick={() => {
                   setFilter('all');
                   setPage(1);
                 }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                className={cn(
+                  'flex items-center gap-1.5 rounded-lg px-3 h-6 text-xs font-medium transition-all select-none cursor-pointer',
                   filter === 'all'
-                    ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] border border-[var(--color-border)]/50'
-                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]'
-                }`}
+                    ? 'bg-accent text-primary font-semibold border border-border'
+                    : 'tint-text hover:text-foreground hover:bg-accent/30'
+                )}
               >
-                {t('filterAll')} ({items.length})
+                <span>{t('filterAll')} ({items.length})</span>
               </button>
               <button
                 type="button"
@@ -253,13 +255,14 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                   setFilter('folders');
                   setPage(1);
                 }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                className={cn(
+                  'flex items-center gap-1.5 rounded-lg px-3 h-6 text-xs font-medium transition-all select-none cursor-pointer',
                   filter === 'folders'
-                    ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] border border-[var(--color-border)]/50'
-                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]'
-                }`}
+                    ? 'bg-accent text-primary font-semibold border border-border'
+                    : 'tint-text hover:text-foreground hover:bg-accent/30'
+                )}
               >
-                {t('filterFolders')} ({items.filter((i) => !i.url).length})
+                <span>{t('filterFolders')} ({items.filter((i) => !i.url).length})</span>
               </button>
               <button
                 type="button"
@@ -267,13 +270,14 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                   setFilter('links');
                   setPage(1);
                 }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                className={cn(
+                  'flex items-center gap-1.5 rounded-lg px-3 h-6 text-xs font-medium transition-all select-none cursor-pointer',
                   filter === 'links'
-                    ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] border border-[var(--color-border)]/50'
-                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]'
-                }`}
+                    ? 'bg-accent text-primary font-semibold border border-border'
+                    : 'tint-text hover:text-foreground hover:bg-accent/30'
+                )}
               >
-                {t('filterLinks')} ({items.filter((i) => !!i.url).length})
+                <span>{t('filterLinks')} ({items.filter((i) => !!i.url).length})</span>
               </button>
             </div>
 
@@ -283,12 +287,12 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                 <Button
                   onClick={handleRestoreSelected}
                   disabled={isRestoring}
-                  className="flex items-center gap-1.5 h-8 px-3 text-xs rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold shadow-xs cursor-pointer active:scale-95 transition-all"
+                  className="flex items-center gap-1.5 h-8 px-3 text-xs rounded-xl bg-success hover:opacity-90 text-white font-semibold cursor-pointer active:scale-95 transition-all"
                 >
                   {isRestoring ? (
-                    <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                    <Refresh className="h-3.5 w-3.5 animate-spin" />
                   ) : (
-                    <RotateCcw className="h-3.5 w-3.5" />
+                    <RotateLeft className="h-3.5 w-3.5" />
                   )}
                   <span>{t('restoreSelected', { count: selectedIds.size })}</span>
                 </Button>
@@ -296,10 +300,10 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                 <Button
                   onClick={handleDeleteSelectedPermanent}
                   disabled={isDeleting}
-                  className="flex items-center gap-1.5 h-8 px-3 bg-rose-500 hover:bg-rose-600 text-white font-semibold text-xs rounded-xl shadow-xs cursor-pointer active:scale-95 transition-all"
+                  className="flex items-center gap-1.5 h-8 px-3 bg-destructive hover:opacity-90 text-white font-semibold text-xs rounded-xl cursor-pointer active:scale-95 transition-all"
                 >
                   {isDeleting ? (
-                    <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                    <Refresh className="h-3.5 w-3.5 animate-spin" />
                   ) : (
                     <Trash2 className="h-3.5 w-3.5" />
                   )}
@@ -310,10 +314,10 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
           </div>
 
           {/* Right Summary Status & Pagination */}
-          <div className="flex items-center gap-3 text-xs font-semibold text-[var(--color-foreground)] shrink-0">
+          <div className="flex items-center gap-3 text-xs font-semibold text-foreground shrink-0">
             {filteredItems.length > 0 && (
               <div className="flex items-center gap-2.5">
-                <span className="text-xs font-medium text-[var(--color-muted-foreground)]">
+                <span className="text-xs font-medium tint-text">
                   Total {filteredItems.length} item
                 </span>
                 {pageCount > 1 && <Pagination page={page} pageCount={pageCount} onChange={setPage} />}
@@ -323,11 +327,11 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
         </div>
 
         {/* Fixed Table Layout Container */}
-        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] overflow-hidden shadow-xs">
+        <div className="rounded-2xl border border-border bg-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse table-fixed">
               <thead>
-                <tr className="border-b border-[var(--color-border)] bg-[var(--color-background)]/60 text-[var(--color-muted-foreground)] font-semibold select-none">
+                <tr className="border-b border-border bg-background/60 tint-text font-medium select-none">
                   <th className="py-2.5 px-4 w-12 text-center">
                     <Checkbox
                       checked={isAllChecked}
@@ -342,13 +346,13 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                   <th className="py-2.5 px-4 w-28 text-center">{t('colAction')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--color-border)]/40">
+              <tbody className="divide-y divide-border/40">
                 {/* State 1: Loading */}
                 {loading && (
                   <tr>
-                    <td colSpan={6} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
+                    <td colSpan={6} className="py-14 px-4 text-center text-xs text-muted-foreground">
                       <div className="flex items-center justify-center gap-2">
-                        <RefreshCw className="h-4 w-4 animate-spin text-[var(--color-primary)]" />
+                        <Refresh className="h-4 w-4 animate-spin text-primary" />
                         <span>{t('githubLoading')}</span>
                       </div>
                     </td>
@@ -358,13 +362,13 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                 {/* State 2: Empty Trash / No Search Results */}
                 {!loading && filteredItems.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="py-14 px-4 text-center text-xs text-[var(--color-muted-foreground)]">
+                    <td colSpan={6} className="py-14 px-4 text-center text-xs text-muted-foreground">
                       <div className="flex flex-col items-center justify-center space-y-2">
-                        <div className="p-3 rounded-full bg-[var(--color-accent)] text-[var(--color-muted-foreground)]">
+                        <div className="p-3 rounded-full bg-accent tint-text">
                           <Trash2 className="h-6 w-6" />
                         </div>
-                        <p className="font-semibold text-[var(--color-foreground)]">{t('trashEmptyTitle')}</p>
-                        <p className="text-[11px] text-[var(--color-muted-foreground)] max-w-xs">
+                        <p className="font-semibold text-foreground">{t('trashEmptyTitle')}</p>
+                        <p className="text-[11px] tint-text max-w-xs">
                           {t('trashEmptyDesc')}
                         </p>
                       </div>
@@ -387,8 +391,8 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                         onClick={() => handleToggleItem(item.id)}
                         className={`cursor-pointer transition-colors ${
                           isChecked
-                            ? 'bg-rose-500/5 hover:bg-rose-500/10'
-                            : 'hover:bg-[var(--color-accent)]/20'
+                            ? 'bg-(--color-destructive)/5 hover:bg-(--color-destructive)/10'
+                            : 'hover:bg-(--color-accent)/20'
                         }`}
                       >
                         <td className="py-2.5 px-4 text-center select-none" onClick={(e) => e.stopPropagation()}>
@@ -399,23 +403,23 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                         </td>
                         <td className="py-2.5 px-4 min-w-0">
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <div className="p-1.5 rounded-lg bg-[var(--color-accent)] shrink-0 border border-[var(--color-border)] flex items-center justify-center h-8 w-8">
+                            <div className="p-1.5 rounded-lg bg-accent shrink-0 border border-border flex items-center justify-center h-8 w-8">
                               {item.url ? (
                                 <FaviconImage url={item.url} className="h-4 w-4 object-contain" />
                               ) : (
-                                <Folder className="h-4 w-4 text-amber-500" />
+                                <Folder className="h-4 w-4 text-warning" />
                               )}
                             </div>
                             <div className="space-y-0.5 min-w-0">
-                              <div className="font-semibold text-[var(--color-foreground)] truncate" title={item.title}>
+                              <div className="font-semibold text-foreground truncate" title={item.title}>
                                 {item.title}
                               </div>
                               {item.url ? (
-                                <div className="text-[11px] font-mono text-[var(--color-muted-foreground)] truncate" title={item.url}>
+                                <div className="text-[11px] font-mono tint-text truncate" title={item.url}>
                                   {item.url}
                                 </div>
                               ) : (
-                                <div className="text-[11px] font-mono text-[var(--color-muted-foreground)]">
+                                <div className="text-[11px] font-mono tint-text">
                                   {item.children?.length ?? 0} items inside
                                 </div>
                               )}
@@ -434,12 +438,12 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                           )}
                         </td>
                         <td className="py-2.5 px-4 w-36 text-center">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 font-mono text-[10px] font-semibold whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-warning/10 text-warning font-mono text-[10px] font-semibold whitespace-nowrap">
                             <Clock className="h-3 w-3 shrink-0" />
                             <span>{t('daysLeft', { days: daysLeft })}</span>
                           </span>
                         </td>
-                        <td className="py-2.5 px-4 w-32 text-center text-[11px] font-mono text-[var(--color-muted-foreground)]">
+                        <td className="py-2.5 px-4 w-32 text-center text-[11px] font-mono tint-text">
                           {item.deletedAt ? new Date(item.deletedAt).toLocaleDateString() : '-'}
                         </td>
                         <td className="py-2.5 px-4 w-28 text-center" onClick={(e) => e.stopPropagation()}>
@@ -448,17 +452,17 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                               variant="outline"
                               size="sm"
                               onClick={() => handleRestore(item.id)}
-                              className="h-7 w-7 p-0 rounded-lg bg-[var(--color-background)] hover:bg-[var(--color-accent)] border-[var(--color-border)] text-[var(--color-foreground)] flex items-center justify-center cursor-pointer"
+                              className="h-7 w-7 p-0 rounded-lg bg-background hover:bg-accent border-border text-foreground flex items-center justify-center cursor-pointer"
                               title={t('restoreBtn')}
                             >
-                              <RotateCcw className="h-3.5 w-3.5 text-emerald-500" />
+                              <RotateLeft className="h-3.5 w-3.5 text-success" />
                             </Button>
 
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleDeletePermanent(item)}
-                              className="h-7 w-7 p-0 rounded-lg text-[var(--color-muted-foreground)] hover:text-rose-500 hover:bg-rose-500/10 flex items-center justify-center cursor-pointer"
+                              className="h-7 w-7 p-0 rounded-lg tint-text hover:text-destructive hover:bg-destructive/10 flex items-center justify-center cursor-pointer"
                               title={t('deletePermanentBtn')}
                             >
                               <Trash2 className="h-3.5 w-3.5" />
@@ -469,10 +473,10 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
                                 href={item.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex p-1.5 rounded-lg text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)] transition-colors"
+                                className="inline-flex p-1.5 rounded-lg tint-text hover:text-foreground hover:bg-accent transition-colors"
                                 title="Buka URL di tab baru"
                               >
-                                <ExternalLink className="h-3.5 w-3.5" />
+                                <ArrowUpRight className="h-3.5 w-3.5" />
                               </a>
                             )}
                           </div>
@@ -485,9 +489,9 @@ export function TrashView({ onTrashChange }: { onTrashChange?: () => void }) {
           </div>
         </div>
 
-        {/* Bottom Pagination Info */}
+        {/* Bottom Pagination InfoCircle */}
         {!loading && pageCount > 1 && (
-          <div className="flex items-center justify-between px-2 py-1 text-xs text-[var(--color-muted-foreground)]">
+          <div className="flex items-center justify-between px-2 py-1 text-xs tint-text">
             <div>
               {t('showingTrashPageText', { page, pageCount, totalItems: filteredItems.length })}
             </div>

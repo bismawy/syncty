@@ -14,12 +14,12 @@ const sizeStyles = {
 
 /**
  * Muted description text used throughout modals, panels, and settings.
- * Replaces the 14+ inline occurrences of `text-[10/11px] text-[var(--color-muted-foreground)] leading-relaxed`.
+ * Replaces the 14+ inline occurrences of `text-[10/11px] text-(--color-muted-foreground) leading-relaxed`.
  */
 export function MutedText({ size = 'xs', as: Tag = 'p', className, children, ...props }: MutedTextProps) {
   return (
     <Tag
-      className={cn(sizeStyles[size], 'text-[var(--color-muted-foreground)] leading-relaxed', className)}
+      className={cn(sizeStyles[size], 'text-muted-foreground leading-relaxed', className)}
       {...props}
     >
       {children}

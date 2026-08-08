@@ -11,12 +11,12 @@ interface PanelHeaderProps {
 
 /**
  * Icon + title row used inside Panel containers. Replaces the repeated inline:
- * `flex items-center gap-2 font-bold text-[var(--color-foreground)] text-xs`
+ * `flex items-center gap-2 font-medium text-(--color-foreground) text-xs`
  */
 export function PanelHeader({ icon, title, action, className }: PanelHeaderProps) {
   return (
     <div className={cn('flex items-center justify-between', className)}>
-      <div className="flex items-center gap-2 font-bold text-[var(--color-foreground)] text-xs">
+      <div className="flex items-center gap-2 font-medium text-foreground text-xs">
         {icon}
         <span>{title}</span>
       </div>

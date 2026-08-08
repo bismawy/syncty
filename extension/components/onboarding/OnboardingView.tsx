@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Download, Copy, Check, ShieldCheck, ArrowLeft, RefreshCw, Languages } from 'lucide-react';
+import { Download, Copy, Check, ShieldCheck, ArrowLeft, Refresh, Language } from 'reicon-react';
 import { Button } from '@/components/ui/button';
 import { generateMnemonic, normalizeMnemonic, validateMnemonic, mnemonicToTextFile } from '@/lib/mnemonic';
 import { deriveKeys } from '@/lib/crypto';
@@ -93,8 +93,8 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
     <div className="relative flex min-h-screen w-full items-center justify-center p-4 select-none overflow-hidden bg-[#050505] text-white">
       {/* 1. Abstract Blurred Dot Clusters & Glows at Top-Right & Bottom-Left */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {/* Top-Right Dot Cluster + Emerald Glow */}
-        <div className="absolute -top-16 -right-16 h-[440px] w-[440px] opacity-80">
+        {/* Top-Right Dot Cluster + Success Glow */}
+        <div className="absolute -top-16 -right-16 h-110 w-110 opacity-80">
           <div
             className="absolute inset-0 blur-[0.5px]"
             style={{
@@ -104,11 +104,11 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
               WebkitMaskImage: 'radial-gradient(circle at 80% 20%, black 25%, transparent 75%)',
             }}
           />
-          <div className="absolute top-0 right-0 h-72 w-72 rounded-full bg-emerald-500/20 blur-[100px]" />
+          <div className="absolute top-0 right-0 h-72 w-72 rounded-full bg-success/20 blur-[100px]" />
         </div>
 
         {/* Bottom-Left Dot Cluster + Teal Glow */}
-        <div className="absolute -bottom-16 -left-16 h-[440px] w-[440px] opacity-80">
+        <div className="absolute -bottom-16 -left-16 h-110 w-110 opacity-80">
           <div
             className="absolute inset-0 blur-[0.5px]"
             style={{
@@ -124,7 +124,7 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
 
       {/* Security & Encryption Note at Bottom-Left Corner */}
       <div className="fixed bottom-4 left-4 z-20 hidden sm:flex items-center gap-2 text-[11px] text-zinc-400 font-sans backdrop-blur-xl bg-zinc-950/60 px-3.5 py-1.5 rounded-full border border-white/15 shadow-lg select-none">
-        <ShieldCheck className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+        <ShieldCheck className="h-3.5 w-3.5 text-success shrink-0" />
         <span>{t('onboardingSecurityNote')}</span>
       </div>
 
@@ -137,7 +137,7 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-950/60 hover:bg-zinc-900/80 border border-white/15 text-zinc-200 transition-all cursor-pointer shadow-lg backdrop-blur-xl active:scale-95 text-xs font-semibold"
               title="Pilih Bahasa / Change Language"
             >
-              <Languages className="h-3.5 w-3.5 text-zinc-400" />
+              <Language className="h-3.5 w-3.5 text-zinc-400" />
               <span className="uppercase font-mono font-semibold text-xs">
                 {language === 'id' ? 'ID' : 'EN'}
               </span>
@@ -153,7 +153,7 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
               className="flex items-center justify-between px-3 py-2 text-xs rounded-xl cursor-pointer hover:bg-white/10 focus:bg-white/10 text-zinc-100"
             >
               <span className="font-medium">Bahasa Indonesia</span>
-              {language === 'id' && <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0 ml-2" />}
+              {language === 'id' && <Check className="h-3.5 w-3.5 text-success shrink-0 ml-2" />}
             </DropdownMenuItem>
 
             <DropdownMenuItem
@@ -161,7 +161,7 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
               className="flex items-center justify-between px-3 py-2 text-xs rounded-xl cursor-pointer hover:bg-white/10 focus:bg-white/10 text-zinc-100"
             >
               <span className="font-medium">English</span>
-              {language === 'en' && <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0 ml-2" />}
+              {language === 'en' && <Check className="h-3.5 w-3.5 text-success shrink-0 ml-2" />}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -169,7 +169,7 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
 
       {/* Main Landing / Login Modal (High-Vibrancy Glassmorphism) */}
       {mode === 'choose' && (
-        <div className="relative z-10 w-full max-w-[420px] rounded-3xl border border-white/20 bg-zinc-950/45 p-8 sm:p-9 shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-3xl flex flex-col items-center text-center space-y-6">
+        <div className="relative z-10 w-full max-w-105 rounded-3xl border border-white/20 bg-zinc-950/45 p-8 sm:p-9 shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-3xl flex flex-col items-center text-center space-y-6">
           {/* Original Light Logo */}
           <div className="py-1">
             <img
@@ -183,7 +183,7 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
           <div className="w-full space-y-1.5 text-left">
             <input
               type="text"
-              className="w-full h-14 bg-black/60 border border-white/15 rounded-2xl px-4 text-center font-mono text-xs sm:text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/60 transition-all shadow-inner backdrop-blur-md"
+              className="w-full h-14 bg-black/60 border border-white/15 rounded-2xl px-4 text-center font-mono text-xs sm:text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-success/60 focus:ring-1 focus:ring-success/60 transition-all shadow-inner backdrop-blur-md"
               placeholder={t('onboardingPlaceholder')}
               value={importText}
               onChange={(e) => {
@@ -195,7 +195,7 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
               }}
             />
             {error && (
-              <p className="text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl text-center">
+              <p className="text-xs text-destructive bg-destructive/10 border border-destructive/20 p-2.5 rounded-xl text-center">
                 {error}
               </p>
             )}
@@ -233,10 +233,10 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
 
       {/* Optimized Create Secret Key Card (High-Vibrancy Glassmorphism) */}
       {mode === 'create' && (
-        <div className="relative z-10 w-full max-w-[540px] rounded-3xl border border-white/20 bg-zinc-950/45 p-6 sm:p-8 shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-3xl space-y-5">
+        <div className="relative z-10 w-full max-w-135 rounded-3xl border border-white/20 bg-zinc-950/45 p-6 sm:p-8 shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-3xl space-y-5">
           {/* Header */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[#00E676] font-semibold text-base sm:text-lg">
+            <div className="flex items-center gap-2 text-success font-semibold text-base sm:text-lg">
               <ShieldCheck className="h-5 w-5" />
               <span>{t('onboardingTitleCreate')}</span>
             </div>
@@ -246,7 +246,7 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
               onClick={generate}
               className="h-7 px-2 text-xs text-zinc-400 hover:text-white hover:bg-white/10"
             >
-              <RefreshCw className="h-3.5 w-3.5 mr-1" />
+              <Refresh className="h-3.5 w-3.5 mr-1" />
               <span>{t('onboardingRegenerate')}</span>
             </Button>
           </div>
@@ -257,7 +257,7 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
               {mnemonic.split(' ').map((w, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-1.5 rounded-xl bg-white/[0.04] border border-white/10 px-2.5 py-2 font-mono text-xs text-zinc-100 min-w-0 overflow-hidden shadow-inner"
+                  className="flex items-center gap-1.5 rounded-xl bg-white/4 border border-white/10 px-2.5 py-2 font-mono text-xs text-zinc-100 min-w-0 overflow-hidden shadow-inner"
                 >
                   <span className="text-[10px] text-zinc-500 shrink-0 font-sans">{i + 1}.</span>
                   <span className="font-medium text-xs text-zinc-100 truncate">{w}</span>
@@ -283,19 +283,19 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
               onClick={copy}
               className="flex-1 border-white/15 bg-white/5 hover:bg-white/15 text-zinc-200 h-9 text-xs font-medium rounded-xl backdrop-blur-md"
             >
-              {copied ? <Check className="h-3.5 w-3.5 mr-1.5 text-[#00E676]" /> : <Copy className="h-3.5 w-3.5 mr-1.5" />}
+              {copied ? <Check className="h-3.5 w-3.5 mr-1.5 text-success" /> : <Copy className="h-3.5 w-3.5 mr-1.5" />}
               <span>{copied ? t('onboardingCopied') : t('onboardingCopy')}</span>
             </Button>
           </div>
 
           {saved && (
-            <p className="flex items-center gap-1.5 text-xs text-[#00E676] bg-[#00E676]/10 border border-[#00E676]/20 p-2.5 rounded-xl backdrop-blur-sm">
+            <p className="flex items-center gap-1.5 text-xs text-success bg-success/10 border border-success/20 p-2.5 rounded-xl backdrop-blur-sm">
               <Check className="h-4 w-4 shrink-0" /> {t('onboardingDownloadedMsg')}
             </p>
           )}
 
           {error && (
-            <p className="text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl backdrop-blur-sm">
+            <p className="text-xs text-destructive bg-destructive/10 border border-destructive/20 p-2.5 rounded-xl backdrop-blur-sm">
               {error}
             </p>
           )}

@@ -1,24 +1,25 @@
 import * as React from 'react';
 import {
-  LayoutDashboard,
+  Home,
   Bookmark,
   Trash2,
   Sun,
   Moon,
   Laptop,
   Settings,
-  RefreshCw,
-  PanelLeftClose,
-  FolderGit2,
+  Refresh,
+  Sidebar2,
+  Library,
   Heart,
-} from 'lucide-react';
+} from 'reicon-react';
 import { toolbarId } from '@/components/bookmark/useBookmarks';
+import { computeBookmarkStats } from '@/lib/bookmarkStats';
 import { SettingsModal } from '@/components/modals/SettingsModal';
 import { SupportModal } from '@/components/modals/SupportModal';
 import { Header } from './Header';
 import { DashboardView } from '@/components/dashboard/DashboardView';
 import { BookmarkView } from '@/components/bookmark/BookmarkView';
-import { BookmarkManagementView } from '@/components/tools/BookmarkManagementView';
+import { BookmarkManagementView } from '@/components/management/BookmarkManagementView';
 import { TrashView } from '@/components/trash/TrashView';
 import { getTrashItems } from '@/lib/trash';
 import type { SyncStatus } from '@/lib/types';
@@ -55,6 +56,44 @@ function SidebarNavItem({
   title,
   className,
 }: SidebarNavItemProps) {
+  const iconClassName = (icon as React.ReactElement<{ className?: string }> | null)?.props?.className;
+
+  const renderIcon = React.useCallback(
+    (weight: 'Filled' | 'Outline') => {
+      if (!React.isValidElement(icon)) return icon;
+      return React.cloneElement(icon as React.ReactElement<{ weight?: string; className?: string }>, {
+        weight,
+      });
+    },
+    [icon]
+  );
+
+  // Render outline + filled stacked and crossfade between them so the
+  // weight change animates smoothly (path swap alone isn't CSS-animatable).
+  const displayIcon = React.isValidElement(icon) ? (
+    <span className={cn('relative inline-flex items-center justify-center', iconClassName)}>
+      <span
+        className={cn(
+          'absolute inset-0 flex items-center justify-center transition-all duration-200 ease-out',
+          isActive ? 'opacity-0 scale-100' : 'opacity-100 scale-100'
+        )}
+        aria-hidden
+      >
+        {renderIcon('Outline')}
+      </span>
+      <span
+        className={cn(
+          'flex items-center justify-center transition-all duration-200 ease-out',
+          isActive ? 'opacity-100 scale-110' : 'opacity-0 scale-100'
+        )}
+      >
+        {renderIcon('Filled')}
+      </span>
+    </span>
+  ) : (
+    icon
+  );
+
   if (collapsed) {
     return (
       <button
@@ -62,14 +101,14 @@ function SidebarNavItem({
         onClick={onClick}
         title={title || label}
         className={cn(
-          'relative flex items-center justify-center h-10 w-10 rounded-xl transition-colors cursor-pointer border',
+          'relative flex items-center justify-center h-10 w-10 rounded-xl transition-all duration-200 cursor-pointer border',
           isActive
-            ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] border-[var(--color-border)]/50'
-            : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)]/50 border-transparent',
+            ? 'bg-accent text-primary border-border'
+            : 'tint-text hover:text-foreground hover:bg-accent/50 border-transparent',
           className
         )}
       >
-        <span className="shrink-0">{icon}</span>
+        <span className={cn('shrink-0', isActive && 'text-primary')}>{displayIcon}</span>
         {badge}
       </button>
     );
@@ -83,14 +122,14 @@ function SidebarNavItem({
       className={cn(
         'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer select-none border',
         isActive
-          ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] border-[var(--color-border)]/50'
-          : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)]/50 border-transparent',
+          ? 'bg-accent text-primary border-border'
+          : 'tint-text hover:text-foreground hover:bg-accent/50 border-transparent',
         className
       )}
     >
       <div className="flex items-center gap-3 min-w-0 truncate">
-        <span className="shrink-0">{icon}</span>
-        <span className="truncate">{label}</span>
+        <span className={cn('shrink-0 self-center flex items-center justify-center', isActive && 'text-primary')}>{displayIcon}</span>
+        <span className="truncate leading-tight self-center">{label}</span>
       </div>
       {badge && <span className="shrink-0 ml-2">{badge}</span>}
     </button>
@@ -139,7 +178,7 @@ function SidebarHeader({
         onClick={onToggleCollapse}
         title={t('collapseSidebar')}
       >
-        <PanelLeftClose className="h-4 w-4" />
+        <Sidebar2 className="h-4 w-4" />
       </IconButton>
     </div>
   );
@@ -150,7 +189,7 @@ function AvatarInitial({ label, size }: { label: string; size: 'sm' | 'md' }) {
     <div
       title={label}
       className={cn(
-        'rounded-full border border-[var(--color-border)] bg-[var(--color-accent)] text-[var(--color-foreground)] shrink-0 shadow-xs flex items-center justify-center font-bold uppercase select-none',
+        'rounded-full border border-border bg-accent text-foreground shrink-0 flex items-center justify-center font-medium uppercase select-none',
         size === 'sm' ? 'h-8 w-8 text-xs' : 'h-10 w-10 text-sm'
       )}
     >
@@ -176,7 +215,7 @@ function SidebarProfileCard({
 
   if (collapsed) {
     return (
-      <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)]/60 p-2 flex flex-col items-center gap-2 shadow-xs w-full">
+      <div className="rounded-2xl border border-border bg-background/60 p-2 flex flex-col items-center gap-2 w-full">
         <AvatarInitial label={deviceLabel} size="sm" />
         <IconButton
           variant="outline"
@@ -185,21 +224,21 @@ function SidebarProfileCard({
           disabled={syncing}
           title={syncing ? t('syncingButton') : `${t('syncButton')} (${lastSyncText})`}
         >
-          <RefreshCw className={cn('h-3.5 w-3.5 text-[var(--color-primary)]', syncing && 'animate-spin')} />
+          <Refresh className={cn('h-3.5 w-3.5 text-primary', syncing && 'animate-spin')} />
         </IconButton>
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)]/60 p-3 space-y-3 shadow-xs">
+    <div className="rounded-2xl border border-border bg-background/60 p-3 space-y-3">
       <div className="flex items-center gap-3">
         <AvatarInitial label={deviceLabel} size="md" />
         <div className="flex flex-col min-w-0 flex-1">
-          <span className="text-xs font-semibold text-[var(--color-foreground)] truncate">
+          <span className="text-xs font-semibold text-foreground truncate">
             {deviceLabel}
           </span>
-          <span className="text-[10px] text-[var(--color-muted-foreground)] font-mono truncate">
+          <span className="text-[10px] tint-text font-mono truncate">
             {lastSyncText}
           </span>
         </div>
@@ -208,11 +247,11 @@ function SidebarProfileCard({
       <Button
         variant="outline"
         size="sm"
-        className="w-full h-8 text-xs font-semibold rounded-xl bg-[var(--color-card)] hover:bg-[var(--color-accent)] border-[var(--color-border)] text-[var(--color-foreground)] flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+        className="w-full h-8 text-xs font-semibold rounded-xl bg-card hover:bg-accent border-border text-foreground flex items-center justify-center gap-2 cursor-pointer"
         onClick={onSync}
         disabled={syncing}
       >
-        <RefreshCw className={cn('h-3.5 w-3.5 text-[var(--color-primary)]', syncing && 'animate-spin')} />
+        <Refresh className={cn('h-3.5 w-3.5 text-primary', syncing && 'animate-spin')} />
         <span>{syncing ? t('syncingButton') : t('syncButton')}</span>
       </Button>
     </div>
@@ -264,7 +303,7 @@ function SidebarFooter({
     return (
       <div className="flex flex-col items-center gap-2 w-full">
         <SidebarNavItem
-          icon={<Heart className="h-4.5 w-4.5 text-rose-500 fill-rose-500/20" />}
+          icon={<Heart className="h-4.5 w-4.5 text-destructive fill-destructive/20" />}
           label={t('headerSupport')}
           onClick={onOpenSupport}
           collapsed={true}
@@ -285,11 +324,11 @@ function SidebarFooter({
   return (
     <div className="flex items-center justify-between gap-1 w-full">
       <SidebarNavItem
-        icon={<Heart className="h-4.5 w-4.5 text-rose-500 fill-rose-500/20" />}
+        icon={<Heart className="h-4.5 w-4.5 text-destructive fill-destructive/20" />}
         label={t('headerSupport')}
         onClick={onOpenSupport}
         collapsed={false}
-        className="flex-1 text-rose-500 hover:text-rose-500"
+        className="flex-1 text-destructive hover:text-destructive"
       />
       <div className="flex items-center gap-1">
         <IconButton
@@ -358,32 +397,12 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
 
   const calculateTotalBookmarks = React.useCallback(async () => {
     try {
-      const id = toolbarId();
-      const nodes = await browser.bookmarks.getSubTree(id);
-
-      let bCount = 0;
-      let fCount = 0;
-      let directCount = 0;
-
-      if (nodes && nodes[0]) {
-        (nodes[0].children ?? []).forEach((child) => {
-          if (child.url) directCount++;
-        });
-
-        const traverse = (node: Browser.bookmarks.BookmarkTreeNode) => {
-          if (node.url) {
-            bCount++;
-          } else {
-            if (node.id !== id) fCount++;
-            (node.children ?? []).forEach(traverse);
-          }
-        };
-
-        traverse(nodes[0]);
-        setTotalLocalCount(bCount);
-        setTotalFolderCount(fCount);
-        setDirectLinksCount(directCount);
-      }
+      const nodes = await browser.bookmarks.getSubTree(toolbarId());
+      const root = nodes?.[0];
+      const stats = root ? computeBookmarkStats(root) : { bookmarks: 0, folders: 0, directLinks: 0 };
+      setTotalLocalCount(stats.bookmarks);
+      setTotalFolderCount(stats.folders);
+      setDirectLinksCount(stats.directLinks);
     } catch (err) {
       console.error('Failed to calculate total bookmarks & folders:', err);
     }
@@ -424,23 +443,6 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
     });
   }, []);
 
-  // Keep the theme (and UI isDark state) in sync when the OS/browser scheme
-  // changes while mode === 'system'. Without this, the sidebar logo and
-  // .light/.dark classes would stay stale until a manual re-render.
-  const [, forceThemeSync] = React.useReducer((x: number) => x + 1, 0);
-  React.useEffect(() => {
-    if (themeMode !== 'system') return;
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const onChange = () => {
-      loadThemeConfig().then((cfg) => {
-        applyThemeConfig(cfg);
-        forceThemeSync();
-      });
-    };
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, [themeMode]);
-
   const handleToggleThemeMode = async () => {
     const nextMode: 'dark' | 'light' | 'system' =
       themeMode === 'light' ? 'dark' : themeMode === 'dark' ? 'system' : 'light';
@@ -478,12 +480,12 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
   };
 
   return (
-    <div className="flex h-screen w-full bg-[var(--color-background)] text-[var(--color-foreground)] overflow-hidden">
+    <div className="flex h-screen w-full bg-background text-foreground overflow-hidden">
       {/* Left Sidebar */}
       <aside
         className={cn(
-          'border-r border-[var(--color-border)] bg-[var(--color-card)] p-3.5 flex flex-col justify-between h-screen sticky top-0 shrink-0 select-none transition-all duration-300 z-20',
-          sidebarCollapsed ? 'w-[68px] items-center px-2' : 'w-60'
+          'border-r border-border bg-card p-3.5 flex flex-col justify-between h-screen sticky top-0 shrink-0 select-none transition-all duration-300 z-20',
+          sidebarCollapsed ? 'w-17 items-center px-2' : 'w-60'
         )}
       >
         <div className={cn('space-y-6 w-full flex flex-col', sidebarCollapsed && 'items-center')}>
@@ -496,7 +498,7 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
           {/* Navigation Menu */}
           <nav className={cn('space-y-1 w-full flex flex-col', sidebarCollapsed && 'items-center')}>
             <SidebarNavItem
-              icon={<LayoutDashboard className="h-4.5 w-4.5" />}
+              icon={<Home className="h-4.5 w-4.5" />}
               label={t('navDashboard')}
               isActive={activeTab === 'dashboard'}
               onClick={() => setActiveTab('dashboard')}
@@ -510,7 +512,7 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
               collapsed={sidebarCollapsed}
             />
             <SidebarNavItem
-              icon={<FolderGit2 className="h-4.5 w-4.5" />}
+              icon={<Library className="h-4.5 w-4.5" />}
               label={t('navOrganize')}
               isActive={activeTab === 'organize'}
               onClick={() => setActiveTab('organize')}
@@ -530,11 +532,11 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
             badge={
               trashCount > 0 ? (
                 sidebarCollapsed ? (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-xs">
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-white">
                     {trashCount > 99 ? '99+' : trashCount}
                   </span>
                 ) : (
-                  <span className="px-1.5 py-0.5 rounded-full bg-rose-500/10 text-rose-500 border border-rose-500/20 text-[11px] font-mono font-bold">
+                  <span className="px-1.5 py-0.5 rounded-full bg-destructive/10 text-destructive border border-destructive/20 text-[11px] font-mono font-medium">
                     {trashCount}
                   </span>
                 )
@@ -551,7 +553,7 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
           />
 
           {/* Full-width divider between profile and footer controls */}
-          <div className={cn('h-px bg-[var(--color-border)]/60', sidebarCollapsed ? '-mx-2' : '-mx-3.5')} />
+          <div className={cn('h-px bg-border/60', sidebarCollapsed ? '-mx-2' : '-mx-3.5')} />
 
           <SidebarFooter
             collapsed={sidebarCollapsed}
