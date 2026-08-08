@@ -1,5 +1,21 @@
-@import url('https://fonts.bunny.net/css?family=geist:400,500,600,700|geist-mono:400,500,600,700');
 @import "tailwindcss";
+
+/* Self-hosted Inter variable font (latin subset, weight axis 100-900).
+   No CDN: newtab/popup must render fast and work offline. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('./fonts/Inter.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('./fonts/Inter-Italic.woff2') format('woff2-variations');
+}
 
 /* ponytail: single dark theme (Cloudflare-dashboard inspired). Add a light
    variant behind a `.light` class toggle when a theme switch is requested. */
@@ -70,8 +86,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'Geist Mono', monospace;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -100,8 +116,10 @@
   --radius-sm: calc(var(--radius) - 4px);
 }
 
-* {
-  border-color: var(--color-border);
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
 }
 
 html, body, #root {
@@ -116,18 +134,18 @@ body {
   padding: 0;
   background-color: var(--color-background);
   color: var(--color-foreground);
-  font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.2s ease, color 0.2s ease;
   overflow: hidden;
 }
 
-/* Reusable section label component using Geist Mono font */
+/* Reusable section label component (system mono — Inter has no mono variant) */
 .section-label {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;

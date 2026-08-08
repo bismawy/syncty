@@ -21,6 +21,7 @@ import {
   mergeDuplicateFolderGroup,
   scanFoldersForSplitting,
   scanEmptyFolders,
+  walkBookmarkTree,
   type DuplicateFolderGroup,
   type SplitFolderCandidate,
   type EmptyFolderItem,
@@ -119,35 +120,22 @@ export function BookmarkManagementView() {
     setIsScanning(true);
     setNotice(null);
     try {
-      const tree = await browser.bookmarks.getTree();
       const map = new Map<string, Array<{ id: string; title: string; url: string; folderPath: string; dateAdded?: number }>>();
 
-      const traverse = (node: Browser.bookmarks.BookmarkTreeNode, currentPath: string[]) => {
-        if (node.url) {
-          const key = normalizeUrl(node.url, matchStrategy);
-          const item = {
-            id: node.id,
-            title: node.title || node.url,
-            url: node.url,
-            folderPath: currentPath.join(' > ') || 'Root',
-            dateAdded: node.dateAdded,
-          };
-          const existing = map.get(key) || [];
-          existing.push(item);
-          map.set(key, existing);
-        }
-
-        if (node.children) {
-          const nextPath = node.title ? [...currentPath, node.title] : currentPath;
-          for (const child of node.children) {
-            traverse(child, nextPath);
-          }
-        }
-      };
-
-      for (const rootNode of tree) {
-        traverse(rootNode, []);
-      }
+      await walkBookmarkTree((node, currentPath) => {
+        if (!node.url) return;
+        const key = normalizeUrl(node.url, matchStrategy);
+        const item = {
+          id: node.id,
+          title: node.title || node.url,
+          url: node.url,
+          folderPath: currentPath.join(' > ') || 'Root',
+          dateAdded: node.dateAdded,
+        };
+        const existing = map.get(key) || [];
+        existing.push(item);
+        map.set(key, existing);
+      });
 
       const dupGroups: DuplicateGroup[] = [];
       map.forEach((items, key) => {
@@ -388,10 +376,10 @@ export function BookmarkManagementView() {
               <button
                 type="button"
                 onClick={() => setActiveSubTab('duplicates')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
                   activeSubTab === 'duplicates'
-                    ? 'bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xs border border-[var(--color-border)]/60'
-                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]'
+                    ? 'bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xs border-[var(--color-border)]/60'
+                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] border-transparent'
                 }`}
               >
                 <CopyCheck className="h-3.5 w-3.5 text-current" />
@@ -401,10 +389,10 @@ export function BookmarkManagementView() {
               <button
                 type="button"
                 onClick={() => setActiveSubTab('merge')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
                   activeSubTab === 'merge'
-                    ? 'bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xs border border-[var(--color-border)]/60'
-                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]'
+                    ? 'bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xs border-[var(--color-border)]/60'
+                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] border-transparent'
                 }`}
               >
                 <FolderGit2 className="h-3.5 w-3.5 text-current" />
@@ -414,10 +402,10 @@ export function BookmarkManagementView() {
               <button
                 type="button"
                 onClick={() => setActiveSubTab('split')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
                   activeSubTab === 'split'
-                    ? 'bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xs border border-[var(--color-border)]/60'
-                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]'
+                    ? 'bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xs border-[var(--color-border)]/60'
+                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] border-transparent'
                 }`}
               >
                 <Split className="h-3.5 w-3.5 text-current" />
@@ -427,10 +415,10 @@ export function BookmarkManagementView() {
               <button
                 type="button"
                 onClick={() => setActiveSubTab('empty')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
                   activeSubTab === 'empty'
-                    ? 'bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xs border border-[var(--color-border)]/60'
-                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]'
+                    ? 'bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xs border-[var(--color-border)]/60'
+                    : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] border-transparent'
                 }`}
               >
                 <FolderX className="h-3.5 w-3.5 text-current" />
@@ -662,8 +650,6 @@ export function BookmarkManagementView() {
                     expandedGroupKeys={expandedGroupKeys}
                     toggleExpandGroup={toggleExpandGroup}
                     pageData={getCurrentPageData(duplicateGroups)}
-                    page={page}
-                    itemsPerPage={ITEMS_PER_PAGE}
                     language={language}
                     hasScanned={hasScanned}
                     isScanning={isScanning}

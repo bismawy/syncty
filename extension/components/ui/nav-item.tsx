@@ -15,10 +15,10 @@ export function NavItem({ active = false, icon, children, className, ...props }:
     <button
       type="button"
       className={cn(
-        'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer select-none text-left',
+        'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all cursor-pointer select-none text-left border',
         active
-          ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] border border-[var(--color-border)]/60 shadow-xs'
-          : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)]/30',
+          ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] border-[var(--color-border)]/60 shadow-xs'
+          : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)]/30 border-transparent',
         className
       )}
       {...props}

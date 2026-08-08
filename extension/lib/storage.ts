@@ -9,7 +9,7 @@ export const KEYS = {
   createdAt: 'syntive.createdAt', // creation timestamp (ms) of secret key
 } as const;
 
-export interface StoredSession {
+interface StoredSession {
   mnemonic: string;
   authId: string;
   encKey: CryptoKey;
@@ -54,11 +54,6 @@ export async function getVersion(): Promise<number> {
 
 export async function setVersion(version: number): Promise<void> {
   await browser.storage.local.set({ [KEYS.version]: version });
-}
-
-export async function getLastSync(): Promise<number | null> {
-  const data = await browser.storage.local.get(KEYS.lastSync);
-  return (data[KEYS.lastSync] as number) ?? null;
 }
 
 export async function setLastSync(ts: number): Promise<void> {

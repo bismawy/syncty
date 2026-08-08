@@ -30,7 +30,7 @@ export interface TreeNode {
 
 const DIRTY_KEY = 'syntive.dirty';
 
-export async function isDirty(): Promise<boolean> {
+async function isDirty(): Promise<boolean> {
   const data = await browser.storage.local.get(DIRTY_KEY);
   return data[DIRTY_KEY] === true;
 }
@@ -92,7 +92,7 @@ function countBookmarks(node: TreeNode): number {
   return (node.children ?? []).reduce((n, c) => n + countBookmarks(c), 0);
 }
 
-export async function countLocalBookmarks(): Promise<number> {
+async function countLocalBookmarks(): Promise<number> {
   try {
     const tree = await serializeToolbar();
     return countBookmarks(tree);

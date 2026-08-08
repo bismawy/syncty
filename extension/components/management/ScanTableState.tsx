@@ -65,3 +65,28 @@ export function ScanTableState({
     </tr>
   );
 }
+
+/**
+ * Shared 3-state guard for the four Bookmark Management scan tabs.
+ * Returns a <ScanTableState> row when the tab should show a placeholder
+ * (not-scanned / scanning / empty), or `null` when data is ready to render.
+ */
+export function useScanTableState(
+  hasScanned: boolean,
+  isScanning: boolean,
+  itemsLength: number,
+  language: string,
+  labels: { subtitleId: string; subtitleEn: string; emptyId: string; emptyEn: string },
+) {
+  if (!hasScanned && !isScanning) {
+    return <ScanTableState state="notScanned" language={language} {...labels} />;
+  }
+  if (isScanning) {
+    return <ScanTableState state="scanning" language={language} subtitleId="" subtitleEn="" emptyId="" emptyEn="" />;
+  }
+  if (hasScanned && itemsLength === 0) {
+    return <ScanTableState state="empty" language={language} subtitleId="" subtitleEn="" emptyId={labels.emptyId} emptyEn={labels.emptyEn} />;
+  }
+  return null;
+}
+

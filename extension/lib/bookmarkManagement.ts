@@ -29,6 +29,29 @@ function extractDomain(url: string): string {
 }
 
 /**
+ * Walk the entire bookmark tree, invoking `visit` for every node (bookmarks and folders).
+ * The visitor receives the current node and the path of ancestor folder titles.
+ * Roots (id 0 / root________) are passed to the visitor but excluded from the path.
+ */
+export async function walkBookmarkTree(
+  visit: (node: Browser.bookmarks.BookmarkTreeNode, path: string[]) => void,
+): Promise<void> {
+  const tree = await browser.bookmarks.getTree();
+  const traverse = (node: Browser.bookmarks.BookmarkTreeNode, currentPath: string[]) => {
+    visit(node, currentPath);
+    if (node.children) {
+      const nextPath = node.title ? [...currentPath, node.title] : currentPath;
+      for (const child of node.children) {
+        traverse(child, nextPath);
+      }
+    }
+  };
+  for (const rootNode of tree) {
+    traverse(rootNode, []);
+  }
+}
+
+/**
  * Check if a folder title is ALREADY a domain subfolder
  */
 function isDomainFolderName(folderTitle: string, domain: string): boolean {
@@ -67,44 +90,27 @@ async function isAncestorOrSame(ancestorId: string, nodeId: string): Promise<boo
  */
 export async function scanDuplicateFolders(): Promise<DuplicateFolderGroup[]> {
   try {
-    const tree = await browser.bookmarks.getTree();
     const folderMap = new Map<string, FolderNodeItem[]>();
 
-    const traverse = (node: Browser.bookmarks.BookmarkTreeNode, currentPath: string[]) => {
-      if (!node.url && node.id !== '0' && node.id !== 'root________') {
-        const title = (node.title || 'Untitled Folder').trim();
-        const key = title.toLowerCase();
-        const nextPath = [...currentPath, title];
-        const childrenCount = (node.children ?? []).length;
+    await walkBookmarkTree((node, currentPath) => {
+      if (node.url || node.id === '0' || node.id === 'root________') return;
+      const title = (node.title || 'Untitled Folder').trim();
+      const key = title.toLowerCase();
+      const childrenCount = (node.children ?? []).length;
 
-        const folderItem: FolderNodeItem = {
-          id: node.id,
-          title,
-          parentId: node.parentId,
-          folderPath: currentPath.join(' > ') || 'Root',
-          itemCount: childrenCount,
-          dateAdded: node.dateAdded,
-        };
+      const folderItem: FolderNodeItem = {
+        id: node.id,
+        title,
+        parentId: node.parentId,
+        folderPath: currentPath.join(' > ') || 'Root',
+        itemCount: childrenCount,
+        dateAdded: node.dateAdded,
+      };
 
-        const existing = folderMap.get(key) || [];
-        existing.push(folderItem);
-        folderMap.set(key, existing);
-
-        if (node.children) {
-          for (const child of node.children) {
-            traverse(child, nextPath);
-          }
-        }
-      } else if (node.children) {
-        for (const child of node.children) {
-          traverse(child, currentPath);
-        }
-      }
-    };
-
-    for (const rootNode of tree) {
-      traverse(rootNode, []);
-    }
+      const existing = folderMap.get(key) || [];
+      existing.push(folderItem);
+      folderMap.set(key, existing);
+    });
 
     const duplicateGroups: DuplicateFolderGroup[] = [];
     folderMap.forEach((folders, key) => {
@@ -228,54 +234,41 @@ export async function mergeDuplicateFolderGroup(
  */
 export async function scanFoldersForSplitting(): Promise<SplitFolderCandidate[]> {
   try {
-    const tree = await browser.bookmarks.getTree();
     const candidates: SplitFolderCandidate[] = [];
 
-    const traverse = async (node: Browser.bookmarks.BookmarkTreeNode, currentPath: string[]) => {
-      if (!node.url && node.children && node.children.length >= 2) {
-        const bookmarkChildren = node.children.filter((c) => c.url);
-        if (bookmarkChildren.length >= 2) {
-          const domainMap = new Map<string, string[]>();
-          for (const b of bookmarkChildren) {
-            if (b.url) {
-              const d = extractDomain(b.url);
-              const list = domainMap.get(d) || [];
-              list.push(b.id);
-              domainMap.set(d, list);
-            }
-          }
+    await walkBookmarkTree((node, currentPath) => {
+      if (node.url || !node.children || node.children.length < 2) return;
+      const bookmarkChildren = node.children.filter((c) => c.url);
+      if (bookmarkChildren.length < 2) return;
 
-          const domainGroups: { domain: string; count: number; bookmarkIds: string[] }[] = [];
-          domainMap.forEach((ids, domain) => {
-            if (ids.length >= 2 && domain !== 'other' && !isDomainFolderName(node.title || '', domain)) {
-              domainGroups.push({ domain, count: ids.length, bookmarkIds: ids });
-            }
-          });
-
-          if (domainGroups.length > 0) {
-            domainGroups.sort((a, b) => b.count - a.count);
-            candidates.push({
-              folderId: node.id,
-              folderName: node.title || 'Untitled Folder',
-              folderPath: currentPath.join(' > ') || 'Root',
-              totalBookmarks: bookmarkChildren.length,
-              domainGroups,
-            });
-          }
+      const domainMap = new Map<string, string[]>();
+      for (const b of bookmarkChildren) {
+        if (b.url) {
+          const d = extractDomain(b.url);
+          const list = domainMap.get(d) || [];
+          list.push(b.id);
+          domainMap.set(d, list);
         }
       }
 
-      if (node.children) {
-        const nextPath = node.title ? [...currentPath, node.title] : currentPath;
-        for (const child of node.children) {
-          await traverse(child, nextPath);
+      const domainGroups: { domain: string; count: number; bookmarkIds: string[] }[] = [];
+      domainMap.forEach((ids, domain) => {
+        if (ids.length >= 2 && domain !== 'other' && !isDomainFolderName(node.title || '', domain)) {
+          domainGroups.push({ domain, count: ids.length, bookmarkIds: ids });
         }
-      }
-    };
+      });
 
-    for (const rootNode of tree) {
-      await traverse(rootNode, []);
-    }
+      if (domainGroups.length > 0) {
+        domainGroups.sort((a, b) => b.count - a.count);
+        candidates.push({
+          folderId: node.id,
+          folderName: node.title || 'Untitled Folder',
+          folderPath: currentPath.join(' > ') || 'Root',
+          totalBookmarks: bookmarkChildren.length,
+          domainGroups,
+        });
+      }
+    });
 
     return candidates;
   } catch (err) {
@@ -324,42 +317,26 @@ export interface EmptyFolderItem {
  */
 export async function scanEmptyFolders(): Promise<EmptyFolderItem[]> {
   try {
-    const tree = await browser.bookmarks.getTree();
     const emptyFolders: EmptyFolderItem[] = [];
 
     const isSystemFolder = (id: string) => {
       return ['0', 'root________', 'menu________', 'toolbar________', 'unfiled________', 'mobile________'].includes(id);
     };
 
-    const traverse = (node: Browser.bookmarks.BookmarkTreeNode, currentPath: string[]) => {
-      // If node is a folder (has no url) and is not a system root container
-      if (!node.url && !isSystemFolder(node.id)) {
-        const folderName = (node.title || 'Untitled Folder').trim();
-        const children = node.children || [];
+    await walkBookmarkTree((node, currentPath) => {
+      if (node.url || isSystemFolder(node.id)) return;
+      const folderName = (node.title || 'Untitled Folder').trim();
+      const children = node.children || [];
 
-        if (children.length === 0) {
-          emptyFolders.push({
-            id: node.id,
-            folderName,
-            folderPath: currentPath.join(' > ') || 'Root',
-            dateAdded: node.dateAdded,
-          });
-        } else {
-          const nextPath = [...currentPath, folderName];
-          for (const child of children) {
-            traverse(child, nextPath);
-          }
-        }
-      } else if (node.children) {
-        for (const child of node.children) {
-          traverse(child, currentPath);
-        }
+      if (children.length === 0) {
+        emptyFolders.push({
+          id: node.id,
+          folderName,
+          folderPath: currentPath.join(' > ') || 'Root',
+          dateAdded: node.dateAdded,
+        });
       }
-    };
-
-    for (const rootNode of tree) {
-      traverse(rootNode, []);
-    }
+    });
 
     return emptyFolders;
   } catch (err) {

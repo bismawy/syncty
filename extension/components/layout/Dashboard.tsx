@@ -27,12 +27,11 @@ import { Button } from '@/components/ui/button';
 import { clearSession } from '@/lib/storage';
 import { getDeviceLabel } from '@/lib/device';
 import { cn, formatSyncAgo } from '@/lib/utils';
-import { loadThemeConfig, saveThemeConfig, applyThemeConfig, getEffectiveIsDark } from '@/lib/theme';
+import { loadThemeConfig, saveThemeConfig, applyThemeConfig } from '@/lib/theme';
 import { LanguageProvider, useTranslation } from '@/lib/i18n';
 
 import { IconButton } from '@/components/ui/icon-button';
-import logoDark from '@/assets/logo-dark.svg';
-import logoLight from '@/assets/logo-light.svg';
+import logo from '@/assets/logo.svg';
 import logoIcon from '@/assets/logo-icon.svg';
 
 interface SidebarNavItemProps {
@@ -63,10 +62,10 @@ function SidebarNavItem({
         onClick={onClick}
         title={title || label}
         className={cn(
-          'relative flex items-center justify-center h-10 w-10 rounded-xl transition-colors cursor-pointer',
+          'relative flex items-center justify-center h-10 w-10 rounded-xl transition-colors cursor-pointer border',
           isActive
-            ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] border border-[var(--color-border)]/50'
-            : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)]/50',
+            ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] border-[var(--color-border)]/50'
+            : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)]/50 border-transparent',
           className
         )}
       >
@@ -82,10 +81,10 @@ function SidebarNavItem({
       onClick={onClick}
       title={title || label}
       className={cn(
-        'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer select-none',
+        'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer select-none border',
         isActive
-          ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] border border-[var(--color-border)]/50'
-          : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)]/50',
+          ? 'bg-[var(--color-accent)] text-[var(--color-foreground)] border-[var(--color-border)]/50'
+          : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-accent)]/50 border-transparent',
         className
       )}
     >
@@ -100,15 +99,12 @@ function SidebarNavItem({
 
 function SidebarHeader({
   collapsed,
-  themeMode,
   onToggleCollapse,
 }: {
   collapsed: boolean;
-  themeMode: 'dark' | 'light' | 'system';
   onToggleCollapse: () => void;
 }) {
   const { t } = useTranslation();
-  const isDark = getEffectiveIsDark(themeMode);
 
   if (collapsed) {
     return (
@@ -132,7 +128,7 @@ function SidebarHeader({
   return (
     <div className="flex items-center justify-between px-1 pt-1">
       <img
-        src={isDark ? logoDark : logoLight}
+        src={logo}
         alt="Syntive"
         className="h-6 w-auto select-none shrink-0"
       />
@@ -494,7 +490,6 @@ function DashboardContent({ onLogout }: { onLogout: () => void }) {
           {/* Sidebar Top: Header Logo & Collapse Toggle */}
           <SidebarHeader
             collapsed={sidebarCollapsed}
-            themeMode={themeMode}
             onToggleCollapse={toggleSidebarCollapse}
           />
 

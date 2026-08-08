@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from '@/lib/i18n';
 
-export interface SearchProvider {
+interface SearchProvider {
   id: string;
   name: string;
   url: string;

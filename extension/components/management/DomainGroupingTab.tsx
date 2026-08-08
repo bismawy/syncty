@@ -3,7 +3,7 @@ import { Folder, ChevronDown, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { SplitFolderCandidate, splitFolderByDomain } from '@/lib/bookmarkManagement';
-import { ScanTableState } from './ScanTableState';
+import { useScanTableState } from './ScanTableState';
 
 interface DomainGroupingTabProps {
   splitCandidates: SplitFolderCandidate[];
@@ -61,35 +61,13 @@ export function DomainGroupingTab({
     }
   };
 
-  if (!hasScanned && !isScanning) {
-    return (
-      <ScanTableState
-        state="notScanned"
-        language={language}
-        subtitleId="Klik tombol Pindai untuk menganalisis pengelompokan domain Anda."
-        subtitleEn="Click Scan to analyze domain grouping."
-        emptyId="Tidak Ada Folder Yang Perlu Dikelompokkan!"
-        emptyEn="No Folders Need Domain Grouping!"
-      />
-    );
-  }
-
-  if (isScanning) {
-    return <ScanTableState state="scanning" language={language} subtitleId="" subtitleEn="" emptyId="" emptyEn="" />;
-  }
-
-  if (hasScanned && splitCandidates.length === 0) {
-    return (
-      <ScanTableState
-        state="empty"
-        language={language}
-        subtitleId=""
-        subtitleEn=""
-        emptyId="Tidak Ada Folder Yang Perlu Dikelompokkan!"
-        emptyEn="No Folders Need Domain Grouping!"
-      />
-    );
-  }
+  const placeholder = useScanTableState(hasScanned, isScanning, splitCandidates.length, language, {
+    subtitleId: 'Klik tombol Pindai untuk menganalisis pengelompokan domain Anda.',
+    subtitleEn: 'Click Scan to analyze domain grouping.',
+    emptyId: 'Tidak Ada Folder Yang Perlu Dikelompokkan!',
+    emptyEn: 'No Folders Need Domain Grouping!',
+  });
+  if (placeholder) return placeholder;
 
   return (
     <>

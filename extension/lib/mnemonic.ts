@@ -1,7 +1,7 @@
 import { WORDLIST, WORDSET } from './wordlist-id';
 import { getDeviceLabel } from './device';
 
-export const MNEMONIC_WORDS = 12;
+const MNEMONIC_WORDS = 12;
 
 // 12 words, each an independent uniform draw from the 2048-word list.
 // 12 × 11 bits = 132 bits of entropy — exceeds the 128-bit target.
@@ -34,7 +34,7 @@ export function validateMnemonic(input: string): { ok: boolean; reason?: string 
   return { ok: true };
 }
 
-export interface MnemonicExportOptions {
+interface MnemonicExportOptions {
   createdAt?: number | string | Date;
   deviceName?: string;
   lang?: 'id' | 'en';

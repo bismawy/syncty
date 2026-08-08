@@ -4,7 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyFolderItem } from '@/lib/bookmarkManagement';
-import { ScanTableState } from './ScanTableState';
+import { useScanTableState } from './ScanTableState';
 import { moveToTrash } from '@/lib/trash';
 
 interface EmptyFoldersTabProps {
@@ -28,35 +28,13 @@ export function EmptyFoldersTab({
   isScanning,
   handleScanEmpty,
 }: EmptyFoldersTabProps) {
-  if (!hasScanned && !isScanning) {
-    return (
-      <ScanTableState
-        state="notScanned"
-        language={language}
-        subtitleId="Klik tombol Pindai untuk menganalisis folder kosong Anda."
-        subtitleEn="Click Scan to analyze your empty folders."
-        emptyId="Tidak Ada Folder Kosong Ditemukan!"
-        emptyEn="No Empty Folders Found!"
-      />
-    );
-  }
-
-  if (isScanning) {
-    return <ScanTableState state="scanning" language={language} subtitleId="" subtitleEn="" emptyId="" emptyEn="" />;
-  }
-
-  if (hasScanned && emptyFolders.length === 0) {
-    return (
-      <ScanTableState
-        state="empty"
-        language={language}
-        subtitleId=""
-        subtitleEn=""
-        emptyId="Tidak Ada Folder Kosong Ditemukan!"
-        emptyEn="No Empty Folders Found!"
-      />
-    );
-  }
+  const placeholder = useScanTableState(hasScanned, isScanning, emptyFolders.length, language, {
+    subtitleId: 'Klik tombol Pindai untuk menganalisis folder kosong Anda.',
+    subtitleEn: 'Click Scan to analyze your empty folders.',
+    emptyId: 'Tidak Ada Folder Kosong Ditemukan!',
+    emptyEn: 'No Empty Folders Found!',
+  });
+  if (placeholder) return placeholder;
 
   return (
     <>

@@ -1,6 +1,6 @@
 // Theme management helper for Syntive
 
-export interface ThemePreset {
+interface ThemePreset {
   id: string;
   name: string;
   accentHex: string;

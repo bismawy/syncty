@@ -4,7 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DuplicateFolderGroup, mergeDuplicateFolderGroup } from '@/lib/bookmarkManagement';
-import { ScanTableState } from './ScanTableState';
+import { useScanTableState } from './ScanTableState';
 
 interface MergeFoldersTabProps {
   duplicateGroups: DuplicateFolderGroup[];
@@ -13,8 +13,6 @@ interface MergeFoldersTabProps {
   expandedGroupKeys: Set<string>;
   toggleExpandGroup: (key: string) => void;
   pageData: DuplicateFolderGroup[];
-  page: number;
-  itemsPerPage: number;
   language: string;
   hasScanned: boolean;
   isScanning: boolean;
@@ -39,6 +37,14 @@ export function MergeFoldersTab({
   setNotice,
   handleScanMerge,
 }: MergeFoldersTabProps) {
+  const placeholder = useScanTableState(hasScanned, isScanning, duplicateGroups.length, language, {
+    subtitleId: 'Klik tombol Pindai untuk menganalisis folder duplikat Anda.',
+    subtitleEn: 'Click Scan to analyze your duplicate folders.',
+    emptyId: 'Tidak Ada Folder Duplikat!',
+    emptyEn: 'No Duplicate Folders Found!',
+  });
+  if (placeholder) return placeholder;
+
   const handleMergeSingle = async (group: DuplicateFolderGroup) => {
     setIsProcessing(true);
     setNotice(null);
@@ -56,36 +62,6 @@ export function MergeFoldersTab({
       setIsProcessing(false);
     }
   };
-
-  if (!hasScanned && !isScanning) {
-    return (
-      <ScanTableState
-        state="notScanned"
-        language={language}
-        subtitleId="Klik tombol Pindai untuk menganalisis folder duplikat Anda."
-        subtitleEn="Click Scan to analyze your duplicate folders."
-        emptyId="Tidak Ada Folder Duplikat!"
-        emptyEn="No Duplicate Folders Found!"
-      />
-    );
-  }
-
-  if (isScanning) {
-    return <ScanTableState state="scanning" language={language} subtitleId="" subtitleEn="" emptyId="" emptyEn="" />;
-  }
-
-  if (hasScanned && duplicateGroups.length === 0) {
-    return (
-      <ScanTableState
-        state="empty"
-        language={language}
-        subtitleId=""
-        subtitleEn=""
-        emptyId="Tidak Ada Folder Duplikat!"
-        emptyEn="No Duplicate Folders Found!"
-      />
-    );
-  }
 
   return (
     <>

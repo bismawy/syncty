@@ -4,6 +4,7 @@ import { DashboardCard } from './DashboardCard';
 import { FaviconImage } from '@/components/ui/FaviconImage';
 import { Pagination } from '@/components/bookmark/Pagination';
 import { domainOf } from '@/lib/utils';
+import { useLocalStorageState } from '@/lib/hooks';
 import {
   Dialog,
   DialogContent,
@@ -132,17 +133,10 @@ export function TopSitesWidget({ dragHandle }: { dragHandle?: React.ReactNode })
 // 2. Favorite Sites Widget (Situs Favorit - 4 Kolom, 8 Items Per Page, Page Navigation)
 export function FavoriteSitesWidget({ dragHandle }: { dragHandle?: React.ReactNode }) {
   const { t } = useTranslation();
-  const [pinnedSites, setPinnedSites] = React.useState<SiteItem[]>(() => {
-    const saved = localStorage.getItem('syntive.pinnedSites');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // fallback
-      }
-    }
-    return DEFAULT_PINNED_SITES;
-  });
+  const [pinnedSites, setPinnedSites] = useLocalStorageState<SiteItem[]>(
+    'syntive.pinnedSites',
+    DEFAULT_PINNED_SITES,
+  );
 
   const [page, setPage] = React.useState(1);
   const [showAddModal, setShowAddModal] = React.useState(false);
@@ -159,10 +153,6 @@ export function FavoriteSitesWidget({ dragHandle }: { dragHandle?: React.ReactNo
       setPage(pageCount);
     }
   }, [page, pageCount]);
-
-  React.useEffect(() => {
-    localStorage.setItem('syntive.pinnedSites', JSON.stringify(pinnedSites));
-  }, [pinnedSites]);
 
   const handleAddPinned = () => {
     if (!newTitle.trim() || !newUrl.trim()) return;

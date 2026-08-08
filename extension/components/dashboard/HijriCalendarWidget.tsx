@@ -39,7 +39,7 @@ const DAYS_SHORT_EN = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 const DAYS_FULL_ID = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 const DAYS_FULL_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-export interface HijriEventDef {
+interface HijriEventDef {
   month: number; // 0-indexed
   day: number;
   titleId: string;
@@ -87,7 +87,7 @@ function getTodayHijri() {
     // Intl islamic-umalqura is supported by all targeted browsers; keep defaults if not.
   }
 
-  return { day, monthIndex, year, dayOfWeek, gregorianDate: now };
+  return { day, monthIndex, year, dayOfWeek };
 }
 
 function getDaysInHijriMonth(monthIndex: number, year: number): number {

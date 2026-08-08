@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import logoDark from '@/assets/logo-dark.svg';
+import logo from '@/assets/logo.svg';
 
 type Mode = 'choose' | 'create';
 
@@ -173,7 +173,7 @@ function OnboardingContent({ onDone }: { onDone: () => void }) {
           {/* Original Light Logo */}
           <div className="py-1">
             <img
-              src={logoDark}
+              src={logo}
               alt="Syntive"
               className="h-8 sm:h-9 select-none mx-auto drop-shadow-md"
             />

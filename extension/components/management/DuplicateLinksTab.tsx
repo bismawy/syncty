@@ -4,14 +4,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { moveToTrash } from '@/lib/trash';
-import { ScanTableState } from './ScanTableState';
+import { useScanTableState } from './ScanTableState';
 
-export interface DuplicateBookmarkItem {
+interface DuplicateBookmarkItem {
   id: string;
   title: string;
   url: string;
   dateAdded?: number;
-  parentId?: string;
   folderPath: string;
 }
 
@@ -50,35 +49,13 @@ export function DuplicateLinksTab({
   isScanning,
   handleScanDuplicateLinks,
 }: DuplicateLinksTabProps) {
-  if (!hasScanned && !isScanning) {
-    return (
-      <ScanTableState
-        state="notScanned"
-        language={language}
-        subtitleId="Klik tombol Pindai untuk menganalisis link duplikat Anda."
-        subtitleEn="Click Scan to analyze your duplicate links."
-        emptyId="Tidak Ada Link Duplikat Ditemukan!"
-        emptyEn="No Duplicate Links Found!"
-      />
-    );
-  }
-
-  if (isScanning) {
-    return <ScanTableState state="scanning" language={language} subtitleId="" subtitleEn="" emptyId="" emptyEn="" />;
-  }
-
-  if (hasScanned && dupLinkGroups.length === 0) {
-    return (
-      <ScanTableState
-        state="empty"
-        language={language}
-        subtitleId=""
-        subtitleEn=""
-        emptyId="Tidak Ada Link Duplikat Ditemukan!"
-        emptyEn="No Duplicate Links Found!"
-      />
-    );
-  }
+  const placeholder = useScanTableState(hasScanned, isScanning, dupLinkGroups.length, language, {
+    subtitleId: 'Klik tombol Pindai untuk menganalisis link duplikat Anda.',
+    subtitleEn: 'Click Scan to analyze your duplicate links.',
+    emptyId: 'Tidak Ada Link Duplikat Ditemukan!',
+    emptyEn: 'No Duplicate Links Found!',
+  });
+  if (placeholder) return placeholder;
 
   return (
     <>

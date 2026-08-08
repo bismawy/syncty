@@ -82,10 +82,11 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { formatSyncAgo } from '@/lib/utils';
+import { useLocalStorageState } from '@/lib/hooks';
 import type { SyncStatus } from '@/lib/types';
 import { useTranslation, type TranslationKey, type Language } from '@/lib/i18n';
 
-export interface WidgetConfig {
+interface WidgetConfig {
   id: string;
   nameKey: TranslationKey;
   enabled: boolean;
@@ -110,15 +111,15 @@ const DEFAULT_WIDGET_CONFIGS: WidgetConfig[] = [
 const DEFAULT_ORDER = DEFAULT_WIDGET_CONFIGS.map((w) => w.id);
 const DEFAULT_NAME_KEYS = new Map(DEFAULT_WIDGET_CONFIGS.map((w) => [w.id, w.nameKey]));
 
-export type WidgetCategoryId = 'timeProductivity' | 'sitesNavigation' | 'islamicInspiration';
+type WidgetCategoryId = 'timeProductivity' | 'sitesNavigation' | 'islamicInspiration';
 
-export interface WidgetCategoryDef {
+interface WidgetCategoryDef {
   id: WidgetCategoryId;
   titleKey: TranslationKey;
   widgetIds: string[];
 }
 
-export const WIDGET_CATEGORIES: WidgetCategoryDef[] = [
+const WIDGET_CATEGORIES: WidgetCategoryDef[] = [
   {
     id: 'timeProductivity',
     titleKey: 'catTimeProductivity',
@@ -178,22 +179,18 @@ export function WidgetsSection({
     return DEFAULT_WIDGET_CONFIGS;
   });
 
-  const [widgetOrder, setWidgetOrder] = React.useState<string[]>(() => {
-    const saved = localStorage.getItem('syntive.widgetOrder');
-    if (saved) {
-      try {
-        const parsed: string[] = JSON.parse(saved);
-        const filtered = parsed.filter((id) => id !== 'quicklinks');
-        DEFAULT_ORDER.forEach((id) => {
-          if (!filtered.includes(id)) filtered.push(id);
-        });
-        return filtered;
-      } catch {
-        // fallback
-      }
-    }
-    return DEFAULT_ORDER;
-  });
+  const [widgetOrder, setWidgetOrder] = useLocalStorageState<string[]>('syntive.widgetOrder', DEFAULT_ORDER);
+
+  // Filter out removed 'quicklinks' id and merge any new default ids once on mount.
+  React.useEffect(() => {
+    setWidgetOrder((prev) => {
+      const filtered = prev.filter((id) => id !== 'quicklinks');
+      DEFAULT_ORDER.forEach((id) => {
+        if (!filtered.includes(id)) filtered.push(id);
+      });
+      return filtered.length === prev.length && filtered.every((v, i) => v === prev[i]) ? prev : filtered;
+    });
+  }, []);
 
   const [localManageModal, setLocalManageModal] = React.useState(false);
   const showManageModal = manageModalOpen || localManageModal;
@@ -216,10 +213,6 @@ export function WidgetsSection({
   React.useEffect(() => {
     localStorage.setItem('syntive.widgetConfigs', JSON.stringify(configs));
   }, [configs]);
-
-  React.useEffect(() => {
-    localStorage.setItem('syntive.widgetOrder', JSON.stringify(widgetOrder));
-  }, [widgetOrder]);
 
   const toggleWidget = (id: string) => {
     setConfigs((prev) =>
@@ -630,25 +623,11 @@ interface TodoItem {
 
 function TodoWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
   const { t } = useTranslation();
-  const [todos, setTodos] = React.useState<TodoItem[]>(() => {
-    const saved = localStorage.getItem('syntive.todoItems');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // fallback
-      }
-    }
-    return [
-      { id: '1', text: 'Periksa bookmark penting', completed: true },
-      { id: '2', text: 'Singkronkan perangkat', completed: false },
-    ];
-  });
+  const [todos, setTodos] = useLocalStorageState<TodoItem[]>('syntive.todoItems', [
+    { id: '1', text: 'Periksa bookmark penting', completed: true },
+    { id: '2', text: 'Singkronkan perangkat', completed: false },
+  ]);
   const [inputText, setInputText] = React.useState('');
-
-  React.useEffect(() => {
-    localStorage.setItem('syntive.todoItems', JSON.stringify(todos));
-  }, [todos]);
 
   const handleAdd = () => {
     if (!inputText.trim()) return;
@@ -1824,17 +1803,10 @@ const AVAILABLE_WORLD_CITIES: WorldCity[] = [
 
 function WorldClockWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
   const { t } = useTranslation();
-  const [selectedZones, setSelectedZones] = React.useState<string[]>(() => {
-    const saved = localStorage.getItem('syntive.worldClockZones');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // fallback
-      }
-    }
-    return ['Asia/Tokyo', 'Europe/London', 'America/New_York'];
-  });
+  const [selectedZones, setSelectedZones] = useLocalStorageState<string[]>(
+    'syntive.worldClockZones',
+    ['Asia/Tokyo', 'Europe/London', 'America/New_York'],
+  );
 
   const [now, setNow] = React.useState(new Date());
   const [showEditModal, setShowEditModal] = React.useState(false);
@@ -1844,10 +1816,6 @@ function WorldClockWidget({ dragHandle }: { dragHandle: React.ReactNode }) {
     const interval = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
-
-  React.useEffect(() => {
-    localStorage.setItem('syntive.worldClockZones', JSON.stringify(selectedZones));
-  }, [selectedZones]);
 
   const toggleZone = (tz: string) => {
     setSelectedZones((prev) => {
